@@ -2,13 +2,15 @@
 %% 附录 A 实验超参数与配置
 %%=============================================================================
 
-\chapter{实验超参数与配置}
+\chapter{附录}
 \label{chap:appendix}
+\enchapter{Appendix}
 
 本附录详细列出本研究中所有实验的超参数设置与软件环境配置，以确保研究的可复现性。所有超参数均在统一的配置文件中管理，便于调试和修改。
 
 \section{EEG 数据参数}
 \label{sec:eeg_params}
+\ensection{EEG Data Parameters}
 
 EEG 数据采集与预处理的基础参数如表~\ref{tab:eeg_params} 所示。
 
@@ -32,6 +34,7 @@ EEG 数据采集与预处理的基础参数如表~\ref{tab:eeg_params} 所示。
 
 \section{表格型 Q-Learning 超参数}
 \label{sec:tabular_ql_params}
+\ensection{Tabular Q-Learning Hyperparameters}
 
 表格型 Q-Learning 方法（包括 Standard Q-Learning、Double Q-Learning、Dueling Q-Learning、Dueling Double Q-Learning）的超参数设置如表~\ref{tab:tabular_ql_params} 所示。
 
@@ -85,6 +88,7 @@ $t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
 
 \section{DQN 超参数}
 \label{sec:dqn_params}
+\ensection{DQN Hyperparameters}
 
 DQN 基线方法的超参数设置如表~\ref{tab:dqn_params} 所示。
 
@@ -141,6 +145,7 @@ DQN 使用两层全连接网络近似 Q 函数：
 
 \section{Dueling 架构参数}
 \label{sec:dueling_params}
+\ensection{Dueling Architecture Parameters}
 
 Dueling Q-Learning 和 Dueling Double Q-Learning 采用 Dueling 网络架构，将 Q 函数分解为状态价值函数 $V(s)$ 和优势函数 $A(s,a)$：
 
@@ -168,6 +173,7 @@ Dueling 架构的学习参数如表~\ref{tab:dueling_params} 所示。
 
 \section{CSP-SVM 分类器超参数}
 \label{sec:csp_svm_params}
+\ensection{CSP-SVM Classifier Hyperparameters}
 
 本研究使用 CSP-SVM 作为基础分类器计算奖励信号，其超参数设置如表~\ref{tab:csp_svm_params} 所示。为公平评估不同时间窗选择方法的性能，所有实验方法统一使用固定参数的 SVM 分类器，避免分类器参数变化对时间窗评估产生干扰。
 
@@ -202,6 +208,7 @@ CSP 分量数 & 4 \\
 
 \section{数据集信息}
 \label{sec:dataset_info}
+\ensection{Dataset Information}
 
 本研究使用的数据集信息如表~\ref{tab:dataset_info} 所示。
 
@@ -221,7 +228,31 @@ EEG 通道数 & 22 通道 \\
 通道位置 & 国际标准 10-20 系统 \\
 训练集试次数 & 288 试次/被试（72 试次 × 4 类） \\
 测试集试次数 & 288 试次/被试（72 试次 × 4 类） \\
-数据来源 & \url{http://www.bbci.de/competition/iv/} \\
+数据来源 & \url{https://github.com/bregydoc/bcidatasetIV2a.git} \\
 \hline
 \end{tabular}
 \end{table}
+
+
+\section{源代码仓库}
+\label{sec:source_code}
+\ensection{Source Code Repository}
+
+本研究的全部源代码、实验配置及数据处理脚本均已开源，托管于 GitHub 平台。
+
+\subsection{仓库地址}
+\begin{itemize}
+    \item \textbf{GitHub 仓库}: \url{https://github.com/theoldman-lab/XMU_DKX.git}
+\end{itemize}
+
+
+\subsection{仓库截图}
+图~\ref{fig:github_repo} 展示了该 GitHub 仓库的主页面。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/截图 2026-03-18 20-39-30.png}
+\caption{GitHub 源代码仓库主页}
+\label{fig:github_repo}
+\end{figure}
+
