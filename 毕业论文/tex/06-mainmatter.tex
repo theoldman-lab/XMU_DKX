@@ -1,0 +1,35 @@
+%%=============================================================================
+%% 前置/正文/后置部分设置
+%%=============================================================================
+
+%% 选择编译
+\RequirePackage{ifthen}
+
+%% check pdfTeX mode
+\RequirePackage{ifpdf}
+
+%% 设置前置
+\renewcommand{\frontmatter}{ % 修改 frontmatter 的页码为大写罗马格式，并调整页面风格
+	\if@openright\cleardoublepage\else\clearpage\fi
+	\@mainmatterfalse
+	\setcounter{blankpage}{0}
+	\global\c@page \@ne
+	\renewcommand\thepage{\@Roman{\the\numexpr\value{page}-\value{blankpage}\relax}}
+	\pagestyle{xmu@headings}
+}
+
+%% 设置正文
+\renewcommand{\mainmatter}{ % 修改 mainmatter 的页码为阿拉伯格式，并调整页面风格
+	\if@openright\cleardoublepage\else\clearpage\fi
+	\@mainmattertrue
+	\pagestyle{xmu@headings}
+	\setstretch{1.5} %设置正文段落行距
+	\setcounter{blankpage}{0}
+	\global\c@page \@ne
+	\renewcommand\thepage{\@arabic{\the\numexpr\value{page}-\value{blankpage}\relax}}
+}
+
+%% 设置后置
+\renewcommand{\backmatter}{%
+	\@mainmatterfalse
+}

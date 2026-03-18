@@ -1,0 +1,108 @@
+%%=============================================================================
+%% 封面和声明页面
+%%=============================================================================
+
+%% 绘制封面
+\newcommand\makecover{
+	\setstretch{1.78889} % 设置行间距
+	\newpage
+	\cleardoublepage
+	\thispagestyle{empty}
+	\pdfbookmark[0]{封面}{cover}
+
+	% \ifxmu@pdf
+		% \includepdf[pages=-]{pdf_files/cover.pdf}
+	% \else
+
+		{\heiti \zihao{-4} \noindent \xmu@label@schoolserialnumber \xmu@value@schoolserialnumber}  \\
+		{\heiti \zihao{-4} \xmu@label@studentnumber \xmu@value@studentnumber}
+
+		\vskip 20pt
+
+		\begin{figure}[htb!]
+			\centering
+			\includegraphics[width=4.82cm]{figures/xmu-logo.pdf}
+		\end{figure}
+
+		\begin{center}
+			{\heiti \zihao{2} \xmu@value@thesistype}
+			\vskip 35pt
+				{\heiti \zihao{-2} \xmu@value@title}
+			\vskip 15pt
+				{\bfseries \zihao{3} \xmu@value@entitle}
+			\vskip 55pt
+				{\kaishu \zihao{-2} \xmu@value@author}
+			\vskip 30pt
+
+				{\kaishu \zihao{-3}
+					\begin{tabular}{r p{1mm} l}
+						\xmu@label@advisor    &  & \xmu@value@advisor
+						\\
+						\xmu@label@major      &  & \xmu@value@major
+						\\
+						\xmu@label@submitdate &  & \xmu@value@submitdate
+						\\
+						\xmu@label@defenddate &  & \xmu@value@defenddate
+						\\
+						\xmu@label@grantdate  &  & \xmu@value@grantdate
+					\end{tabular}}
+
+			\vskip 100pt
+				{\heiti \zihao{-4} \xmu@value@printdate}
+		\end{center}
+
+		\vfill
+
+	% \fi
+
+	\clearpage
+}
+
+%% 绘制原创性声明
+\newcommand\makeoriginalitystatement{
+	\cleardoublepage
+	\pdfbookmark[0]{原创性声明}{originality_statement}
+	\thispagestyle{empty}
+
+	\setstretch{2.2}
+	% \ifxmu@pdf
+	% 	\includepdf[pages=-]{pdf_files/originality_statement.pdf}
+	% \else
+		\begin{center}
+			{\bfseries \heiti \zihao{-2} \xmu@label@originality@title}
+		\end{center}
+		\vskip 10pt
+			{\songti\zihao{4} \par \xmu@label@originality@content}
+		\vskip 20pt
+		\hspace{8cm}{\zihao{4}\xmu@label@originality@authorsign\par}
+		\hspace{8cm}{\zihao{4}\xmu@label@originality@supervisorsign\par}
+		\vskip 20pt
+		\hspace{8.4cm} {\zihao{4}\xmu@label@originality@signdate}
+	% \fi
+
+	\clearpage
+}
+
+%% 论文著作权使用声明
+\newcommand\makecopyrightstatement{
+	\cleardoublepage
+	\pdfbookmark[0]{著作权使用声明}{copyright_statement}
+	\thispagestyle{empty}
+
+	\setstretch{2.2}
+	% \ifxmu@pdf
+	% 	\includepdf[pages=-]{pdf_files/copyright_statement.pdf}
+	% \else
+		\begin{center}
+			{\bfseries \heiti \zihao{-2} \xmu@label@copyright@title}
+		\end{center}
+		\vskip 10pt
+			{\songti\zihao{4} \par \xmu@label@copyright@content}
+		\vskip 20pt
+		\hspace{8cm}{\zihao{4}\xmu@label@copyright@authorsign\par}
+		\vskip 20pt
+		\hspace{8.4cm} {\zihao{4}\xmu@label@copyright@signdate}
+	% \fi
+
+	\clearpage
+}

@@ -1,0 +1,94 @@
+# 只保留源代码、.md 和.pdf 文件，其他都忽略
+
+# ==================== LaTeX 编译产物 ====================
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+*.fls
+*.fdb_latexmk
+*.dvi
+*.xdv
+
+# ==================== Python 相关 ====================
+# 字节码
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 虚拟环境
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# ==================== 压缩文件 ====================
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ==================== 二进制/数据集 ====================
+*.mat
+*.gdf
+*.edf
+*.bdf
+*.cnt
+*.data
+*.bin
+*.npz
+
+# ==================== 图片缓存 ====================
+# 如果是生成的临时图片可以忽略，手动的保留
+# figures/*.png
+
+# ==================== 系统文件 ====================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ==================== IDE 配置 ====================
+.idea/
+.vscode/
+*.iml
+
+# ==================== 文档类 (只保留.md 和.pdf) ====================
+# 忽略 .docx 文件
+*.docx
+*.pdf
+*.md
+
+# ==================== 临时文件 ====================
+tmp/
+temp/
+trash/
+*.tmp
+
+# ==================== work 目录特殊规则 ====================
+# 只保留 .py 源代码文件，忽略其他所有文件
+work/results/**/*
+!work/results/**/*.py
+work/figures/**/*
+!work/figures/**/*.py
+work/trash/**/*
+work/.venv/**/*
+work/codes.zip
+
+# bcidataset 数据文件（只保留 py 文件）
+work/bcidatasetIV2a-master/*.png
+work/bcidatasetIV2a-master/*.gdf
+work/bcidatasetIV2a-master/*.mat

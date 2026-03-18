@@ -1,0 +1,50 @@
+%%=============================================================================
+%% 参考文献
+%%=============================================================================
+
+%% 参考文献风格
+\IfFileExists{gbt7714.sty}{
+\RequirePackage[sort&compress]{gbt7714}
+\bibliographystyle{reference/gbt7714-numerical}
+\citestyle{numbers}
+}{%
+\PackageWarning{xmu-thesis-grd}{gbt7714 package not found. Using plain bib style}%
+\bibliographystyle{plain}
+}
+
+%% 引用文献序号的排序与压缩
+\providecommand{\supercite}[1]{{\citestyle{super}\cite{#1}}} % 上标引用
+
+%% 参考文献环境
+\renewenvironment{thebibliography}[1]{
+	\zihao{5}
+	\setlength{\baselineskip}{16pt}
+	\chapter*{\bibname}
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily\xmu@label@enreference}{\sffamily \thepage}{chapter.\thechapter}}
+	\addcontentsline{etoc}{chapter}{\sffamily\xmu@label@enreference}
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily\xmu@label@enreference}{\thepage}{chapter*.\thepage}}
+	\markboth{\bibname}{\bibname}%
+	\addcontentsline{toc}{chapter}{\xmu@label@reference}
+	\vspace{3pt}
+	\list{\@biblabel{\@arabic\c@enumiv}}%
+	{\settowidth\labelwidth{\@biblabel{#1}}%
+		\leftmargin\labelwidth
+		\advance\leftmargin\labelsep
+		\setlength{\parsep}{0mm}
+		\setlength{\labelsep}{0.5em}
+		\setlength{\itemsep}{3pt}
+		\setlength{\listparindent}{0in}
+		\setlength{\itemindent}{0in}
+		\setlength{\rightmargin}{0in}
+		\@openbib@code
+		\usecounter{enumiv}%
+		\let\p@enumiv\@empty
+		\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+	\sloppy
+	\clubpenalty4000
+	\@clubpenalty \clubpenalty
+	\widowpenalty4000%
+	\sfcode`\.\@m}
+{\def\@noitemerr
+	{\@latex@warning{Empty `thebibliography' environment}}%
+	\endlist}

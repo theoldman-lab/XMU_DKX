@@ -1,0 +1,42 @@
+%%=============================================================================
+%% 页面布局和段落间距
+%%=============================================================================
+
+%% 提前加载 setspace 以支持 \stretch 命令
+\RequirePackage[nodisplayskipstretch]{setspace}
+
+%% the setup of ctex package
+\def\contentsname{\xmu@label@contents}
+\def\encontentsname{\xmu@label@encontents}
+\def\listfigurename{\xmu@label@figurelist}
+\def\listtablename{\xmu@label@tablelist}
+
+%% 页面设置。设置纸张类型、页面边距和页眉、页脚
+\RequirePackage[%
+	paper = a4paper,%
+	top = 3.1cm,%
+	bottom = 3cm,%
+	left = 3cm,%
+	right = 3cm,%
+	headsep = 0.34cm,%
+	footskip = 0.8cm%
+]{geometry}
+
+%% 设置段落间距
+\setlength{\parskip}{0em}
+\setlength{\abovedisplayskip}{0em}
+\setlength{\belowdisplayskip}{0em}
+
+%% 让空白页前后页码连续
+\newcounter{blankpage}
+\def\cleardoublepage{
+	\clearpage
+	\if@twoside
+		\ifodd
+			\c@page
+		\else
+			\stepcounter{blankpage}%
+			\hbox {}\newpage
+		\fi
+	\fi
+}

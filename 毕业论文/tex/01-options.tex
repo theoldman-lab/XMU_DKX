@@ -1,0 +1,32 @@
+%%=============================================================================
+%% 模板选项定义
+%%=============================================================================
+
+\NeedsTeXFormat{LaTeX2e}[2005/12/01]
+\ProvidesClass{xmu-thesis-grd}[2021/12/28 v1.2 xmu-thesis-grd document class]
+
+%% 声明选项
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
+
+%% 定义布尔选项
+\newif\ifxmu@master\xmu@masterfalse
+\newif\ifxmu@doctor\xmu@doctorfalse
+\newif\ifxmu@istwoside\xmu@istwosidefalse
+\newif\ifxmu@pdf\xmu@pdffalse
+\newif\ifxmu@compact\xmu@compactfalse
+
+%% 选项处理
+\DeclareOption{twoside}{\xmu@istwosidetrue}
+\DeclareOption{master}{\xmu@mastertrue}
+\DeclareOption{doctor}{\xmu@doctortrue}
+\DeclareOption{pdf}{\xmu@pdftrue}
+\DeclareOption{compact}{\xmu@compacttrue}
+
+\ProcessOptions\relax
+
+%% 加载 ctexbook 基类
+\ifxmu@istwoside
+	\LoadClass[zihao=-4,a4paper,twoside,openright,UTF8,space=auto]{ctexbook}
+\else
+	\LoadClass[zihao=-4,a4paper,oneside,openany,UTF8,space=auto]{ctexbook}
+\fi

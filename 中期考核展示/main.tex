@@ -1,0 +1,188 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+
+% 使用简洁现代的主题
+\usetheme{metropolis}
+\usecolortheme{seahorse}
+
+% 中文支持
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shadows,shapes.geometric}
+\usepackage{pgfplots}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{colortbl}
+
+% 设置 pgfplots 兼容
+\pgfplotsset{compat=1.18}
+
+% ============================================================
+% 现代学术风格配色 - 专业、清晰、舒适
+% ============================================================
+% 主色调：深青蓝色（专业、稳重）
+\definecolor{primaryblue}{RGB}{15,65,110}        % 深蓝 - 主标题、重点
+\definecolor{secondaryblue}{RGB}{41,121,255}     % 亮蓝 - 次要元素、链接
+\definecolor{lightblue}{RGB}{230,240,250}        % 浅蓝 - 背景点缀
+
+% 强调色：珊瑚红（醒目但不刺眼）
+\definecolor{accentred}{RGB}{220,53,69}          % 红色 - 警告、重点强调
+\definecolor{accentorange}{RGB}{253,126,20}      % 橙色 - 次级强调
+
+% 辅助色：青绿色（清新、积极）
+\definecolor{accentgreen}{RGB}{20,160,133}       % 青绿 - 成功、正面
+\definecolor{teal}{RGB}{0,150,136}               % 深青 - 数据可视化
+
+% 中性色
+\definecolor{darkgray}{RGB}{51,51,51}            % 深灰 - 正文
+\definecolor{mediumgray}{RGB}{108,117,125}       % 中灰 - 次要文字
+\definecolor{lightgray}{RGB}{248,249,250}        % 浅灰 - 背景
+\definecolor{bordergray}{RGB}{222,226,230}       % 边框灰
+
+% metropolis 主题颜色覆盖
+\definecolor{metropolisbackground}{RGB}{255,255,255}
+\definecolor{metropolisforeground}{RGB}{51,51,51}
+\definecolor{metropolisblockbackground}{RGB}{248,249,250}
+
+% 设置主题颜色
+\setbeamercolor{palette primary}{bg=primaryblue,fg=white}
+\setbeamercolor{palette secondary}{bg=secondaryblue,fg=white}
+\setbeamercolor{palette tertiary}{bg=accentgreen,fg=white}
+\setbeamercolor{palette quaternary}{bg=accentred,fg=white}
+\setbeamercolor{titlelike}{bg=primaryblue,fg=white}
+\setbeamercolor{frametitle}{bg=white,fg=primaryblue}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=darkgray}
+\setbeamercolor{section in toc}{fg=primaryblue,bg=white}
+\setbeamercolor{section in head/foot}{fg=white,bg=primaryblue}
+\setbeamercolor{title}{fg=white,bg=primaryblue}
+\setbeamercolor{subtitle}{fg=white,bg=primaryblue}
+\setbeamercolor{author}{fg=darkgray,bg=white}
+\setbeamercolor{institute}{fg=mediumgray,bg=white}
+\setbeamercolor{date}{fg=mediumgray,bg=white}
+
+% 自定义块样式 - 现代化设计
+\setbeamercolor{block title}{bg=primaryblue,fg=white}
+\setbeamercolor{block body}{bg=lightblue,fg=darkgray}
+\setbeamercolor{block title alerted}{bg=accentred,fg=white}
+\setbeamercolor{block body alerted}{bg=lightgray,fg=darkgray}
+\setbeamercolor{block title example}{bg=accentgreen,fg=white}
+\setbeamercolor{block body example}{bg=lightgray,fg=darkgray}
+
+% 表格颜色
+\setbeamercolor{row 1}{bg=primaryblue,fg=white}
+\setbeamercolor{row 2}{bg=lightgray,fg=darkgray}
+
+% 超链接设置
+\hypersetup{
+    colorlinks=true,
+    linkcolor=secondaryblue,
+    filecolor=accentred,
+    urlcolor=secondaryblue,
+    citecolor=primaryblue,
+}
+
+% 标题页背景设计
+\makeatletter
+\setbeamertemplate{title page}{
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.4\paperheight,center]{palette primary}
+        \vfill
+        {\usebeamerfont{title}\usebeamercolor[fg]{title}\Huge\bfseries\inserttitle\par}
+        \vspace{1em}
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\Large\insertsubtitle\par}
+        \vfill
+    \end{beamercolorbox}
+    \vfill
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\large\insertauthor\par}
+    \vspace{0.5em}
+    {\usebeamerfont{institute}\usebeamercolor[fg]{institute}\small\insertinstitute\par}
+    \vspace{0.5em}
+    {\usebeamerfont{date}\usebeamercolor[fg]{date}\small\insertdate\par}
+    \vfill
+}
+
+% 章节页样式 - 渐变背景
+\AtBeginSection{
+    \begin{frame}
+        \vfill
+        \centering
+        \begin{tikzpicture}[remember picture,overlay]
+            \fill[top color=primaryblue,bottom color=secondaryblue]
+                (current page.south west) rectangle (current page.north east);
+        \end{tikzpicture}
+        \begin{beamercolorbox}[sep=12pt,center,rounded=true,shadow=true]{title}
+            \usebeamerfont{title}\Large\color{white}\bfseries\insertsectionhead\par
+        \end{beamercolorbox}
+        \vfill
+    \end{frame}
+}
+
+% 页脚设计
+\setbeamertemplate{footline}{
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.6cm,dp=0.3cm]{palette primary}
+        \hspace*{1em}\tiny\insertshortauthor\hfill
+        \tiny\insertshorttitle
+        \hfill \tiny\insertframenumber{} / \inserttotalframenumber\hspace*{1em}
+    \end{beamercolorbox}
+}
+
+% ============================================================
+% 字体优化 - 更清晰、更现代
+% ============================================================
+% 设置页面布局
+\raggedbottom
+\setlength{\belowcaptionskip}{0.5em}
+
+% 设置正文字体
+\setbeamerfont{normal text}{size=\footnotesize,series=\mdseries}
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{block title}{size=\small,series=\bfseries}
+\setbeamerfont{block body}{size=\footnotesize}
+\setbeamerfont{itemize/enumerate}{size=\footnotesize}
+
+% 标题页字体
+\setbeamerfont{title}{size=\large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize,series=\mdseries}
+\setbeamerfont{author}{size=\small,series=\mdseries}
+\setbeamerfont{institute}{size=\footnotesize,series=\mdseries}
+\setbeamerfont{date}{size=\footnotesize,series=\mdseries}
+
+% 标题信息
+\title{基于表格型 Q-Learning 的运动想象脑电信号时间窗优化方法研究}
+\subtitle{毕业设计中期考核报告}
+\author{邓凯璇}
+\institute{
+    姓名：邓凯璇 \quad|\quad 学号：37220222203575 \\
+    学院：信息学院 \quad|\quad 专业：人工智能 \\
+    指导教师：施明辉
+}
+\date{\today}
+
+\begin{document}
+ 
+% 标题页
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% 目录页
+\begin{frame}{报告提纲}
+    \vspace{1em}
+    \tableofcontents
+\end{frame}
+
+% 导入章节
+\input{sections/01_background.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_method.tex}
+\input{sections/04_experiments.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_future_work.tex}
+
+\end{document}

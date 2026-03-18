@@ -1,0 +1,103 @@
+%%=============================================================================
+%% 标签和默认内容定义
+%%=============================================================================
+
+%% 声明内容标签
+\def\xmu@label@namelist{学位论文答辩委员会名单}
+\def\xmu@label@abstract{摘~~~~要}
+\def\xmu@label@compactabstract{摘要}
+\def\xmu@label@enabstract{Abstract}
+\def\xmu@label@abstractincontent{Abstract-Chinese}
+\def\xmu@label@enabstractincontent{Abstract-English}
+\def\xmu@label@keywords{关键词：}
+\def\xmu@label@enkeywords{Keywords:~}
+\def\xmu@label@appendix{附录}
+\def\xmu@label@enappendix{Appendix}
+\def\xmu@label@publications{在学期间完成的相关学术成果}
+\def\xmu@label@enpublications{Relevant Academic Achievements Completed During the Acad-\linebreak emic Period}
+\def\xmu@label@reference{参考文献}
+\def\xmu@label@enreference{References}
+\def\xmu@label@acknowledgements{致~~~~谢}
+\def\xmu@label@compactacknowledgements{致谢}
+\def\xmu@label@enacknowledgements{Acknowledgements}
+\def\xmu@label@contents{目~~~~录}
+\def\xmu@label@compactcontents{目录}
+\def\xmu@label@encontents{Contents}
+\def\xmu@label@encontentszh{Contents-Chinese}
+\def\xmu@label@encontentsen{Contents-English}
+\def\xmu@label@acronymlist{主要缩略词表}
+\def\xmu@label@symbollist{主要符号表}
+\def\xmu@label@enacronymlist{List of Acronyms}
+\def\xmu@label@ensymbollist{List of Symbols}
+\def\xmu@label@figurelist{图索引}
+\def\xmu@label@enfigurelist{List of Figures}
+\def\xmu@label@tablelist{表索引}
+\def\xmu@label@entablelist{List of Tables}
+\def\xmu@value@templateversion{v1.0}
+
+%% 封面标签
+\def\xmu@label@schoolserialnumber{学校编码：}
+\def\xmu@label@studentnumber{学~~~~~~~~号：}
+\def\xmu@label@advisor{指导教师姓名：}
+\def\xmu@label@major{专~~业~~~~名~~称：}
+\def\xmu@label@submitdate{论文提交日期：}
+\def\xmu@label@defenddate{论文答辩日期：}
+\def\xmu@label@grantdate{学位授予日期：}
+
+%% 声明内容标签
+\def\xmu@label@originality@title{厦门大学学位论文原创性声明}
+\def\xmu@label@originality@authorsign{声明人~~~~（签名）：}
+\def\xmu@label@originality@supervisorsign{指导教师（签名）：}
+\def\xmu@label@originality@signdate{~~~~~~~~年~~~~月~~~~日}
+\def\xmu@label@originality@content{本人呈交的学位论文是本人在导师指导下，独立完成的研究成果。本人在论文写作中参考其他个人或集体已经发表的研究成果，均在文中以适当方式明确标明，并符合法律规范和《厦门大学研究生学术活动规范（试行）》。\par
+	另外，该学位论文为（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）课题（组）的研究成果，获得（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）课题（组）经费或实验室的资助，在（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）实验室完成。（请在以上括号内填写课题或课题组负责人或实验室名称，未有此项声明内容的，可以不作特别声明。）\par
+	本人声明该学位论文不存在剽窃、抄袭等学术不端行为，并愿意承担因学术不端行为所带来的一切后果和法律责任。
+}
+
+\def\xmu@label@copyright@title{厦门大学学位论文著作权使用声明}
+\def\xmu@label@copyright@content{本人同意厦门大学根据《中华人民共和国学位条例暂行实施办法》等规定保留和使用此学位论文，并向主管部门或其指定机构送交学位论文（包括纸质版和电子版），允许学位论文进入厦门大学图书馆及其数据库被查阅、借阅。本人同意厦门大学将学位论文加入全国博士、硕士学位论文共建单位数据库进行检索，将学位论文的标题和摘要汇编出版，采用影印、缩印或者其它方式合理复制学位论文。\par
+	本学位论文属于：\par
+	（\hspace{4.5em}） 1.经厦门大学保密委员会审查核定的涉密学位论文，于~~~~~~~~年~~~~月~~~~日解密，解密后适用上述授权。\par
+	（\hspace{4.5em}） 2.不涉密，适用上述授权。\par
+	（请在以上相应括号内打"√"或填上相应内容。涉密学位论文应是已经厦门大学保密委员会审定过的学位论文，未经厦门大学保密委员会审定的学位论文均为公开学位论文。此声明栏不填写的，默认为公开学位论文，均适用上述授权。）
+}
+\def\xmu@label@copyright@authorsign{声明人（签名）：}
+\def\xmu@label@copyright@signdate{~~~~~~~~年~~~~月~~~~日}
+
+%% 学位论文答辩委员会名单
+\def\xmu@label@namelist@title{学位论文答辩委员会名单}
+
+%% 封面默认内容
+\def\xmu@value@schoolserialnumber{10384}
+\def\xmu@value@studentnumber{37220222203575}
+\ifxmu@master
+	\def\xmu@value@thesistype{硕~~~~士~~~~学~~~~位~~~~论~~~~文}
+\else
+	\def\xmu@value@thesistype{学~~~~士~~~~学~~~~位~~~~论~~~~文}
+\fi
+\def\xmu@value@title{基于表格型 Q-Learning 的运动想象时间窗优化方法}
+\def\xmu@value@entitle{Tabular Q-Learning based time window optimization for motor imagery BCI}
+\def\xmu@value@author{邓凯璇}
+\def\xmu@value@advisor{施明辉 教授}
+\def\xmu@value@major{人工智能}
+\def\xmu@value@submitdate{~~~~年~~~~月}
+\def\xmu@value@defenddate{~~~~年~~~~月}
+\def\xmu@value@grantdate{~~~~年~~~~月}
+\def\xmu@value@printdate{\today}
+
+%% 设置封面内容的命令
+\newcommand\schoolserialnumber[1]{\def\xmu@value@schoolserialnumber{#1}}
+\newcommand\studentnumber[1]{\def\xmu@value@studentnumber{#1}}
+\renewcommand\title[2][\xmu@value@title]{
+	\def\xmu@value@title{#2}
+	\def\xmu@value@titlemark{\MakeUppercase{#1}}}
+\newcommand\entitle[2][\xmu@value@entitle]{
+	\def\xmu@value@entitle{#2}
+	\def\xmu@value@entitlemark{\MakeUppercase{#1}}}
+\renewcommand\author[1]{\def\xmu@value@author{#1}}
+\newcommand\advisor[1]{\def\xmu@value@advisor{#1}}
+\newcommand\major[1]{\def\xmu@value@major{#1}}
+\newcommand\submitdate[1]{\def\xmu@value@submitdate{#1}}
+\newcommand\defenddate[1]{\def\xmu@value@defenddate{#1}}
+\newcommand\grantdate[1]{\def\xmu@value@grantdate{#1}}
+\newcommand\printdate[1]{\def\xmu@value@printdate{#1}}

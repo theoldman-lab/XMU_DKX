@@ -1,0 +1,545 @@
+\documentclass[aspectratio=169, 10pt]{beamer}
+
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\title{基于表格型 Q-Learning 的运动想象脑电时间窗优化方法}
+\subtitle{中期考核汇报}
+\author{邓凯璇——37220222203575}
+\institute{厦门大学信息学院}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{目录}
+\tableofcontents
+\end{frame}
+
+% ========== 章节分隔页样式 ==========
+\newcommand{\chapterframe}{
+  \begin{frame}
+    \frametitle{\insertsectionhead}
+    \centering
+    \vspace{0.5cm}
+    {\Huge \textbf{\thesection} \\[0.3cm]}
+    {\Large \textcolor{blue}{\insertsectionhead}} \\[0.5cm]
+  \end{frame}
+}
+% ====================================
+
+\section{研究意义}
+\chapterframe
+
+\begin{frame}{研究背景}
+\begin{itemize}
+    \item \textbf{运动想象 (MI) 分类}是基于脑机接口 (BCI) 技术的核心应用方向
+    \item 通过解码 ERD/ERS 脑电信号实现无外部刺激下的自然控制
+    \item 应用领域：医疗康复、神经工程、智能控制
+    \item \textbf{关键挑战}：
+    \begin{itemize}
+        \item EEG 信号的非平稳性和个体差异性
+        \item \textcolor{red}{时间窗选择}是影响分类性能的关键因素
+        \item 不同被试的 ERD/ERS 起始时间和持续时间存在显著差异
+        \item 固定时间窗策略易导致信号信息丢失或噪声引入
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{国内外研究现状 - 传统方法}
+\begin{table}
+\centering
+\large
+\begin{tabular}{ll}
+\toprule
+\textbf{方法类别} & \textbf{局限性} \\
+\midrule
+经验法与固定时间窗 & 忽视神经响应的个体差异性 \\
+网格搜索与随机搜索 & 计算成本随维度指数增长 \\
+贝叶斯优化 & 代理模型训练复杂，缺乏内在关联性建模 \\
+启发式算法 (ACO/GA) & 易陷入局部最优，收敛性难以保证 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{国内外研究现状 - 强化学习方法}
+\begin{block}{强化学习在 BCI 时间窗优化中的应用}
+\begin{itemize}
+    \item \textbf{现有研究}：已有使用强化学习进行时间窗优化的工作
+    \item \textbf{主流方法}：深度强化学习（如 DQN）
+    \begin{itemize}
+        \item Chen 等 (2019)：DQN 用于 SSVEP 动态窗口控制
+        \item 需要大量训练数据和复杂调参
+        \item 在有限状态空间问题中可能过度复杂
+    \end{itemize}
+    \item \textbf{研究空白}：
+    \begin{itemize}
+        \item \textcolor{red}{缺乏对简单表格型 Q-Learning 方法的探索}
+        \item 存在"深度模型必然优于浅层模型"的隐含假设
+        \item 轻量化方法在 BCI 时间窗优化中的应用尚未系统研究
+    \end{itemize}
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\begin{alertblock}{本研究创新点}
+在保持与 DQN 相当性能的前提下，探索表格型 Q-Learning 这一更简单、更轻量化的方法在 BCI 时间窗优化中的应用。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{理论贡献}
+\begin{block}{理论贡献}
+\begin{enumerate}
+    \item \textbf{挑战深度强化学习的"必要性"假设}
+    \begin{itemize}
+        \item 证明表格型 Q-Learning 可取得与 DQN 统计上无显著差异的性能
+        \item 准确率差异仅 -0.02\%
+    \end{itemize}
+    
+    \item \textbf{提出 BCI 轻量化设计框架}
+    \begin{itemize}
+        \item 系统阐述轻量化设计的三方面动机
+        \item 数据稀缺性、设备成本约束、辅助任务定位
+    \end{itemize}
+    
+    \item \textbf{界定表格型与深度方法的适用边界}
+    \begin{itemize}
+        \item 状态空间规模 $< 10^4$ 且状态 - 动作对可充分访问
+        \item 表格型方法是更优选择
+    \end{itemize}
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{实际应用价值}
+\begin{block}{实际应用价值}
+\begin{enumerate}
+    \item \textbf{适合嵌入式 BCI 设备部署}
+    \begin{itemize}
+        \item 参数量仅 544，内存占用约 4 KB
+        \item 无需深度学习框架
+        \item 可移植至 ARM Cortex-M 等低功耗嵌入式平台
+    \end{itemize}
+    
+    \item \textbf{降低系统部署成本}
+    \begin{itemize}
+        \item 推理延迟降低 1000 倍 (约 0.1 μs)
+        \item 显著改善用户体验和系统响应性
+    \end{itemize}
+    
+    \item \textbf{提升跨被试稳定性}
+    \begin{itemize}
+        \item 跨被试标准差较 DQN 降低 10.97\%
+        \item 增强系统鲁棒性
+    \end{itemize}
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\section{研究目标}
+\chapterframe
+
+\begin{frame}{总体目标}
+\begin{block}{总体目标}
+在保持与深度强化学习方法相当性能的前提下，显著降低时间窗优化算法的复杂度和资源消耗，提升系统稳定性和可解释性。
+\end{block}
+
+\vspace{0.3cm}
+\begin{enumerate}
+    \item \textbf{提出表格型 Q-Learning 时间窗优化框架}
+    \begin{itemize}
+        \item 将时间窗选择建模为 MDP
+        \item 设计离散化状态空间 (136 个状态) 和动作空间 (4 个动作)
+        \item 以 CSP-SVM 分类器的交叉验证准确率作为奖励信号
+    \end{itemize}
+    
+    \item \textbf{实现轻量化与性能的平衡}
+    \begin{itemize}
+        \item 目标：Kappa $> 0.5$
+        \item 训练时间缩短 3 倍、推理延迟降低 1000 倍、内存占用减少 125 倍
+    \end{itemize}
+    
+    \item \textbf{验证跨被试稳定性优势}：标准差较 DQN 降低 10\% 以上
+    
+    \item \textbf{界定表格型与深度方法的适用边界}
+\end{enumerate}
+\end{frame}
+
+\section{技术路线}
+\chapterframe
+
+\begin{frame}{技术路线总览}
+\begin{center}
+\begin{tikzpicture}[node distance=1.5cm]
+    \node[draw, rectangle, rounded corners, fill=blue!20, minimum width=3cm, minimum height=1cm] (stage1) {阶段一：问题形式化};
+    \node[draw, rectangle, rounded corners, fill=green!20, minimum width=3cm, minimum height=1cm, right of=stage1, xshift=2cm] (stage2) {阶段二：算法设计};
+    \node[draw, rectangle, rounded corners, fill=orange!20, minimum width=3cm, minimum height=1cm, right of=stage2, xshift=2cm] (stage3) {阶段三：实验验证};
+    
+    \draw[->, thick] (stage1) -- (stage2);
+    \draw[->, thick] (stage2) -- (stage3);
+\end{tikzpicture}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{问题形式化}
+\begin{table}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{组件} & \textbf{定义与参数} \\
+\midrule
+\textbf{状态空间 $\mathcal{S}$} & 
+\begin{tabular}{@{}l@{}}
+离散化时间窗参数 $(t_{\text{start}}, t_{\text{end}})$ \\
+$t_{\text{start}} \in [0.0, 3.0]$s, 步长 0.2s \\
+$t_{\text{end}} \in [1.0, 4.0]$s, 步长 0.2s \\
+约束：$t_{\text{end}} - t_{\text{start}} \geq 0.5$s \\
+\textcolor{red}{\textbf{有效状态数：136}}
+\end{tabular} \\
+\midrule
+\textbf{动作空间 $\mathcal{A}$} & 
+\begin{tabular}{@{}l@{}}
+4 个离散动作 $\{a_0, a_1, a_2, a_3\}$ \\
+$a_0$: $t_{\text{start}} - 0.2$s \quad $a_1$: $t_{\text{start}} + 0.2$s \\
+$a_2$: $t_{\text{end}} - 0.2$s \quad $a_3$: $t_{\text{end}} + 0.2$s
+\end{tabular} \\
+\midrule
+\textbf{奖励函数 $\mathcal{R}$} & CSP-SVM 的 5 折交叉验证准确率 \\
+\midrule
+\textbf{状态转移 $\mathcal{P}$} & 确定性状态转移 \\
+\midrule
+\textbf{折扣因子 $\gamma$} & $\gamma = 0.95$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{算法设计}
+\begin{block}{Q 值更新公式}
+$$Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t) \right]$$
+\end{block}
+
+\vspace{0.3cm}
+\begin{block}{关键设计}
+\begin{itemize}
+    \item \textbf{初始化}：Q 值表初始化为零，$\epsilon = 0.9$
+    \item \textbf{探索策略}：$\epsilon$-贪婪策略
+    \begin{itemize}
+        \item 初始$\epsilon = 0.9$，每轮衰减 0.995 倍，最小 0.05
+    \end{itemize}
+    \item \textbf{训练参数}：100 轮 Episode，每轮最多 40 步
+    \item \textbf{早停机制}：
+    \begin{itemize}
+        \item Q 值收敛 (连续 10 轮变化 $< 10^{-4}$)
+        \item 或最优状态稳定 (连续 20 轮不变)
+    \end{itemize}
+    \item \textbf{收敛性保证}：Watkins \& Dayan (1992) 定理
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{算法设计}
+\begin{block}{时间窗评估子过程}
+\begin{enumerate}
+    \item 时间窗截取：$X^{\text{window}} \leftarrow X[:, t_{\text{start}}:t_{\text{end}}]$
+    \item \textbf{CSP 特征提取}:
+    \begin{itemize}
+        \item 计算各类别协方差矩阵：$C_c = \frac{1}{N_c} \sum_{i \in \text{class}_c} X_i \cdot X_i^T$
+        \item 求解广义特征值问题：$C_1 \cdot w = \lambda \cdot (C_1 + C_2) \cdot w$
+        \item 构建空间滤波器：$W = [w_1, ..., w_4]^T$
+        \item 提取对数方差特征：$f_i = \log(\text{var}(W \cdot X_i))$
+    \end{itemize}
+    \item Z-score 标准化：$f_i \leftarrow (f_i - \mu_f) / \sigma_f$
+    \item 5 折交叉验证：训练线性 SVM ($C=1.0$)，返回平均验证准确率
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{算法设计}
+\begin{table}
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{维度} & \textbf{实现方式} & \textbf{效果} \\
+\midrule
+模型轻量化 & 使用表格而非神经网络 & 参数量从 $10^4$–$10^5$ 降至 544 \\
+计算轻量化 & 单步代数更新，无需反向传播 & 训练时间约为 DQN 的 1/3 \\
+内存轻量化 & 无需经验回放缓冲区和目标网络 & 内存占用约 4 KB (DQN 的 1/125) \\
+能耗轻量化 & 查表推理机制 & 能耗约为神经网络的 1/1000 \\
+部署轻量化 & 无需深度学习框架 & 可移植至 ARM Cortex-M \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{实验验证}
+\begin{block}{数据集与实验协议}
+\begin{itemize}
+    \item \textbf{数据集}：BCI Competition IV 2a
+    \begin{itemize}
+        \item 9 名健康被试，4 类运动想象任务
+        \item 22 通道 EEG，250 Hz 采样率
+    \end{itemize}
+    \item \textbf{数据划分}：Session T (288 试次) 训练，Session E (288 试次) 测试
+    \item \textbf{重复实验}：5 次 (随机种子 0-4)，报告平均值 ± 标准差
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\begin{block}{数据预处理流程}
+\begin{center}
+原始 EEG $\rightarrow$ 带通滤波 (8-30 Hz) $\rightarrow$ 陷波滤波 (50 Hz) $\rightarrow$ 平均参考 $\rightarrow$ 时间窗截取
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}{实验验证}
+\begin{table}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{类别} & \textbf{方法} \\
+\midrule
+\multirow{3}{*}{固定时间窗} & Fixed-2s \\
+& Fixed-1.5s \\
+& Fixed-1s \\
+\midrule
+\multirow{2}{*}{搜索优化} & Grid-Search (步长 0.2s) \\
+& Random-Search (采样 50 个) \\
+\midrule
+\multirow{5}{*}{强化学习} & Standard Q-Learning \\
+& Double Q-Learning \\
+& Dueling Q-Learning \\
+& Dueling Double Q \\
+& DQN \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{实验验证}
+\begin{block}{评估指标}
+\begin{itemize}
+    \item \textbf{分类性能}：准确率 (Accuracy)、Cohen's Kappa、F1 分数
+    \item \textbf{稳定性}：标准差 (Std Dev)、变异系数 (CV)
+    \item \textbf{效率指标}：训练时间、推理延迟、内存占用
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\begin{block}{实验层次}
+\begin{enumerate}
+    \item \textbf{基线对比}：自适应方法 vs 固定时间窗策略
+    \item \textbf{Q-Learning vs 基线}：强化学习 vs 搜索优化方法
+    \item \textbf{Table Q vs DQN}：表格型 vs 深度强化学习 (配对 t 检验，$\alpha = 0.05$)
+    \item \textbf{消融实验}：Q-Learning 变体对比 (Double Q、Dueling 架构等)
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\section{目前进展}
+\chapterframe
+
+\begin{frame}{已完成工作}
+\begin{enumerate}
+    \item \textbf{理论框架搭建} \checkmark
+    \begin{itemize}
+        \item 完成 MDP 建模、算法设计、轻量化设计框架
+        \item 完成理论收敛性分析
+    \end{itemize}
+    
+    \item \textbf{实验原型设计} \checkmark
+    \begin{itemize}
+        \item 实现完整的数据处理流水线和特征提取模块
+        \item 实现 Q-Learning 训练框架和对比方法
+    \end{itemize}
+    
+    \item \textbf{正式实验} \checkmark
+    \begin{itemize}
+        \item 完成 5 次重复实验
+        \item 完成四个层次的实验对比
+    \end{itemize}
+    
+    \item \textbf{实验数据收集与分析} \checkmark
+    
+    \item \textbf{理论验证} \checkmark
+    
+    \item \textbf{可视化与成果整理} \checkmark
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{核心实验结果}
+\begin{table}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{方法} & \textbf{准确率 (\%)} & \textbf{Kappa} & \textbf{标准差 (\%)} \\
+\midrule
+Standard Q-Learning & 62.68 & 0.5019 & \textbf{8.20} \\
+DQN & 62.70 & 0.5022 & 9.21 \\
+Grid-Search & \textbf{63.35} & \textbf{0.5107} & 8.78 \\
+Fixed-2s & 45.08 & 0.2662 & 8.95 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.5cm}
+\begin{block}{关键发现}
+\begin{itemize}
+    \item 表格型 Q-Learning 与 DQN 准确率差异仅 -0.02\% (p = 0.981)
+    \item 跨被试稳定性优于 DQN，标准差相对降低 10.97\%
+    \item 自适应方法显著优于固定时间窗策略 (准确率提升约 17\%)
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{理论验证结果}
+\begin{table}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{主张} & \textbf{验证状态} \\
+\midrule
+主张 1 (性能等价性) & \checkmark Table Q 与 DQN 无显著差异 (p = 0.981) \\
+主张 2 (稳定性优势) & \checkmark 跨被试标准差降低 10.97\% \\
+主张 3 (轻量化优势) & \checkmark 参数量 544，内存 4 KB，延迟 0.1 μs \\
+主张 4 (可解释性优势) & \checkmark Q 值表可完整可视化和分析 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.5cm}
+\begin{alertblock}{总结}
+除正式论文撰写外，本研究的核心工作 (理论框架、算法实现、实验验证、数据分析) 已基本完成，具备进入论文撰写阶段的条件。
+\end{alertblock}
+\end{frame}
+
+\section{后续进度安排}
+\chapterframe
+
+\begin{frame}{第一阶段：实验优化与论文初稿撰写}
+\begin{block}{2026 年 3 月中旬—4 月上旬}
+\begin{table}
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{时间} & \textbf{任务} & \textbf{交付物} \\
+\midrule
+3 月中旬—3 月下旬 & 实验优化 (待定) & 优化版代码 \\
+4 月上旬 & 完成引言、相关工作章节 & 第 1-2 章初稿 \\
+4 月中旬 & 完成方法章节 & 第 3 章初稿 \\
+4 月中旬 & 完成实验结果与分析章节 & 第 4 章初稿 \\
+4 月中旬 & 完成结论与展望、摘要 & 论文初稿完整版 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{block}
+\end{frame}
+
+\begin{frame}{第二、三阶段：论文修改与答辩准备}
+\begin{block}{第二阶段：论文修改与完善 (2026 年 4 月中旬—4 月下旬)}
+\begin{itemize}
+    \item 4 月中旬：导师审阅、第一次修改
+    \item 4 月下旬：根据反馈意见完善实验分析
+    \item 4 月下旬：格式审查、语言润色、图表优化
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\begin{block}{第三阶段：论文定稿与答辩准备 (2026 年 5 月上旬)}
+\begin{itemize}
+    \item 5 月上旬：论文查重、最终修改
+    \item 5 月上旬：答辩 PPT 制作、预答辩
+    \item 5 月中旬：正式答辩
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{主要时间节点}
+\begin{table}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{时间} & \textbf{里程碑} \\
+\midrule
+2026 年 3 月下旬 & 完成实验优化任务 (如有) \\
+2026 年 4 月 10 日 & 提交论文初稿 \\
+2026 年 4 月 20 日 & 提交论文评审稿 \\
+2026 年 5 月 10 日 & 论文定稿提交 \\
+2026 年 5 月中旬 & 毕业答辩 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.5cm}
+\begin{block}{总体进度评估}
+\textbf{当前研究进度约 85\%}，预计可按计划完成全部工作。
+\end{block}
+\end{frame}
+
+\begin{frame}{风险预案}
+\begin{table}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{风险} & \textbf{应对措施} \\
+\midrule
+实验优化任务增加工作量 & 灵活调整，优先保证论文撰写进度 \\
+论文修改工作量大 & 提前与导师沟通，分批次修改 \\
+答辩准备时间紧张 & 4 月下旬启动 PPT 制作，预留预答辩环节 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{总结}
+\begin{block}{研究贡献}
+\begin{itemize}
+    \item 提出基于\textbf{表格型 Q-Learning}的轻量化时间窗优化方法
+    \item 在保持与 DQN 相当性能的前提下，显著降低资源消耗
+    \item 参数量仅 544，内存占用约 4 KB，推理延迟约 0.1 μs
+    \item 跨被试标准差较 DQN 降低 10.97\%
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\begin{block}{创新点}
+\begin{enumerate}
+    \item 挑战深度强化学习的"必要性"假设
+    \item 提出 BCI 轻量化设计框架
+    \item 界定表格型与深度方法的适用边界
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+\vspace{1cm}
+\Large \textbf{感谢聆听！} \\
+\vspace{0.5cm}
+\large 敬请各位老师批评指正 \\
+\vspace{1cm}
+\end{center}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,86 @@
+%%=============================================================================
+%% 缩略词表、符号表、图索引、表索引
+%%=============================================================================
+
+\RequirePackage{glossaries}
+\RequirePackage{booktabs}
+\glsdisablehyper % 禁用缩略词跳转
+
+%% 自定义缩略词样式
+\newacronymstyle{acronym-cn}{%
+	\ifglshaslong{\glslabel}{\glsgenacfmt}{\glsgenentryfmt}%
+}{
+	\renewcommand*{\GenericAcronymFields}{%
+		first={\the\glslongtok\space\protect\paren{\the\glsshorttok}},%
+		description={\the\glslongtok}}
+	\renewcommand*{\genacrfullformat}[2]{%
+		\glsentrydesc{##1}~（\glsentrylong{##1}，%
+		\glsentryshort{##1}）%
+	}
+	\renewcommand*{\acronymentry}[1]{%
+		\acronymfont{\glsentryshort{##1}}%
+	}
+}
+\setacronymstyle{acronym-cn}
+
+%% 符号表样式
+\setlength\LTleft{0pt}
+\setlength\LTright{0pt}
+\newglossarystyle{chinese}{
+	\setlength{\glsdescwidth}{.35\textwidth}
+	\setlength{\glspagelistwidth}{.35\textwidth}
+	\renewenvironment{theglossary}%
+	{\vspace{-5mm}\begin{longtable}{@{\extracolsep{\fill}}lp{\glsdescwidth}p{\glspagelistwidth}}\toprule[1.0pt]}%
+		{\bottomrule[1.0pt]\end{longtable}}%
+	\renewcommand*{\glossaryheader}{%
+		\heiti 缩略词 &\heiti 英文全称 &
+		\heiti 中文全称 \tabularnewline \midrule[0.2pt] \endhead}%
+	\renewcommand*{\glsgroupheading}[1]{}%
+	\renewcommand{\glossentry}[2]{
+		\glsentryitem{##1}\glstarget{##1}{\glossentryname{##1}} &
+		\glsentrylong{##1} & \glsentrydesc{##1}\tabularnewline
+	}
+	\renewcommand*{\subglossentry}[3]{
+		\glossentry{##2}{##3}}
+}
+
+%% 缩略词表
+\newcommand\makeacronymlist{
+	\setstretch{1.5}
+	\markboth{\xmu@label@acronymlist}{\xmu@label@acronymlist} % 页眉
+	\addcontentsline{etoc}{chapter}{\sffamily \xmu@label@enacronymlist}
+
+	\pdfbookmark{主要缩略词表}{glossary}
+	\printglossary[style=chinese, title={\protect\centering 主要缩略词表}, nonumberlist, nogroupskip]
+
+	\clearpage
+}
+
+%% 符号表
+\newcommand\makesymbollist{
+	\setstretch{1.5}
+	\markboth{\xmu@label@symbollist}{\xmu@label@symbollist} % 页眉
+	\addcontentsline{etoc}{chapter}{\sffamily \xmu@label@ensymbollist}
+	\input{chapters/symbol_list.tex}
+	\clearpage
+}
+
+%% 图索引
+\newcommand\makefigurelist{
+	% 	\pdfbookmark[0]{\xmu@label@figurelist}{figure_list}
+	{\renewcommand{\addvspace}[1]{}
+			\listoffigures}
+	\addcontentsline{toc}{chapter}{\xmu@label@figurelist}
+	\addcontentsline{etoc}{chapter}{\sffamily \xmu@label@enfigurelist}
+
+}
+
+%% 表索引
+\newcommand\maketablelist{
+	% 	\pdfbookmark[0]{\xmu@label@tablelist}{table_list}
+	{\renewcommand{\addvspace}[1]{}
+			\listoftables}
+	\addcontentsline{toc}{chapter}{\xmu@label@tablelist}
+	\addcontentsline{etoc}{chapter}{\sffamily \xmu@label@entablelist}
+
+}

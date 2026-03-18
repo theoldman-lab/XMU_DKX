@@ -1,0 +1,6 @@
+Method,Type,Accuracy (%),Kappa,F1,Std Dev (%),t_start (s),t_end (s),Window (s)
+Standard Q-Learning,Table Q,62.68 ± 8.20,0.5019 ± 0.1114,0.6201 ± 0.0869,8.20,2.29,3.17,0.88
+Double Q-Learning,Table Q,61.86 ± 8.42,0.4909 ± 0.1143,0.6103 ± 0.0901,8.42,2.17,3.22,1.05
+Dueling Q-Learning,Table Q,62.74 ± 8.26,0.5029 ± 0.1122,0.6204 ± 0.0873,8.26,2.27,3.16,0.89
+Dueling Double Q-Learning,Table Q,61.73 ± 9.11,0.4894 ± 0.1231,0.6094 ± 0.0952,9.11,2.17,3.28,1.11
+DQN,Deep Q,62.70 ± 9.21,0.5022 ± 0.1251,0.6200 ± 0.0970,9.21,2.23,3.28,1.05

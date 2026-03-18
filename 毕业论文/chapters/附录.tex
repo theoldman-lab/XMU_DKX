@@ -1,0 +1,227 @@
+%%=============================================================================
+%% 附录 A 实验超参数与配置
+%%=============================================================================
+
+\chapter{实验超参数与配置}
+\label{chap:appendix}
+
+本附录详细列出本研究中所有实验的超参数设置与软件环境配置，以确保研究的可复现性。所有超参数均在统一的配置文件中管理，便于调试和修改。
+
+\section{EEG 数据参数}
+\label{sec:eeg_params}
+
+EEG 数据采集与预处理的基础参数如表~\ref{tab:eeg_params} 所示。
+
+\begin{table}[H]
+\centering
+\caption{EEG 数据参数设置}
+\label{tab:eeg_params}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
+\hline
+采样频率 & 250 Hz \\
+通道数 & 22 \\
+类别数 & 4（左手、右手、脚、舌头） \\
+试次持续时间 & 4.0 秒 \\
+带通滤波范围 & 8--30 Hz \\
+陷波滤波频率 & 50 Hz \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{表格型 Q-Learning 超参数}
+\label{sec:tabular_ql_params}
+
+表格型 Q-Learning 方法（包括 Standard Q-Learning、Double Q-Learning、Dueling Q-Learning、Dueling Double Q-Learning）的超参数设置如表~\ref{tab:tabular_ql_params} 所示。
+
+\begin{table}[H]
+\centering
+\caption{表格型 Q-Learning 超参数设置}
+\label{tab:tabular_ql_params}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
+\hline
+\multicolumn{2}{c}{\textit{状态空间参数}} \\
+\hline
+$t_{\text{start}}$ 范围 & [0.0, 3.0] 秒 \\
+$t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
+时间窗离散化步长 $\Delta t$ & 0.2 秒 \\
+最小时间窗长度 & 0.5 秒 \\
+状态空间大小 $|\mathcal{S}|$ & 136 \\
+\hline
+\multicolumn{2}{c}{\textit{学习参数}} \\
+\hline
+学习率 $\alpha$ & 0.2 \\
+折扣因子 $\gamma$ & 0.95 \\
+\hline
+\multicolumn{2}{c}{\textit{探索策略参数}} \\
+\hline
+初始探索率 $\varepsilon_{\text{init}}$ & 0.9 \\
+最小探索率 $\varepsilon_{\text{min}}$ & 0.05 \\
+探索率衰减率 $\varepsilon_{\text{decay}}$ & 0.995 \\
+\hline
+\multicolumn{2}{c}{\textit{训练参数}} \\
+\hline
+训练轮数 $n_{\text{episodes}}$ & 100 \\
+每轮最大步数 & 40 \\
+动作空间大小 $|\mathcal{A}|$ & 4 \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent\textbf{参数选择依据}：
+
+（1）\textbf{状态空间离散化}：时间窗起始点 $t_{\text{start}}$ 以 0.2 秒步长在 [0.0, 3.0] 秒范围内离散化（16 个取值），结束点 $t_{\text{end}}$ 在 [1.0, 4.0] 秒范围内离散化（16 个取值），约束 $t_{\text{end}} - t_{\text{start}} \geq 0.5$ 秒，有效状态数量为 136 个。
+
+（2）\textbf{学习率 $\alpha = 0.2$}：参考经典 Q-Learning 文献的常用设置，在收敛速度与稳定性之间取得平衡。
+
+（3）\textbf{折扣因子 $\gamma = 0.95$}：使智能体在关注即时分类性能的同时，兼顾长期累积奖励。
+
+（4）\textbf{探索策略}：初始探索率 $\varepsilon_{\text{init}} = 0.9$ 鼓励充分探索状态空间；衰减率 $\varepsilon_{\text{decay}} = 0.995$ 确保探索率缓慢下降；最小探索率 $\varepsilon_{\text{min}} = 0.05$ 避免陷入局部最优。
+
+（5）\textbf{训练规模}：100 轮 × 40 步 = 4000 步的总探索次数，足以使 544 个状态 - 动作对（136 状态 × 4 动作）被充分访问（平均每对约 7.4 次）。
+
+\section{DQN 超参数}
+\label{sec:dqn_params}
+
+DQN 基线方法的超参数设置如表~\ref{tab:dqn_params} 所示。
+
+\begin{table}[H]
+\centering
+\caption{DQN 超参数设置}
+\label{tab:dqn_params}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
+\hline
+\multicolumn{2}{c}{\textit{状态空间参数}} \\
+\hline
+$t_{\text{start}}$ 范围 & [0.0, 3.0] 秒 \\
+$t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
+时间窗离散化步长 $\Delta t$ & 0.2 秒 \\
+最小时间窗长度 & 0.5 秒 \\
+\hline
+\multicolumn{2}{c}{\textit{学习参数}} \\
+\hline
+学习率 $\eta$ & $1 \times 10^{-3}$ \\
+折扣因子 $\gamma$ & 0.95 \\
+\hline
+\multicolumn{2}{c}{\textit{探索策略参数}} \\
+\hline
+初始探索率 $\varepsilon_{\text{init}}$ & 0.9 \\
+最小探索率 $\varepsilon_{\text{min}}$ & 0.05 \\
+探索率衰减率 $\varepsilon_{\text{decay}}$ & 0.995 \\
+\hline
+\multicolumn{2}{c}{\textit{训练参数}} \\
+\hline
+训练轮数 $n_{\text{episodes}}$ & 100 \\
+每轮最大步数 & 40 \\
+\hline
+\multicolumn{2}{c}{\textit{经验回放参数}} \\
+\hline
+缓冲区容量 & 10000 \\
+批量大小 $\text{batch\_size}$ & 32 \\
+目标网络更新频率 & 每 4 步 \\
+软更新参数 $\tau$ & $1 \times 10^{-3}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent\textbf{神经网络架构}：
+
+DQN 使用两层全连接网络近似 Q 函数：
+\begin{itemize}
+    \item \textbf{输入层}：状态维度（时间窗参数编码）
+    \item \textbf{隐藏层 1}：64 隐藏单元 + ReLU 激活
+    \item \textbf{隐藏层 2}：32 隐藏单元 + ReLU 激活
+    \item \textbf{输出层}：动作空间维度（4 维，对应 4 个动作的 Q 值）
+\end{itemize}
+
+\section{Dueling 架构参数}
+\label{sec:dueling_params}
+
+Dueling Q-Learning 和 Dueling Double Q-Learning 采用 Dueling 网络架构，将 Q 函数分解为状态价值函数 $V(s)$ 和优势函数 $A(s,a)$：
+
+\begin{equation}
+Q(s, a) = V(s) + \left( A(s, a) - \frac{1}{|\mathcal{A}|} \sum_{a'} A(s, a') \right)
+\end{equation}
+
+Dueling 架构的学习参数如表~\ref{tab:dueling_params} 所示。
+
+\begin{table}[H]
+\centering
+\caption{Dueling 架构学习参数}
+\label{tab:dueling_params}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
+\hline
+状态价值学习率 $\alpha_v$ & 0.05 \\
+优势函数学习率 $\alpha_a$ & 0.1 \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent\textbf{说明}：状态价值函数和优势函数采用不同的学习率，以平衡两者对学习过程的贡献。
+
+\section{CSP-SVM 分类器超参数}
+\label{sec:csp_svm_params}
+
+本研究使用 CSP-SVM 作为基础分类器计算奖励信号，其超参数设置如表~\ref{tab:csp_svm_params} 所示。为公平评估不同时间窗选择方法的性能，所有实验方法统一使用固定参数的 SVM 分类器，避免分类器参数变化对时间窗评估产生干扰。
+
+\begin{table}[H]
+\centering
+\caption{CSP-SVM 分类器超参数设置}
+\label{tab:csp_svm_params}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
+\hline
+\multicolumn{2}{c}{\textit{CSP 参数}} \\
+\hline
+CSP 分量数 & 4 \\
+协方差矩阵正则化 & $1 \times 10^{-6}$ \\
+特征类型 & 对数方差 \\
+\hline
+\multicolumn{2}{c}{\textit{SVM 参数}} \\
+\hline
+核函数 & 线性核 \\
+正则化参数 $C$ & 1.0 \\
+随机种子 & 0 \\
+\hline
+\multicolumn{2}{c}{\textit{交叉验证参数}} \\
+\hline
+交叉验证折数 & 5 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\section{数据集信息}
+\label{sec:dataset_info}
+
+本研究使用的数据集信息如表~\ref{tab:dataset_info} 所示。
+
+\begin{table}[H]
+\centering
+\caption{BCI Competition IV 2a 数据集信息}
+\label{tab:dataset_info}
+\begin{tabular}{ll}
+\hline
+\textbf{属性} & \textbf{描述} \\
+\hline
+数据集名称 & BCI Competition IV 2a \\
+被试数量 & 9 名健康被试 \\
+任务类型 & 4 类运动想象（左手、右手、脚、舌头） \\
+EEG 通道数 & 22 通道 \\
+采样频率 & 250 Hz \\
+通道位置 & 国际标准 10-20 系统 \\
+训练集试次数 & 288 试次/被试（72 试次 × 4 类） \\
+测试集试次数 & 288 试次/被试（72 试次 × 4 类） \\
+数据来源 & \url{http://www.bbci.de/competition/iv/} \\
+\hline
+\end{tabular}
+\end{table}

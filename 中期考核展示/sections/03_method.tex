@@ -1,0 +1,423 @@
+% 第三部分：方法
+\section{方法}
+
+\begin{frame}{方法整体框架}
+    \begin{block}{\normalsize 两阶段处理流程}
+        \centering
+        \begin{tikzpicture}[
+            node distance=0.8cm,
+            phase/.style={rectangle, draw=primaryblue, fill=lightblue,
+                         rounded corners=4pt, inner sep=8pt, font=\footnotesize\bfseries},
+            box/.style={rectangle, draw=darkgray, fill=white,
+                       rounded corners=4pt, inner sep=6pt, font=\footnotesize},
+            arrow/.style={->, >=Stealth, thick, primaryblue},
+            data/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+                        draw=accentgreen, fill=green!10, inner sep=4pt, font=\footnotesize}
+        ]
+            % 训练阶段
+            \node[phase, fill=primaryblue!15] (trainphase) {
+                \begin{tabular}{c}
+                    \textcolor{primaryblue}{\Large\textbullet} 训练阶段
+                \end{tabular}
+            };
+            
+            \node[box, above=0.3cm of trainphase] (preprocess) {
+                \begin{tabular}{c}
+                    数据预处理 \\
+                    \scriptsize 带通滤波、陷波滤波、平均参考
+                \end{tabular}
+            };
+            
+            \node[box, below=0.3cm of trainphase] (qlearn) {
+                \begin{tabular}{c}
+                    Q-Learning 训练 \\
+                    \scriptsize $\epsilon$-贪婪策略、Q 值更新
+                \end{tabular}
+            };
+            
+            \node[data, left=0.5cm of trainphase] (eegdata) {EEG 数据};
+            
+            \draw[arrow] (eegdata) -- (trainphase);
+            \draw[arrow] (preprocess) -- (trainphase);
+            \draw[arrow] (trainphase) -- (qlearn);
+            
+            % 测试阶段
+            \node[phase, right=3cm of trainphase, fill=secondaryblue!15] (testphase) {
+                \begin{tabular}{c}
+                    \textcolor{secondaryblue}{\Large\textbullet} 测试阶段
+                \end{tabular}
+            };
+            
+            \node[box, above=0.3cm of testphase] (csp) {
+                \begin{tabular}{c}
+                    CSP 特征提取 \\
+                    \scriptsize 空间滤波、对数方差
+                \end{tabular}
+            };
+            
+            \node[box, below=0.3cm of testphase] (svm) {
+                \begin{tabular}{c}
+                    SVM 分类 \\
+                    \scriptsize 线性核、类别预测
+                \end{tabular}
+            };
+            
+            \node[data, right=0.5cm of testphase] (output) {分类结果};
+            
+            \draw[arrow] (testphase) -- (csp);
+            \draw[arrow] (testphase) -- (svm);
+            \draw[arrow] (testphase) -- (output);
+            
+            % 阶段连接
+            \draw[arrow, dashed] (qlearn.east) -- node[above, font=\tiny] {Q 值表} (testphase.west);
+        \end{tikzpicture}
+    \end{block}
+
+
+\end{frame}
+
+\begin{frame}{MDP 问题形式化}
+    \begin{block}{\normalsize 马尔可夫决策过程五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$}
+        \vspace{0.3em}
+        \centering
+        \begin{tikzpicture}[
+            node distance=0.4cm,
+            comp/.style={rectangle, rounded corners=4pt, 
+                        inner sep=4pt, font=\small, minimum width=5cm, align=center}
+        ]
+            \node[comp, draw=primaryblue, fill=primaryblue!15, align=left] (state) {
+                \textbf{\color{primaryblue}状态空间 $\mathcal{S}$} \\
+                \scriptsize 离散化时间窗参数 $s = (t_{\text{start}}, t_{\text{end}})$ \\
+                \scriptsize $t_{\text{start}} \in [0.0, 3.0]$s, 步长 0.2s \\
+                \scriptsize $t_{\text{end}} \in [1.0, 4.0]$s, 步长 0.2s \\
+                \scriptsize 约束：$t_{\text{end}} - t_{\text{start}} \geq 0.5$s \\
+                \scriptsize \textbf{\color{accentgreen}有效状态数：$|\mathcal{S}| = 136$}
+            };
+            
+            \node[comp, draw=secondaryblue, fill=secondaryblue!15, right=0.2cm of state, align=left] (action) {
+                \textbf{\color{secondaryblue}动作空间 $\mathcal{A}$} \\
+                \scriptsize 4 个离散动作 $\mathcal{A} = \{a_0, a_1, a_2, a_3\}$ \\
+                \scriptsize $a_0$: $t_{\text{start}} \!-\! 0.2$s \quad $a_1$: $t_{\text{start}} \!+\! 0.2$s \\
+                \scriptsize $a_2$: $t_{\text{end}} \!-\! 0.2$s \quad $a_3$: $t_{\text{end}} \!+\! 0.2$s \\
+                \scriptsize \textbf{Q 表大小：$136 \times 4 = 544$}
+            };
+            
+            \node[comp, draw=accentred, fill=accentred!15, below=of state, align=left] (reward) {
+                \textbf{\color{accentred}奖励函数 $\mathcal{R}$} \\
+                \scriptsize $\mathcal{R}(s) = \text{Accuracy}_{\text{CV}}(t_{\text{start}}, t_{\text{end}})$ \\
+                \scriptsize 当前时间窗下 CSP-SVM 的 \\
+                \scriptsize 5 折交叉验证准确率
+            };
+            
+            \node[comp, draw=accentgreen, fill=accentgreen!15, below=of action, align=left] (transition) {
+                \textbf{\color{accentgreen}状态转移 $\mathcal{P}$} \\
+                \scriptsize 确定性转移：动作执行后 \\
+                \scriptsize 时间窗边界按固定步长调整 \\
+                \scriptsize 超出范围则保持原状态
+            };
+            
+            \node[comp, draw=darkgray, fill=gray!15, below=of reward, xshift=5.1cm, minimum width=10.2cm] (gamma) {
+                \textbf{折扣因子 $\gamma = 0.95$} \quad 
+                \scriptsize 平衡即时奖励与长期奖励
+            };
+        \end{tikzpicture}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}{表格型 Q-Learning 算法}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            \begin{block}{\normalsize Q 值更新规则}
+                \footnotesize
+                遵循 Bellman 最优方程：
+                $$Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t) \right]$$
+                
+            \end{block}
+
+
+            \begin{block}{\normalsize 收敛性保证}
+                \footnotesize
+                \textbf{定理}（Watkins \& Dayan, 1992）：对于有限 MDP，若满足：
+                \begin{enumerate}
+                    \item 所有状态 - 动作对被无限次访问
+                    \item 学习率满足 Robbins-Monro 条件
+                    \item 采用适当的探索策略（如$\epsilon$-贪婪）
+                \end{enumerate}
+                则 Q 值序列以概率 1 收敛到最优动作价值函数 $Q^*$。
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+
+            \begin{block}{\normalsize 本研究适用性}
+                \footnotesize
+                \begin{itemize}
+                    \item 状态空间有限（136 个状态）、动作空间有限（4 个动作）
+                    \item $\epsilon$-贪婪策略保证充分探索
+                    \item \textbf{理论保证收敛到最优策略}
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Q-Learning 算法流程}
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=0.5cm and 0.6cm,
+        startstop/.style={rectangle, rounded corners, draw=accentred, fill=red!10,
+                         text width=4.5em, text centered, minimum height=1.3em, font=\small},
+        process/.style={rectangle, draw=primaryblue, fill=lightblue,
+                       text width=5.5em, text centered, minimum height=1.3em, font=\small},
+        decision/.style={diamond, draw=secondaryblue, fill=blue!10,
+                        text width=4em, text centered, minimum height=1.3em, font=\small, aspect=1.2},
+        arrow/.style={->, >=Stealth, thick, darkgray},
+        io/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+                  draw=accentgreen, fill=green!10, text width=4.5em, text centered,
+                  minimum height=1.3em, font=\small}
+    ]
+        % 主流程（水平方向）
+        \node[io] (init) {初始化 Q 表\\$\epsilon=0.9$};
+        \node[process, right=of init] (eploop) {Episode 循环\\(1-100)};
+        \node[process, right=of eploop] (initstate) {随机初始化\\状态 $s_0$};
+        \node[process, right=of initstate] (steploop) {Step 循环\\(1-40)};
+        \node[decision, right=of steploop] (epsdecision) {$\text{random}<\epsilon$?};
+        
+        % 分支节点（上下布局）
+        \node[process, above=0.8cm of epsdecision] (explore) {随机探索\\动作};
+        \node[process, below=0.8cm of epsdecision] (exploit) {贪婪选择\\$\arg\max Q$};
+        
+        % 后续流程（水平方向）
+        \node[process, right=1.2cm of epsdecision] (execute) {执行动作\\状态转移};
+        \node[process, right=of execute] (evaluate) {Evaluate};
+        \node[process, right=of evaluate] (updateq) {更新 Q 值};
+        \node[process, right=of updateq] (decayeps) {$\epsilon$ 衰减\\$\times 0.995$};
+        \node[startstop, right=of decayeps] (output) {输出最优\\时间窗};
+
+        % 箭头连接
+        \draw[arrow] (init) -- (eploop);
+        \draw[arrow] (eploop) -- (initstate);
+        \draw[arrow] (initstate) -- (steploop);
+        \draw[arrow] (steploop) -- (epsdecision);
+        \draw[arrow] (epsdecision) -- node[left, font=\tiny] {是} (explore);
+        \draw[arrow] (epsdecision) -- node[right, font=\tiny] {否} (exploit);
+        \draw[arrow] (explore) -| (execute);
+        \draw[arrow] (exploit) -| (execute);
+        \draw[arrow] (execute) -- (evaluate);
+        \draw[arrow] (evaluate) -- (updateq);
+        \draw[arrow] (updateq) -- (decayeps);
+        \draw[arrow] (decayeps) -- (output);
+
+        % 循环反馈
+        \draw[arrow, rounded corners] (output.north) -- ++(0,0.8) -| node[pos=0.25, above, font=\tiny] {step<40} (steploop.north);
+        \draw[arrow, rounded corners] (output.south) -- ++(0,-0.8) -| node[pos=0.25, below, font=\tiny] {episode<100} (eploop.south);
+    \end{tikzpicture}
+    }
+
+    \vspace{0.3em}
+
+    \begin{alertblock}{\normalsize 关键设计}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{$\epsilon$-贪婪策略}：训练初期充分探索（$\epsilon=0.9$），后期逐渐利用（$\epsilon_{\min}=0.05$）
+            \item \textbf{随机初始化}：确保训练初期状态空间覆盖
+            \item \textbf{早停机制}：Q 值收敛或最优状态稳定时提前终止
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{时间窗评估子过程}
+    \centering
+    \resizebox{0.92\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=0.4cm and 0.5cm,
+        startstop/.style={rectangle, rounded corners, draw=accentred, fill=red!10,
+                         text width=4.5em, text centered, minimum height=1.3em, font=\small},
+        process/.style={rectangle, draw=primaryblue, fill=lightblue,
+                       text width=5.5em, text centered, minimum height=1.3em, font=\small},
+        arrow/.style={->, >=Stealth, thick, darkgray},
+        io/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+                  draw=accentgreen, fill=green!10, text width=4.5em, text centered,
+                  minimum height=1.3em, font=\small}
+    ]
+        % 主流程（水平方向）
+        \node[io] (input) {输入状态 $s$\\训练数据};
+        \node[process, right=of input] (window) {时间窗截取\\$X_i^{\text{window}}$};
+        \node[process, right=of window] (cov) {计算协方差\\矩阵 $C_c$};
+        \node[process, right=of cov] (eigen) {广义特征值\\分解};
+        \node[process, right=of eigen] (filter) {构建空间\\滤波器 $W$};
+        \node[process, right=of filter] (feature) {提取对数\\方差特征};
+        \node[process, right=of feature] (normalize) {Z-score\\标准化};
+        \node[process, right=of normalize] (cv) {5 折交叉\\验证 SVM};
+        \node[io, right=of cv] (output) {返回平均\\准确率};
+
+        % 箭头连接
+        \draw[arrow] (input) -- (window);
+        \draw[arrow] (window) -- (cov);
+        \draw[arrow] (cov) -- (eigen);
+        \draw[arrow] (eigen) -- (filter);
+        \draw[arrow] (filter) -- (feature);
+        \draw[arrow] (feature) -- (normalize);
+        \draw[arrow] (normalize) -- (cv);
+        \draw[arrow] (cv) -- (output);
+    \end{tikzpicture}
+    }
+
+    \vspace{0.3em}
+
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{alertblock}{\normalsize CSP 核心思想}
+                \footnotesize
+                通过空间滤波最大化两类信号的方差差异：
+                $$C_1 \cdot w = \lambda \cdot (C_1 + C_2) \cdot w$$
+            \end{alertblock}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{\normalsize SVM 分类器}
+                \footnotesize
+                线性核，$C = 1.0$，5 折交叉验证：
+                $$\min_{w,b} \frac{1}{2}||w||^2 + C \cdot \sum \xi_i$$
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{与 DQN 的对比分析}
+    \begin{columns}[t]
+        \begin{column}{0.52\textwidth}
+            \begin{table}
+                \centering
+                \footnotesize
+                \begin{tabular}{lcc}
+                    \toprule
+                    \textbf{维度} & \textbf{表格型 Q} & \textbf{DQN} \\
+                    \midrule
+                    函数近似 & 无（精确表） & 深度神经网络 \\
+                    \rowcolor{lightblue}
+                    参数量 & \textasciitilde544 & \textasciitilde10⁴–10⁵ \\
+                    收敛性保证 & \textcolor{accentgreen}{理论保证} & 经验性收敛 \\
+                    \rowcolor{lightblue}
+                    训练稳定性 & \textcolor{accentgreen}{高} & 中 \\
+                    推理延迟 & \textcolor{accentgreen}{\textasciitilde0.1 μs} & \textasciitilde100 μs \\
+                    \rowcolor{lightblue}
+                    内存占用 & \textcolor{accentgreen}{\textasciitilde2 KB} & \textasciitilde100 KB–1 MB \\
+                    可解释性 & \textcolor{accentgreen}{高} & 低 \\
+                    \rowcolor{lightblue}
+                    泛化能力 & 中 & \textcolor{accentgreen}{高} \\
+                    适用场景 & \textcolor{accentgreen}{小规模状态空间} & 大规模状态空间 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+        \end{column}
+
+        \begin{column}{0.46\textwidth}
+            \vspace{-0.5em}
+            \begin{alertblock}{\normalsize DQN 方法回顾}
+                \scriptsize
+                DQN 使用深度神经网络近似 Q 函数：
+                \[Q(s, a; \theta) \approx Q^*(s, a)\]
+                损失函数：
+                \[\mathcal{L}(\theta) = \mathbb{E}\left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^-) - Q(s, a; \theta) \right)^2 \right]\]
+            \end{alertblock}
+
+            \begin{exampleblock}{\normalsize 本研究核心主张}
+                \scriptsize
+                \begin{itemize}
+                    \item \textbf{主张 1}：与 DQN 准确率无显著差异
+                    \item \textbf{主张 2}：跨被试标准差更低
+                    \item \textbf{主张 3}：更适合嵌入式部署
+                    \item \textbf{主张 4}：Q 值表透明可视
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{时间窗优化问题的特殊性}
+    \begin{columns}[t]
+        \begin{column}{0.5\textwidth}
+            \begin{block}{\normalsize 状态空间规模分析}
+                \footnotesize
+                时间窗参数空间：
+                \[\mathcal{T} = \{(t_s, t_e) \mid 0 \leq t_s \leq 3, 1 \leq t_e \leq 4, t_e - t_s \geq 0.5\}\]
+                离散化后（步长 0.2 秒）：
+                \[|\mathcal{S}| = \sum_{i=0}^{15} \left\lfloor \frac{4.0 - \max(1.0, 0.2i + 0.5)}{0.2} \right\rfloor + 1 = 136\]
+                Q 表总条目：$136 \times 4 = 544$
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \begin{alertblock}{\normalsize 任务特点}
+                \footnotesize
+                \begin{itemize}
+                    \item \textbf{状态转移确定性}：时间窗边界调整是确定性操作
+                    \item \textbf{奖励函数平滑性}：相邻时间窗的准确率通常相近
+                    \item \textbf{最优策略稀疏性}：最优时间窗集中在刺激后 2–4 秒的 ERD 活跃期
+                    \item \textbf{访问频率高}：每个状态 - 动作对在 100 轮训练中平均被访问约 30 次
+                \end{itemize}
+            \end{alertblock}
+
+
+            \begin{exampleblock}{\normalsize 表格型方法适用性}
+                \footnotesize
+                \begin{itemize}
+                    \item 状态空间规模 $< 10^4$，属于小规模问题
+                    \item 状态 - 动作对可充分访问，无需函数近似
+                    \item 表格型方法足以捕捉任务的最优策略
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{轻量化设计原则}
+    \begin{columns}[T]
+        \begin{column}{0.32\textwidth}
+            \begin{block}{\centering \normalsize 动机一：数据约束}
+                \footnotesize
+                \begin{itemize}
+                    \item \textbf{数据稀缺性}：EEG 数据采集成本高，伦理审查严格
+                    \item \textbf{个体差异性}：跨被试泛化困难
+                    \item \textbf{样本效率}：有限样本下快速收敛
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.32\textwidth}
+            \begin{block}{\centering \normalsize 动机二：设备约束}
+                \footnotesize
+                \begin{itemize}
+                    \item \textbf{硬件成本}：ARM Cortex-M 等低功耗处理器
+                    \item \textbf{能耗约束}：电池供电，需最小化计算能耗
+                    \item \textbf{实时性}：毫秒级延迟完成时间窗选择
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.32\textwidth}
+            \begin{block}{\centering \normalsize 动机三：任务定位}
+                \footnotesize
+                \begin{itemize}
+                    \item \textbf{辅助任务从属性}：服务于分类任务
+                    \item \textbf{计算预算分配}：资源优先给核心任务
+                    \item \textbf{性能 - 效率权衡}：遵循"足够好"原则
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \begin{exampleblock}{\normalsize 轻量化实现维度}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{模型轻量化}：参数量从降低至 544
+            \item \textbf{计算轻量化}：单步代数更新，无需反向传播
+            \item \textbf{能耗轻量化}：查表能耗约为神经网络前向传播的 1/1000
+            \item \textbf{部署轻量化}：无需深度学习框架，可移植至嵌入式平台
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+

@@ -1,0 +1,30 @@
+%%=============================================================================
+%% 页眉页脚和脚注
+%%=============================================================================
+
+%% 页眉页脚
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancypagestyle{xmu@empty}{ %无页眉页脚
+	\fancyhf{}}
+\fancypagestyle{xmu@headings}{ %有页眉页脚
+	\fancyhf{}
+	\fancyfoot[C]{\songti\zihao{5} \thepage}
+
+	\fancyhead[CO]{\zihao{5} \songti \nouppercase\leftmark}
+	\fancyhead[CE]{\zihao{5} \songti {\xmu@value@title}}
+}
+
+%% 脚注样式
+% 设置圈型角标
+\interfootnotelinepenalty=100000
+\RequirePackage{pifont}
+\RequirePackage[hang,flushmargin,perpage,symbol*]{footmisc}
+\DefineFNsymbols{circled}{{\ding{192}}{\ding{193}}{\ding{194}}
+		{\ding{195}}{\ding{196}}{\ding{197}}{\ding{198}}{\ding{199}}{\ding{200}}{\ding{201}}}
+\setfnsymbol{circled}
+
+% 设置角标数字的字体和正文一致，并且 1.6em 缩进
+\RequirePackage{scrextend}
+\deffootnote{1.6em}{0em}{\thefootnotemark \enskip}

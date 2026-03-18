@@ -1,0 +1,103 @@
+%%=============================================================================
+%% 符号表
+%%=============================================================================
+
+\chapter*{符号表}
+\addcontentsline{toc}{chapter}{符号表}
+\markboth{符号表}{符号表}
+
+\begin{description}[font=\normalfont\ttfamily,leftmargin=!,labelwidth=3cm]
+
+\item[$\mathcal{S}$] 状态空间（State Space）
+\item[$\mathcal{A}$] 动作空间（Action Space）
+\item[$\mathcal{R}$] 奖励函数（Reward Function）
+\item[$\mathcal{P}$] 状态转移概率（State Transition Probability）
+\item[$\gamma$] 折扣因子（Discount Factor）
+\item[$\alpha$] 学习率（Learning Rate）
+\item[$\eta$] DQN 学习率（DQN Learning Rate）
+\item[$\varepsilon$] 探索率（Exploration Rate）
+\item[$\varepsilon_{\text{init}}$] 初始探索率（Initial Exploration Rate）
+\item[$\varepsilon_{\text{min}}$] 最小探索率（Minimum Exploration Rate）
+\item[$\varepsilon_{\text{decay}}$] 探索率衰减率（Exploration Decay Rate）
+\item[$\tau$] 目标网络软更新参数（Target Network Soft Update Parameter）
+\item[$\pi$] 策略（Policy）
+\item[$\pi^*$] 最优策略（Optimal Policy）
+\item[$Q(s, a)$] 动作价值函数（Action Value Function）
+\item[$Q^*(s, a)$] 最优动作价值函数（Optimal Action Value Function）
+\item[$V(s)$] 状态价值函数（State Value Function）
+\item[$A(s, a)$] 优势函数（Advantage Function）
+\item[$r_t$] 时刻 $t$ 的即时奖励（Immediate Reward）
+\item[$n_{\text{episodes}}$] 训练轮数（Number of Training Episodes）
+\item[$\text{max\_steps}$] 每轮最大步数（Maximum Steps per Episode）
+\item[$\mathcal{D}$] 数据集（Dataset）
+\item[$\mathcal{D}_{\text{train}}$] 训练数据集（Training Dataset）
+\item[$\mathbf{X}$] EEG 数据矩阵（EEG Data Matrix）
+\item[$\mathbf{X}_i$] 第 $i$ 个试次的 EEG 数据
+\item[$\mathbf{W}$] CSP 空间滤波器（CSP Spatial Filter）
+\item[$\mathbf{w}$] 特征向量（Eigenvector）
+\item[$\lambda$] 特征值（Eigenvalue）
+\item[$C$] 通道数（Number of Channels）
+\item[$T$] 时间点数（Number of Time Points）
+\item[$N$] 试次总数（Total Number of Trials）
+\item[$N_c$] 类别 $c$ 的试次数
+\item[$m$] CSP 分量数（Number of CSP Components）
+\item[$t_{\text{start}}$] 时间窗起始时刻（Time Window Start）
+\item[$t_{\text{end}}$] 时间窗终止时刻（Time Window End）
+\item[$\Delta t$] 时间窗离散化步长（Time Window Discretization Step）
+\item[$\kappa$] Cohen's Kappa 系数
+\item[$d$] Cohen's $d$ 效应量（Effect Size）
+\item[$\mu$] 均值（Mean）
+\item[$\sigma$] 标准差（Standard Deviation）
+\item[$\mathbb{R}$] 实数集（Set of Real Numbers）
+\item[$\mathbb{Z}$] 整数集（Set of Integers）
+\item[$|\mathcal{S}|$] 状态空间大小（Size of State Space）
+\item[$O(\cdot)$] 时间复杂度（Time Complexity）
+
+\end{description}
+
+\vspace{2em}
+
+%%=============================================================================
+%% 英文缩略词表
+%%=============================================================================
+
+\chapter*{英文缩略词表}
+\addcontentsline{toc}{chapter}{英文缩略词表}
+\markboth{英文缩略词表}{英文缩略词表}
+
+\begin{description}[font=\normalfont\ttfamily,leftmargin=!,labelwidth=3.5cm]
+
+%% BCI 相关
+\item[BCI] Brain-Computer Interface，脑机接口
+\item[EEG] Electroencephalogram，脑电信号
+\item[MI] Motor Imagery，运动想象
+\item[ERD] Event-Related Desynchronization，事件相关去同步化
+\item[ERS] Event-Related Synchronization，事件相关同步化
+\item[SSVEP] Steady-State Visually Evoked Potential，稳态视觉诱发电位
+
+%% 特征提取与分类
+\item[CSP] Common Spatial Patterns，共空间模式
+\item[SVM] Support Vector Machine，支持向量机
+\item[LDA] Linear Discriminant Analysis，线性判别分析
+\item[PSD] Power Spectral Density，功率谱密度
+
+%% 强化学习
+\item[RL] Reinforcement Learning，强化学习
+\item[MDP] Markov Decision Process，马尔可夫决策过程
+\item[TD] Temporal Difference，时序差分
+\item[Q-Learning] Q 学习算法（Q-Learning Algorithm）
+\item[DQN] Deep Q-Network，深度 Q 网络
+\item[Double Q-Learning] 双 Q 学习算法（Double Q-Learning）
+\item[Dueling Q-Learning] Dueling Q 学习算法（Dueling Q-Learning）
+
+%% 信号处理
+\item[FIR] Finite Impulse Response，有限脉冲响应
+\item[IIR] Infinite Impulse Response，无限脉冲响应
+
+%% 评估指标
+\item[CV] Cross-Validation，交叉验证
+\item[F1] F1 分数（F1 Score）
+\item[IQR] Interquartile Range，四分位距
+\item[TSGSP] Temporally Constrained Sparse Group Spatial Patterns，时间约束稀疏组空间模式
+
+\end{description}

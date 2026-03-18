@@ -1,0 +1,164 @@
+% 讨论部分
+\section{讨论与分析}
+
+\begin{frame}{讨论：主要发现}
+    \begin{enumerate}
+        \item \textbf{\color{primaryblue}表格型 Q-Learning 性能与 DQN 相当}
+        \begin{itemize}
+            \item 准确率：62.68\% vs 62.70\% ($\Delta = -0.02\%$, $p = 0.981$)
+            \item 在 9 名被试、5 次重复实验的大规模评估中得到验证
+        \end{itemize}
+
+        \vspace{0.5em}
+        \item \textbf{\color{primaryblue}表格型 Q-Learning 稳定性更优}
+        \begin{itemize}
+            \item 标准差：8.20\% vs 9.21\%
+            \item 跨被试稳定性相对提升约 11\%
+        \end{itemize}
+
+        \vspace{0.5em}
+        \item \textbf{\color{primaryblue}轻量化优势显著}
+        \begin{itemize}
+            \item 无需训练深度神经网络
+            \item 模型参数量减少 92 倍，推理延迟降低 1000 倍
+        \end{itemize}
+
+        \vspace{0.5em}
+        \item \textbf{\color{primaryblue}Standard Q-Learning 优于复杂变体}
+        \begin{itemize}
+            \item Double Q-Learning 和 Dueling 架构未带来显著收益
+            \item 任务状态空间相对简单（136 状态），标准方法已足够
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{讨论：理论与实践意义}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{\normalsize {理论意义}}
+                \begin{itemize}
+                    \item \textbf{挑战深度强化学习的"必要性"假设}
+                    \begin{itemize}
+                        \item 并非所有任务都需要深度模型
+                        \item 简单方法在特定场景下可能是更优选择
+                    \end{itemize}
+
+                    \item \textbf{提出 BCI 轻量化设计框架}
+                    \begin{itemize}
+                        \item 数据稀缺性约束
+                        \item 设备成本约束
+                        \item 辅助任务定位约束
+                    \end{itemize}
+
+                    \item \textbf{界定表格型与深度方法的适用边界}
+                    \begin{itemize}
+                        \item 状态空间规模 $< 10^4$：表格型更优
+                        \item 状态空间规模 $> 10^6$：深度方法更优
+                    \end{itemize}
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{\normalsize {实践意义}}
+                \begin{itemize}
+                    \item \textbf{适合资源受限的嵌入式 BCI 设备}
+                    \begin{itemize}
+                        \item 内存占用 $< 10$ KB
+                        \item 推理延迟 $< 1$ ms
+                        \item 无需专用加速硬件
+                    \end{itemize}
+
+                    \vspace{0.5em}
+                    \item \textbf{降低系统部署成本}
+                    \begin{itemize}
+                        \item 无需深度学习框架
+                        \item 可轻松移植至嵌入式平台
+                    \end{itemize}
+
+                    \vspace{0.5em}
+                    \item \textbf{提升在线 BCI 系统响应性}
+                    \begin{itemize}
+                        \item 快速个体校准
+                        \item 低延迟推理
+                    \end{itemize}
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{讨论：局限性与未来工作}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{alertblock}{\normalsize 局限性}
+                \begin{itemize}
+                    \item \textbf{状态空间离散化}
+                    \begin{itemize}
+                        \item 需要将连续时间窗边界离散化
+                        \item 当前步长 (0.2s) 已足够精细
+                    \end{itemize}
+
+                    \vspace{0.5em}
+                    \item \textbf{仅使用离线数据验证}
+                    \begin{itemize}
+                        \item 当前阶段以验证方法有效性为主
+                        \item 未来需探索在线自适应优化
+                    \end{itemize}
+
+                    \vspace{0.5em}
+                    \item \textbf{低表现被试性能提升有限}
+                    \begin{itemize}
+                        \item 这是 BCI 领域的共性问题
+                        \item 需结合迁移学习等其他技术
+                    \end{itemize}
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{\normalsize 未来工作}
+                \begin{itemize}
+                    \item 探索连续状态空间方法
+                    \item 实现在线自适应时间窗优化
+                    \item 结合迁移学习提升低表现被试性能
+                    \item 在嵌入式设备上部署验证
+                    \item 扩展至多模态 BCI 任务
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{研究结论}
+    \begin{enumerate}
+        \item \textbf{\color{primaryblue}方法创新}
+        \begin{itemize}
+            \item 提出基于表格型 Q-Learning 的运动想象时间窗优化方法
+            \item 将时间窗选择建模为 MDP，使用 Q-Learning 自适应优化
+        \end{itemize}
+
+        \vspace{0.5em}
+        \item \textbf{\color{primaryblue}性能验证}
+        \begin{itemize}
+            \item 与 DQN 准确率差异仅 -0.02\% ($p = 0.981$)
+            \item 跨被试稳定性提升 11\%
+            \item 自适应时间窗显著优于固定时间窗（提升约 37\%-41\%）
+        \end{itemize}
+
+        \vspace{0.5em}
+        \item \textbf{\color{primaryblue}轻量化优势}
+        \begin{itemize}
+            \item 参数量减少 92 倍，推理延迟降低 1000 倍
+            \item 内存占用减少 125 倍，训练时间缩短 3 倍
+        \end{itemize}
+
+        \vspace{0.5em}
+        \item \textbf{\color{primaryblue}理论贡献}
+        \begin{itemize}
+            \item 挑战深度强化学习的"必要性"假设
+            \item 提出 BCI 轻量化设计框架
+            \item 界定表格型与深度方法的适用边界
+        \end{itemize}
+    \end{enumerate}
+\end{frame}

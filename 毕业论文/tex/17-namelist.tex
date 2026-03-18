@@ -1,0 +1,28 @@
+%%=============================================================================
+%% 答辩委员会名单
+%%=============================================================================
+
+%% 学位论文答辩委员会名单环境
+\newenvironment{namelist}{
+	\cleardoublepage
+
+	\thispagestyle{plain}
+	\thispagestyle{empty}
+
+	\songti\zihao{4}
+	\setstretch{1.58889} % 设置行间距
+}
+
+\newcommand\makenamelist{
+	\cleardoublepage
+	\pdfbookmark[0]{学位论文答辩委员会名单}{name_list}
+	\thispagestyle{empty}
+
+	% \ifxmu@pdf
+	% 	\includepdf[pages=-]{pdf_files/name_list.pdf}
+	% \else
+		\input{chapters/name_list.tex}
+	% \fi
+
+	\clearpage
+}

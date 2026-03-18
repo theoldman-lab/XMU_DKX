@@ -1,0 +1,76 @@
+%%=============================================================================
+%% 学术成果、致谢、附录
+%%=============================================================================
+
+%% 在学期间完成的相关学术成果
+\newenvironment{publications}[1]{
+	\zihao{-4}
+	\setlength{\baselineskip}{21pt}
+	\chapter*{\xmu@label@publications}
+	\pdfbookmark[0]{在学期间完成的相关学术成果}{publications}
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily\xmu@label@enpublications}{\sffamily {\thepage}}{chapter.\thechapter}}
+	\addcontentsline{toc}{chapter}{\xmu@label@publications}
+	\addcontentsline{etoc}{chapter}{\sffamily\xmu@label@enpublications}
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily\xmu@label@enpublications}{\thepage}{chapter*.\thepage}}
+	\markboth{\xmu@label@publications}{\xmu@label@publications}
+	\vspace{3pt}
+	\list{\@biblabel{\@arabic\c@enumiv}}%
+	{\settowidth\labelwidth{\@biblabel{#1}}%
+		\leftmargin\labelwidth
+		\advance\leftmargin\labelsep
+		\setlength{\parsep}{0mm}
+		\setlength{\labelsep}{0.5em}
+		\setlength{\itemsep}{3pt}
+		\setlength{\listparindent}{0in}
+		\setlength{\itemindent}{0in}
+		\setlength{\rightmargin}{0in}
+		\@openbib@code
+		\usecounter{enumiv}%
+		\let\p@enumiv\@empty
+		\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+	\sloppy
+	\clubpenalty4000
+	\@clubpenalty \clubpenalty
+	\widowpenalty4000%
+	\sfcode`\.\@m}
+{\def\@noitemerr
+	{\@latex@warning{Empty `publications' environment}}%
+	\endlist}
+
+\newcommand\publicationpreamble[1]{
+	\item[]\vspace{0.75cm}\hspace{-\labelwidth}\hspace{-\labelsep}{\heiti  \bfseries #1}
+}
+
+%% 致谢
+\newenvironment{acknowledgements}{
+	\cleardoublepage
+	\chapter*{\xmu@label@acknowledgements}
+	\label{acknowledgements}
+	\ifxmu@compact
+		\markboth{\xmu@label@compactacknowledgements}{\xmu@label@compactacknowledgements} % 页眉
+		\addcontentsline{toc}{chapter}{\xmu@label@compactacknowledgements}
+	\else
+		\markboth{\xmu@label@acknowledgements}{\xmu@label@acknowledgements} % 页眉
+		\addcontentsline{toc}{chapter}{\xmu@label@acknowledgements}
+	\fi
+
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily\xmu@label@enacknowledgements}{\sffamily \thepage}{chapter.\thechapter}}
+	\addcontentsline{etoc}{chapter}{\sffamily\xmu@label@enacknowledgements}
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily\xmu@label@enacknowledgements}{\thepage}{chapter*.\thepage}}
+	\songti
+}
+
+%% 单位宏包
+\IfFileExists{mhchem.sty}{
+\RequirePackage[version=4]{mhchem}
+}{}
+\IfFileExists{siunitx.sty}{
+\RequirePackage[per-mode=symbol]{siunitx}
+}{}
+
+%% 附录编号样式
+\newcommand\setappendixnumberformat{
+	\renewcommand\theequation{\Alph{chapter}-\arabic{equation}}  % 附录中编号形式是"A-1"的样子
+	\renewcommand\thefigure{\Alph{chapter}-\arabic{figure}}
+	\renewcommand\thetable{\Alph{chapter}-\arabic{table}}
+}

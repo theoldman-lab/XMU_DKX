@@ -1,0 +1,197 @@
+% 第二部分：引言与相关工作
+\section{引言与相关工作}
+
+\begin{frame}{研究背景与意义}
+    \begin{block}{\normalsize 脑机接口技术}
+        \begin{itemize}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{BCI 技术}：直接连接大脑与外部设备的新型交互技术
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{应用领域}：医疗康复、神经工程、智能控制
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{运动想象范式}：通过解码 ERD/ERS 脑电信号实现无外部刺激下的自然控制
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3em}
+
+    \begin{alertblock}{\normalsize 关键挑战：时间窗选择问题}
+        \begin{itemize}
+            \item[\textcolor{accentred}{\textbullet}] \textbf{固定时间窗局限}：忽视神经响应的个体差异性和任务依赖性
+            \item[\textcolor{accentred}{\textbullet}] \textbf{个体差异显著}：不同被试的 ERD/ERS 起始时间和持续时间存在明显差异
+            \item[\textcolor{accentred}{\textbullet}] \textbf{性能影响}：固定时间窗导致信号信息丢失或噪声引入，降低分类性能
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3em}
+
+    \begin{exampleblock}{\normalsize 研究意义}
+        开发能够\textbf{自适应调整时间窗参数}的智能方法，对于提升 MI-BCI 系统的实用性和鲁棒性具有重要意义
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{传统时间窗优化方法}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{\normalsize 早期方法}
+                \begin{itemize}
+                    \item \textbf{经验法}：依靠经验或试错法确定时间窗口
+                    \item \textbf{固定时间窗}：采用统一时间段（如 2-4 秒）
+                    \item \textbf{手动选择}：基于先验知识人工设定
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{alertblock}{\normalsize 自动化优化方法}
+                \begin{itemize}
+                    \item \textbf{网格搜索与随机搜索}
+                    \begin{itemize}
+                        \item 遍历或随机采样参数空间
+                        \item 计算成本随维度指数增长
+                        \item 缺乏理论指导
+                    \end{itemize}
+
+                    \item \textbf{贝叶斯优化}
+                    \begin{itemize}
+                        \item Yang 等：双独立贝叶斯优化框架
+                        \item 代理模型训练复杂
+                        \item 缺乏时间窗参数内在关联性建模
+                    \end{itemize}
+
+                    \item \textbf{启发式算法}
+                    \begin{itemize}
+                        \item 蚁群优化、遗传算法等
+                        \item 易陷入局部最优
+                        \item 收敛性难以保证
+                    \end{itemize}
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{强化学习在 BCI 中的应用}
+    \begin{block}{\normalsize 主要应用方向}
+        \begin{itemize}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{动态窗口控制}
+            \begin{itemize}
+                \item Chen 等 (2019)：DQN 用于 SSVEP 识别，动态调整采集窗口长度
+                \item 针对 SSVEP 范式设计，不直接适用于 MI 任务
+            \end{itemize}
+
+            \vspace{0.5em}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{特征选择优化}
+            \begin{itemize}
+                \item Zhang 等 (2021)：多智能体 RL 框架 MARS
+                \item 用于空间 - 频域和时域特征选择
+                \item 主要关注特征层面而非原始信号时间窗截取
+            \end{itemize}
+
+            \vspace{0.5em}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{参数自适应调整}
+            \begin{itemize}
+                \item 优化 BCI 系统参数（分类器超参数、滤波器设置）
+                \item 专门针对时间窗优化的研究仍属空白
+            \end{itemize}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{强化学习算法演进}
+    \begin{columns}[T]
+        \begin{column}{0.58\textwidth}
+            \begin{block}{\normalsize 经典算法}
+                \begin{itemize}
+                    \item \textbf{Q-learning}
+                    \begin{itemize}
+                        \item 经典表格型 RL 算法
+                        \item 在离散状态空间中表现稳定
+                        \item 存在 Q 值过高估计问题
+                    \end{itemize}
+                \end{itemize}
+            \end{block}
+
+
+            \begin{alertblock}{\normalsize 增强算法}
+                \begin{itemize}
+                    \item \textbf{Double Q-learning}：维护两套独立的 Q 值估计交替用于动作选择和值评估缓解 Q 值过高估计问题
+                    \item \textbf{Dueling Network 架构}：分解为状态价值函数和动作优势函数分别评估状态好坏和动作相对优势提升学习效率和策略质量
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{\normalsize 深度 Q 网络变体}
+                \begin{itemize}
+                    \item 结合深度神经网络的函数逼近能力
+                    \item 需要大量数据和复杂调参
+                    \item 在有限状态空间问题中可能过度复杂
+                \end{itemize}
+
+                \vspace{0.5em}
+
+                \begin{itemize}
+                    \item \textbf{技术演进路线}：
+                    \begin{enumerate}
+                        \item 表格型 RL (1990s)
+                        \item 值函数近似 (2000s)
+                        \item 深度 RL (2015-)
+                        \item \textcolor{primaryblue}{\textbf{轻量化 RL (本研究)}}
+                    \end{enumerate}
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{现有研究不足}
+    \begin{alertblock}{\normalsize 研究空白}
+        \begin{itemize}
+            \item[\textcolor{accentred}{\textbullet}] \textbf{方法适用性局限}
+            \begin{itemize}
+                \item 现有时间窗优化方法多基于传统优化理论
+                \item 未充分利用 RL 的序列决策和自适应学习优势
+            \end{itemize}
+
+            \vspace{0.5em}
+            \item[\textcolor{accentred}{\textbullet}] \textbf{个体差异考虑不足}
+            \begin{itemize}
+                \item 大多数方法采用统一优化策略
+                \item 缺乏对神经响应个体差异性的专门建模
+            \end{itemize}
+
+            \vspace{0.5em}
+            \item[\textcolor{accentred}{\textbullet}] \textbf{算法复杂度失衡}
+            \begin{itemize}
+                \item 简单方法性能有限
+                \item 先进方法（如深度 RL）实现复杂且需要大量计算资源
+            \end{itemize}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{本工作创新点}
+    \begin{exampleblock}{\normalsize 创新性工作}
+        \begin{itemize}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{设计面向时间窗优化的 RL 机制}
+            \begin{itemize}
+                \item 将连续时间参数离散化为适合 RL 处理的形式
+                \item 保持生理合理性约束
+                \item 设计状态 - 动作 - 奖励机制
+            \end{itemize}
+
+            \vspace{0.5em}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{提出计算高效的表格型实现方案}
+            \begin{itemize}
+                \item 针对有限状态空间特点
+                \item 避免不必要的深度网络复杂度
+                \item 确保方法在标准计算设备上的可行性
+            \end{itemize}
+
+            \vspace{0.5em}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{构建端到端的个性化优化框架}
+            \begin{itemize}
+                \item 为每个被试独立学习最优时间窗参数
+                \item 显著提升 MI 分类性能
+            \end{itemize}
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}

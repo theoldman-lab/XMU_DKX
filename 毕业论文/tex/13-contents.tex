@@ -1,0 +1,72 @@
+%%=============================================================================
+%% 中英文目录
+%%=============================================================================
+
+%% 中英文目录
+\addtocontents{toc}{\protect\hypersetup{hidelinks}}
+\addtocontents{etoc}{\protect\hypersetup{hidelinks}}
+
+%% 中文目录
+\renewcommand\tableofcontents{
+	\setstretch{1} % 设置行间距
+
+	\chapter*{\contentsname}
+
+	\ifxmu@compact
+		\markboth{\xmu@label@compactcontents}{\xmu@label@compactcontents} % 页眉
+		\addcontentsline{toc}{chapter}{\xmu@label@compactcontents} %将中文摘要加入到目录中
+	\else
+		\markboth{\xmu@label@contents}{\xmu@label@contents} % 页眉
+		\addcontentsline{toc}{chapter}{\xmu@label@contents} %将中文摘要加入到目录中
+	\fi
+
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily \encontentsname}{\sffamily \thepage}{chapter.\thechapter}} %将 Contents 加入到英文目录中
+
+	\addcontentsline{etoc}{chapter}{\sffamily \xmu@label@encontentszh} %将中文目录加入到英文目录中
+	% 	\addtocontents{etoc}{\protect\contentsline{chapter}{\sffamily \encontentsname}{\thepage}{chapter.\thechapter}} %将 Contents 加入到英文目录中
+
+	\makeatletter
+	\renewcommand{\@pnumwidth}{0em}
+	\makeatother
+	\@starttoc{toc}%
+	\clearpage
+}
+\setcounter{secnumdepth}{4}  % 目录显示的章节编号深度 (part 对应 -1)
+\setcounter{tocdepth}{2}     % 目录深度 (part 对应 -1)
+
+%% 添加英文目录条目的命令
+\newcommand\enchapter[1]{\addtocontents{etoc}
+	{\protect\contentsline{chapter}
+		{\protect\numberline{\sffamily Chapter \thechapter}#1}
+		% 		{\sffamily \thepage}{chapter.\thechapter}}
+		{\thepage}{chapter.\thechapter}}
+}
+\newcommand\ensection[1]{\addtocontents{etoc}
+	{\protect\contentsline{section}
+		{\protect\numberline{\sffamily \thesection}#1}
+		% 		{\sffamily \thepage}{section.\thesection}}
+		{\thepage}{section.\thesection}}
+}
+\newcommand\ensubsection[1]{\addcontentsline{etoc}{subsection}{\protect\numberline{\thesubsection}#1}}
+\newcommand\ensubsubsection[1]{\addcontentsline{etoc}{subsubsection}{\protect\numberline{\thesubsubsection}#1}}
+
+%% 英文目录
+\newcommand\entableofcontents{
+	\setstretch{1} % 设置行间距
+
+	\chapter*{\sffamily\encontentsname}
+
+	\pdfbookmark[0]{\encontentsname}{english_contents}
+
+	\markboth{\encontentsname}{\encontentsname} % 修改页眉文字
+
+	\addcontentsline{toc}{chapter}{\xmu@label@encontents} % 将英文目录加入到中文目录中
+	\addcontentsline{etoc}{chapter}{\sffamily \xmu@label@encontentsen} % 将英文目录加入到英文目录中
+
+	\makeatletter
+	\renewcommand{\@pnumwidth}{0em}
+	\makeatother
+
+	\@starttoc{etoc}%
+	\clearpage
+}

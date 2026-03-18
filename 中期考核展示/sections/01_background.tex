@@ -1,0 +1,96 @@
+% 第一部分：引言
+\section{引言}
+
+\begin{frame}{研究背景}
+    \begin{block}{\normalsize 运动想象脑机接口}
+        \begin{itemize}
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{核心任务}：通过分类脑电信号（EEG）中的事件相关去同步化（ERD）模式，识别用户的运动想象意图
+            \item[\textcolor{primaryblue}{\textbullet}] \textbf{关键挑战}：EEG 信号的非平稳性和个体差异性导致时间窗选择成为影响分类性能的关键因素
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.5em}
+
+    \begin{alertblock}{\normalsize 现有时间窗选择策略的局限}
+        \begin{itemize}
+            \item[\textcolor{accentred}{\textbullet}] \textbf{固定时间窗方法}：依赖先验知识选择固定时间段，难以适应个体差异
+            \item[\textcolor{accentred}{\textbullet}] \textbf{深度强化学习方法（DQN）}：通过神经网络近似 Q 函数实现自适应优化，但存在模型复杂度高、训练不稳定、可解释性差等问题
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{研究问题与核心主张}
+    \begin{block}{\normalsize 研究问题}
+        如何在运动想象时间窗优化任务中，在保持与 DQN 相当性能的同时，显著降低模型复杂度、提升系统稳定性和可解释性？
+    \end{block}
+
+    \vspace{0.5em}
+
+    \begin{exampleblock}{\normalsize 核心主张}
+        在运动想象时间窗优化这一特定任务中，\textbf{表格型 Q-Learning} 可以在保持与 DQN 相当性能的同时，显著降低模型复杂度，提升系统稳定性和可解释性，更适合在资源受限的嵌入式 BCI 设备中部署。
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{轻量化设计动机}
+    \begin{columns}[T]
+        \begin{column}{0.31\textwidth}
+            \begin{block}{\centering \normalsize 动机一：数据约束}
+                \begin{itemize}
+                    \item \textbf{数据稀缺性}：EEG 数据采集成本高，伦理审查严格
+                    \item \textbf{个体差异性}：跨被试泛化困难，需快速独立训练
+                    \item \textbf{样本效率}：有限样本下快速收敛
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.31\textwidth}
+            \begin{block}{\centering \normalsize 动机二：设备约束}
+                \begin{itemize}
+                    \item \textbf{硬件成本}：ARM Cortex-M 等低功耗嵌入式处理器
+                    \item \textbf{能耗约束}：电池供电，需最小化计算能耗
+                    \item \textbf{实时性}：毫秒级延迟完成时间窗选择
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.31\textwidth}
+            \begin{block}{\centering \normalsize 动机三：任务定位}
+                \begin{itemize}
+                    \item \textbf{辅助任务从属性}：时间窗选择服务于分类任务
+                    \item \textbf{计算预算分配}：资源优先分配给核心任务
+                    \item \textbf{性能 - 效率权衡}：遵循"足够好"原则
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5em}
+
+    \begin{exampleblock}{\normalsize 设计原则}
+        \centering 时间窗优化算法应在保证性能的前提下，最大化轻量化和高效性，以适应 BCI 技术的数据约束、部署约束和任务定位约束
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{研究意义}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{\normalsize \textcolor{primaryblue}{理论意义}}
+                \begin{itemize}
+                    \item \textbf{挑战深度强化学习的"必要性"假设}：证明简单方法在特定场景下可能是更优选择
+                    \item \textbf{提出 BCI 轻量化设计框架}：系统阐述轻量化设计的三方面动机和实现路径
+                    \item \textbf{界定表格型与深度方法的适用边界}：状态空间规模 $< 10^4$ 时表格型方法更优
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{\normalsize \textcolor{accentgreen}{实际意义}}
+                \begin{itemize}
+                    \item \textbf{适合嵌入式 BCI 设备}：内存占用 KB 级，无需深度学习框架
+                    \item \textbf{降低部署成本}：可移植至 ARM Cortex-M 等平台
+                    \item \textbf{提升系统响应性}：推理延迟降低 1000 倍，改善用户体验
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}

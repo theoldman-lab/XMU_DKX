@@ -1,0 +1,26 @@
+%%=============================================================================
+%% 字体配置
+%%=============================================================================
+
+% %% 设置中文字体 - 使用 Path 选项指定字体目录
+% \setCJKmainfont[Path=fonts/,AutoFakeSlant,AutoFakeBold=2]{SimSun.ttc}
+% \setCJKsansfont[Path=fonts/,AutoFakeSlant,AutoFakeBold=2]{SimHei.ttf}
+% \setCJKmonofont[Path=fonts/,AutoFakeSlant,AutoFakeBold=2]{SimKai.ttf}
+
+% %% 定义字体命令 - 使用 \CJKfamily 切换字体族
+% \DeclareRobustCommand{\songti}{\CJKfamily{zhsong}}
+% \DeclareRobustCommand{\heiti}{\CJKfamily{zhhei}}
+% \DeclareRobustCommand{\kaishu}{\CJKfamily{zhkai}}
+
+%% 修复黑体字重问题：让黑体的中字重使用粗体
+\xeCJKsetup{AutoFakeBold=true}
+
+%% 设置英文字体
+\RequirePackage{fontspec} % 字体配置
+\RequirePackage{mathptmx} % 替换数学字体为近似 Times 字体
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros} % 若要求统一为 Times New Roman，请修改为\setsansfont{Times New Roman}
+\setmonofont{TeX Gyre Cursor}
+
+%% 中文破折号
+\newcommand{\cndash}{\rule{0.0em}{0pt}\rule[0.35em]{1.4em}{0.05em}\rule{0.2em}{0pt}}

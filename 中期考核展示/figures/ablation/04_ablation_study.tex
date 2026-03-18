@@ -1,0 +1,10 @@
+\begin{tabular}{lccccccccccc}
+\toprule
+Method & Improvement & Accuracy (%) & Improvement (%) & Effect Size (d) & Kappa & F1 & Std Dev (%) & t_start (s) & t_end (s) & Window (s) \\
+\midrule
+Standard Q-Learning & Baseline & 62.68 ± 8.20 & +0.00 & 0.00 & 0.5019 ± 0.1114 & 0.6201 ± 0.0869 & 8.20 & 2.29 & 3.17 & 0.88 \\
+Double Q-Learning & + Double Q & 61.86 ± 8.42 & -1.31 & -0.10 & 0.4909 ± 0.1143 & 0.6103 ± 0.0901 & 8.42 & 2.17 & 3.22 & 1.05 \\
+Dueling Q-Learning & + Dueling & 62.74 ± 8.26 & +0.11 & 0.01 & 0.5029 ± 0.1122 & 0.6204 ± 0.0873 & 8.26 & 2.27 & 3.16 & 0.89 \\
+Dueling Double Q-Learning & + Both & 61.73 ± 9.11 & -1.52 & -0.11 & 0.4894 ± 0.1231 & 0.6094 ± 0.0952 & 9.11 & 2.17 & 3.28 & 1.11 \\
+\bottomrule
+\end{tabular}
