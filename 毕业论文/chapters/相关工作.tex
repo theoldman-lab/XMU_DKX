@@ -16,19 +16,19 @@
 \subsection{运动想象的神经生理基础}
 \label{subsec:neuro_basis}
 
-运动想象（Motor Imagery, MI）是指个体在头脑中模拟执行特定动作的心理过程\cite{pfurtscheller1999event}。当用户想象肢体运动时，大脑感觉运动皮层会产生事件相关去同步化（Event-Related Desynchronization, ERD）现象，即$\mu$频段（8--13 Hz）和$\beta$频段（13--30 Hz）的脑电功率显著降低\cite{pfurtscheller1999event}。ERD/ERS 现象的空间分布具有任务特异性，为基于运动想象的 BCI 分类提供了神经生理学基础\cite{pfurtscheller1999event, mcfarland1997spatial}。然而，ERD 的时间动态特性存在显著的个体间差异，使得固定时间窗策略难以适应所有被试\cite{zhang2019temporally, lotte2011regularizing}。
+运动想象（Motor Imagery, MI）是指个体在头脑中模拟执行特定动作的心理过程\cite{pfurtscheller1999event}。当用户想象肢体运动时，大脑感觉运动皮层会产生事件相关去同步化（Event-Related Desynchronization, ERD）现象，即$\mu$频段（8--13 Hz）和$\beta$频段（13--30 Hz）的脑电功率显著降低\cite{pfurtscheller1999event}。ERD/ERS 现象的空间分布具有任务特异性，为基于运动想象的 BCI 分类提供了神经生理学基础\cite{mcfarland1997spatial}。然而，ERD 的时间动态特性存在显著的个体间差异，使得固定时间窗策略难以适应所有被试\cite{lotte2011regularizing}。
 
 \subsection{BCI 系统的基本架构}
 \label{subsec:bci_architecture}
 
-典型的运动想象 BCI 系统包含数据采集、预处理、特征提取、特征选择、分类和后处理等模块\cite{tangermann2012review, lotte2007review}。其中，时间窗选择属于特征选择子任务，直接影响特征提取的质量和分类性能。
+典型的运动想象 BCI 系统包含数据采集、预处理、特征提取、特征选择、分类和后处理等模块\cite{tangermann2012review}。其中，时间窗选择属于特征选择子任务，直接影响特征提取的质量和分类性能。
 
 \section{EEG 特征提取与分类方法}
 \label{sec:feature_classification}
 
 在运动想象 BCI 系统中，特征提取和分类是核心模块\cite{lotte2007review}。本研究采用经典的 CSP-SVM 流水线作为基础分类器，以下介绍相关方法。
 
-\textbf{共空间模式（CSP）}。CSP 是运动想象 BCI 中最常用的特征提取方法\cite{blankertz2008optimizing, mcfarland1997spatial}。该方法通过寻找最优空间滤波器，使得两类任务的方差差异最大化。
+\textbf{共空间模式（CSP）}。CSP 是运动想象 BCI 中最常用的特征提取方法\cite{blankertz2008optimizing}。该方法通过寻找最优空间滤波器，使得两类任务的方差差异最大化。
 
 给定两类 EEG 数据，CSP 首先计算各类别的平均协方差矩阵：
 \begin{equation}
@@ -94,7 +94,7 @@ Zhang 等人（2019）提出时间约束稀疏组空间模式（Temporally Const
 \subsection{时间窗优化的评估标准}
 \label{subsec:evaluation_metrics}
 
-时间窗优化方法的评估通常采用以下指标\cite{tangermann2012review, lotte2007review}：
+时间窗优化方法的评估通常采用以下指标\cite{tangermann2012review}：
 
 （1）\textbf{分类准确率}。使用最优时间窗提取特征后，分类器在测试集上的准确率。这是最直接的评估指标。
 
@@ -116,16 +116,16 @@ Zhang 等人（2019）提出时间约束稀疏组空间模式（Temporally Const
 \subsection{强化学习基础}
 \label{subsec:rl_basics}
 
-强化学习（Reinforcement Learning, RL）是机器学习的一个分支，关注智能体如何通过与环境交互学习最优策略\cite{sutton2018reinforcement}。强化学习问题通常建模为马尔可夫决策过程（MDP），形式化定义为五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$\cite{sutton2018reinforcement}。
+强化学习（Reinforcement Learning, RL）是机器学习的一个分支，关注智能体如何通过与环境交互学习最优策略\cite{sutton2018reinforcement}。强化学习问题通常建模为马尔可夫决策过程（MDP），形式化定义为五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$。
 
-\textbf{Q-Learning} 是一种经典的无模型强化学习算法，由 Watkins 和 Dayan 于 1992 年提出\cite{watkins1992q}。Q-Learning 通过维护状态 - 动作价值表（Q 表），使用 TD 误差迭代更新 Q 值，在有限状态空间下保证收敛到最优策略\cite{watkins1992q}。由于其无需环境模型、实现简单且在低维状态空间下高效，Q-Learning 在资源受限场景中具有独特优势。
+\textbf{Q-Learning} 是一种经典的无模型强化学习算法，由 Watkins 和 Dayan 于 1992 年提出\cite{watkins1992q}。Q-Learning 通过维护状态 - 动作价值表（Q 表），使用 TD 误差迭代更新 Q 值，在有限状态空间下保证收敛到最优策略。由于其无需环境模型、实现简单且在低维状态空间下高效，Q-Learning 在资源受限场景中具有独特优势。
 
 \subsection{深度 Q 网络}
 \label{subsec:deep_q_network}
 
-深度 Q 网络（Deep Q-Network, DQN）是强化学习与深度学习结合的典型代表。Mnih 等人（2015）提出 DQN，使用深度神经网络近似 Q 函数\cite{mnih2015human}。DQN 通过最小化时序差分损失函数训练网络，并引入经验回放（Experience Replay）和目标网络（Target Network）两项关键技术提升训练稳定性\cite{mnih2015human}。DQN 在 Atari 游戏等复杂任务中取得了突破性进展，但其模型复杂、需要大量训练数据且可解释性较差。
+深度 Q 网络（Deep Q-Network, DQN）是强化学习与深度学习结合的典型代表。Mnih 等人（2015）提出 DQN，使用深度神经网络近似 Q 函数\cite{mnih2015human}。DQN 通过最小化时序差分损失函数训练网络，并引入经验回放（Experience Replay）和目标网络（Target Network）两项关键技术提升训练稳定性。DQN 在 Atari 游戏等复杂任务中取得了突破性进展，但其模型复杂、需要大量训练数据且可解释性较差。
 
-后续研究提出了多种 DQN 改进方法，包括 Double Q-Learning 解决 Q 值过高估计问题\cite{van2016deep, hasselt2010double}、Dueling 网络架构将 Q 函数分解为状态价值函数和优势函数\cite{wang2016dueling}，以及集成多种改进的 Rainbow 算法\cite{hessel2018rainbow}。然而，这些改进进一步增加了模型的复杂度和计算开销。
+后续研究提出了多种 DQN 改进方法，包括 Double Q-Learning 解决 Q 值过高估计问题\cite{van2016deep}、Dueling 网络架构将 Q 函数分解为状态价值函数和优势函数\cite{wang2016dueling}，以及集成多种改进的 Rainbow 算法\cite{hessel2018rainbow}。然而，这些改进进一步增加了模型的复杂度和计算开销。
 
 \subsection{强化学习在 BCI 中的应用}
 \label{subsec:rl_bci_applications}
@@ -136,9 +136,7 @@ Zhang 等人（2019）提出时间约束稀疏组空间模式（Temporally Const
 
 \textbf{多智能体特征选择}。Zhang 等人（2021）提出 MARS（Multiagent Reinforcement Learning for Spatial-spectral and Temporal feature selection）方法，使用多智能体强化学习联合优化 EEG 的空间、频谱和时间特征\cite{zhang2021mars}。MARS 在多个 BCI 数据集上取得了先进性能，但计算复杂度高，需要大量训练数据，且可解释性较差。
 
-\textbf{自适应 BCI 控制}。强化学习还被用于 BCI 系统的自适应控制，如调整分类器参数、选择最优 BCI 范式和优化神经反馈策略\cite{jayaram2016transfer}。
-
-\textbf{迁移学习}。Jayaram 等人（2016）综述了迁移学习在 BCI 中的应用，包括跨被试迁移、跨 session 迁移和跨任务迁移\cite{jayaram2016transfer}。迁移学习可减少新被试的校准时间，但面临领域偏移和负迁移等挑战。
+\textbf{自适应 BCI 控制}。强化学习还被用于 BCI 系统的自适应控制，如调整分类器参数、选择最优 BCI 范式和优化神经反馈策略\cite{jayaram2016transfer}。迁移学习可减少新被试的校准时间，但面临领域偏移和负迁移等挑战。
 
 \section{本章小结}
 本章系统回顾了运动想象 BCI 系统与时间窗优化方法的相关研究工作。首先，介绍了运动想象的神经生理基础（ERD/ERS 现象）与 BCI 系统的基本架构，阐明了时间窗选择对分类性能的重要影响。其次，阐述了 EEG 特征提取与分类的核心方法，重点讨论了 CSP-SVM 经典流水线及其理论特性。再次，系统梳理了时间窗优化方法的发展历程，从固定时间窗策略到基于贝叶斯优化、遗传算法的自适应方法，分析了各类技术的优势与局限。最后，回顾了强化学习基础理论及其在 BCI 领域的应用进展，特别是 MARS 等多智能体强化学习方法在特征选择中的成功实践。

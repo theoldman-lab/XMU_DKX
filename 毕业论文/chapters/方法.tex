@@ -18,7 +18,7 @@
 \subsection{马尔可夫决策过程建模}
 \label{subsec:mdp}
 
-本研究将时间窗优化问题建模为马尔可夫决策过程，形式化定义为五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$\cite{sutton2018reinforcement}。各组成部分定义如下：
+本研究将时间窗优化问题建模为马尔可夫决策过程，形式化定义为五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$。各组成部分定义如下：
 
 \textbf{状态空间 $\mathcal{S}$}。状态定义为离散化的时间窗参数对 $(t_{\text{start}}, t_{\text{end}})$，其中 $t_{\text{start}}$ 表示时间窗起始时刻，$t_{\text{end}}$ 表示时间窗终止时刻。时间参数离散化步长为 $\Delta t = 0.2$ 秒，为保证时间窗具有最小有效长度，约束条件为 $t_{\text{end}} - t_{\text{start}} \geq 0.5$ 秒。状态空间可形式化表示为：
 \begin{equation}
@@ -54,7 +54,7 @@
 \end{equation}
 确定性转移假设在本任务中成立，因为时间窗参数的调整是可预测的离散操作。
 
-\textbf{折扣因子 $\gamma$}。折扣因子 $\gamma \in [0, 1)$ 用于平衡即时奖励与长期奖励的权重\cite{sutton2018reinforcement}。本研究设 $\gamma = 0.95$，使智能体在关注即时分类性能的同时，兼顾长期累积奖励。
+\textbf{折扣因子 $\gamma$}。折扣因子 $\gamma \in [0, 1)$ 用于平衡即时奖励与长期奖励的权重。本研究设 $\gamma = 0.95$，使智能体在关注即时分类性能的同时，兼顾长期累积奖励。
 
 \subsection{优化目标}
 \label{subsec:objective}
@@ -86,7 +86,7 @@ Q^*(s, a) = \mathbb{E}_{s' \sim \mathcal{P}} \left[ r + \gamma \max_{a'} Q^*(s',
 \begin{equation}
 Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t) \right]
 \end{equation}
-其中，$\alpha \in (0, 1]$ 为学习率，控制新信息覆盖旧信息的程度；$r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a)$ 为 TD 目标，表示基于经验估计的真实 Q 值；方括号内的差值称为\textbf{TD 误差}，表示当前估计值与目标值之间的差距\cite{sutton2018reinforcement}。
+其中，$\alpha \in (0, 1]$ 为学习率，控制新信息覆盖旧信息的程度；$r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a)$ 为 TD 目标，表示基于经验估计的真实 Q 值；方括号内的差值称为\textbf{TD 误差}，表示当前估计值与目标值之间的差距。
 
 % \textbf{探索与利用的权衡}。Q-Learning 采用$\varepsilon$-贪婪策略平衡探索与利用：以概率 $1-\varepsilon$ 选择当前 Q 值最大的动作（利用），以概率 $\varepsilon$ 随机选择动作（探索）\cite{sutton2018reinforcement}。训练初期设置较高的$\varepsilon$ 值鼓励充分探索状态空间；随训练进行，$\varepsilon$ 按指数衰减，逐步转向利用已知的高 Q 值动作。
 
@@ -167,7 +167,7 @@ Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a} Q(s
 \end{algorithmic}
 \end{algorithm}
 
-\textbf{动作选择策略}。采用$\varepsilon$-贪婪策略平衡探索与利用：训练初期以高概率（$\varepsilon = 0.9$）随机选择动作，鼓励充分探索状态空间；随训练进行，$\varepsilon$ 按指数衰减（衰减率 0.995），逐步转向利用已知的高 Q 值动作；最终保持最小探索率（$\varepsilon = 0.05$），避免陷入局部最优\cite{sutton2018reinforcement}。参数选择依据如下：学习率$\alpha = 0.2$参考了经典 Q-Learning 文献的常用设置\cite{watkins1992q}；折扣因子$\gamma = 0.95$使智能体在关注即时性能的同时兼顾长期奖励；训练轮数$n_{\text{episodes}} = 100$的设定基于状态空间规模（136 个状态），100 轮 × 40 步 = 4000 步的总探索次数足以使 544 个状态 - 动作对被充分访问（平均每对约 7.4 次）。
+\textbf{动作选择策略}。采用$\varepsilon$-贪婪策略平衡探索与利用：训练初期以高概率（$\varepsilon = 0.9$）随机选择动作，鼓励充分探索状态空间；随训练进行，$\varepsilon$ 按指数衰减（衰减率 0.995），逐步转向利用已知的高 Q 值动作；最终保持最小探索率（$\varepsilon = 0.05$），避免陷入局部最优。参数选择依据如下：学习率$\alpha = 0.2$参考了经典 Q-Learning 文献的常用设置；折扣因子$\gamma = 0.95$使智能体在关注即时性能的同时兼顾长期奖励；训练轮数$n_{\text{episodes}} = 100$的设定基于状态空间规模（136 个状态），100 轮 × 40 步 = 4000 步的总探索次数足以使 544 个状态 - 动作对被充分访问（平均每对约 7.4 次）。
 
 \textbf{奖励计算}。核心步骤包括时间窗截取、CSP 特征提取和 SVM 交叉验证。需要说明的是，每次状态转移都需要进行一次完整的 5 折交叉验证，这在训练阶段（100 episodes × 40 steps = 4000 次评估）会产生较大的计算开销。然而，这属于\textbf{离线训练阶段}的一次性开销，而\textbf{在线推理阶段}仅需查表操作（时间复杂度$O(1)$），完全满足在线 BCI 系统的实时性要求。在工程实现中，可采用缓存机制避免重复计算相同时间窗的奖励值，进一步提升训练效率。
 
@@ -200,7 +200,7 @@ s^* = \arg\max_{s \in \mathcal{S}} \max_{a \in \mathcal{A}} Q(s, a)
 
 \textbf{充分探索}。$\varepsilon$-贪婪策略保证所有状态 - 动作对被充分访问。在 100 轮训练中，每轮 40 步，共 4000 步。544 个状态 - 动作对平均被访问约 7.4 次。考虑到$\varepsilon$-贪婪策略的特性，训练初期的高探索率（$\varepsilon = 0.9$）确保状态空间被广泛探索；随训练进行，Q 值引导的利用过程会使高价值区域被更频繁地访问，保证了关键状态 - 动作对的充分学习。
 
-\textbf{学习率设置}。本研究采用固定学习率 $\alpha = 0.2$，虽不严格满足 Robbins-Monro 条件，但在有限状态空间且充分探索的前提下，可近似收敛到最优解\cite{watkins1992q}。
+\textbf{学习率设置}。本研究采用固定学习率 $\alpha = 0.2$，虽不严格满足 Robbins-Monro 条件，但在有限状态空间且充分探索的前提下，可近似收敛到最优解。
 
 因此，本研究算法在理论上保证收敛到最优时间窗选择策略。
 
@@ -218,7 +218,7 @@ Q(s, a; \theta) \approx Q^*(s, a)
 \begin{equation}
 \mathcal{L}(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}} \left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^-) - Q(s, a; \theta) \right)^2 \right]
 \end{equation}
-其中，$\theta^-$ 为目标网络参数，$\mathcal{D}$ 为经验回放缓冲区\cite{mnih2015human}。
+其中，$\theta^-$ 为目标网络参数，$\mathcal{D}$ 为经验回放缓冲区。
 
 \subsection{理论特性对比}
 \label{subsec:theoretical_comparison}
@@ -261,7 +261,7 @@ Q(s, a; \theta) \approx Q^*(s, a)
 
 （1）\textbf{状态空间规模}。时间窗参数空间离散化后仅 136 个状态，Q 表总条目数为 544，在现代计算机内存中仅占用约 4 KB 空间（float64 精度）。使用神经网络进行函数近似不仅不必要，还会引入额外的复杂度和不稳定性。
 
-（2）\textbf{收敛性保证}。表格型 Q-Learning 在有限状态空间下具有严格的收敛性保证\cite{watkins1992q}，而 DQN 的收敛性仅依赖经验验证\cite{mnih2015human}。对于 BCI 等安全敏感应用，收敛性保证是重要考量因素。
+（2）\textbf{收敛性保证}。表格型 Q-Learning 在有限状态空间下具有严格的收敛性保证，而 DQN 的收敛性仅依赖经验验证。对于 BCI 等安全敏感应用，收敛性保证是重要考量因素。
 
 （3）\textbf{样本效率}。表格型方法直接在 Q 表上更新，单步即可传播奖励信号；DQN 需要通过批量梯度下降训练神经网络，样本效率较低。在 BCI 数据稀缺场景下，样本效率是关键指标。
 

@@ -18,7 +18,7 @@
 
 \textbf{硬件环境}。所有实验均在搭载 AMD Ryzen 7 6800H 处理器（8 核 16 线程，基准频率 3.2 GHz）和 NVIDIA GeForce RTX 2050 GPU（4 GB GDDR6 显存）的计算机上完成，系统内存为 16 GB。
 
-\textbf{软件环境}。操作系统为 Ubuntu 25.00（内核版本 6.17.0），深度学习计算后端为 CUDA 12.8 和 cuDNN 9.10.2.21。本研究使用 Python 3.13.7 编程语言实现，主要依赖以下开源库：PyTorch 2.10.0（深度学习框架）、NumPy 2.4.2（数值计算）、SciPy 1.17.1（科学计算）、scikit-learn 1.8.0（机器学习算法）、MNE-Python 1.11.0（脑电信号预处理）、Pandas 3.0.1（数据处理）以及 Matplotlib 3.10.8（数据可视化）。
+\textbf{软件环境}。操作系统为 Ubuntu 25.10（内核版本 6.17.0），深度学习计算后端为 CUDA 12.8 和 cuDNN 9.10.2.21。本研究使用 Python 3.13.7 编程语言实现，主要依赖以下开源库：PyTorch 2.10.0（深度学习框架）、NumPy 2.4.2（数值计算）、SciPy 1.17.1（科学计算）、scikit-learn 1.8.0（机器学习算法）、MNE-Python 1.11.0（脑电信号预处理）、Pandas 3.0.1（数据处理）以及 Matplotlib 3.10.8（数据可视化）。
 
 \textbf{可复现性设置}。为确保实验结果的可复现性，所有实验固定随机种子为 42，随机种子设置涵盖 NumPy 随机数生成器、Python 内置 random 模块、scikit-learn 交叉验证数据划分以及强化学习探索策略。每名被试独立进行 5 次重复实验（随机种子分别为 0--4），报告平均值 $\pm$ 标准差。
 
@@ -86,7 +86,7 @@ J(\mathbf{w}) = \frac{\mathbf{w}^{\text{T}} \Sigma_1 \mathbf{w}}{\mathbf{w}^{\te
 
 \textbf{重复实验设计}。每名被试独立进行 5 次重复实验（随机种子分别为 0--4），报告平均值 $\pm$ 标准差。随机种子影响 CSP 特征提取、SVM 训练、强化学习探索策略和交叉验证划分。
 
-\textbf{评价指标}。采用以下指标评估方法性能\cite{tangermann2012review, lotte2007review, cohen1960coefficient}：（1）准确率（Accuracy）：分类正确的试次占总试次的比例；（2）Cohen's Kappa：考虑随机猜测影响的分类一致性系数，对于 4 类任务，Kappa 系数能够更准确地反映实际性能；（3）F1 分数：精确率和召回率的调和平均，使用宏平均计算；（4）标准差（Std Dev）：跨被试性能波动的度量，反映方法稳定性；（5）变异系数（CV）：标准差与平均值的比值，用于消除量纲影响。
+\textbf{评价指标}。采用以下指标评估方法性能\cite{tangermann2012review, cohen1960coefficient}：（1）准确率（Accuracy）：分类正确的试次占总试次的比例；（2）Cohen's Kappa：考虑随机猜测影响的分类一致性系数，对于 4 类任务，Kappa 系数能够更准确地反映实际性能；（3）F1 分数：精确率和召回率的调和平均，使用宏平均计算；（4）标准差（Std Dev）：跨被试性能波动的度量，反映方法稳定性；（5）变异系数（CV）：标准差与平均值的比值，用于消除量纲影响。
 
 \textbf{统计检验}。采用配对样本 $t$ 检验（$\alpha = 0.05$）比较方法间差异的统计显著性，并计算 Cohen's $d$ 效应量\cite{field2013discovering, cohen1988statistical}。效应量解释：$|d| < 0.2$ 为小效应，$0.2 \leq |d| < 0.5$ 为中等效应，$|d| \geq 0.5$ 为大效应。
 
