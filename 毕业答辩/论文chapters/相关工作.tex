@@ -44,10 +44,7 @@
 \begin{equation}
 \mathbf{f} = \log \left( \text{var}(\mathbf{W} \mathbf{X}) \right)
 \end{equation}
-
-\textbf{多类别 CSP 扩展}。经典 CSP 仅适用于二分类场景，对于 $C$ 类运动想象任务（如本研究中的 4 类任务），需采用多类别扩展方法\cite{blankertz2008optimizing}。近似对角化（Approximate Diagonalization）是常用的多类别 CSP 方法，其核心思想是通过白化变换将多类别协方差矩阵同时对角化：首先计算各类别的平均协方差矩阵 $\bar{\mathbf{C}} = \frac{1}{C}\sum_{c=1}^{C} \mathbf{C}_c$；然后对 $\bar{\mathbf{C}}$ 进行特征分解构造白化矩阵 $\mathbf{W}$，使得 $\mathbf{W} \bar{\mathbf{C}} \mathbf{W}^{\top} = \mathbf{I}$；在白化空间中对第一类协方差矩阵进行特征分解，选择最大和最小特征值对应的特征向量作为空间滤波器。本研究使用 4 个 CSP 分量（2 对），提取滤波后信号的对数方差作为特征。
-
-CSP 计算高效，在二分类任务中表现优异，但对噪声敏感\cite{lotte2011regularizing}。
+CSP 计算高效，在二分类任务中表现优异，但对噪声敏感且仅适用于二分类场景\cite{lotte2011regularizing}。
 
 \textbf{支持向量机（SVM）}。SVM 通过寻找最大间隔超平面实现分类，在小样本场景下表现稳健\cite{lotte2007review}。线性 SVM 的目标函数为：
 \begin{equation}

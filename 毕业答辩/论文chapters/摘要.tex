@@ -6,12 +6,12 @@
 \begin{abstract}
 运动想象脑机接口（Motor Imagery BCI）通过解码运动想象诱发的事件相关去同步化（Event-Related Desynchronization, ERD）现象实现用户意图识别，其中时间窗的选择对分类性能具有关键影响。针对现有自适应时间窗优化方法（如深度强化学习）存在的模型复杂度高、训练不稳定、可解释性差等问题，本文提出一种基于表格型 Q-Learning 的轻量化时间窗优化方法。该方法将时间窗选择建模为马尔可夫决策过程，定义包含 136 个状态的有限状态空间，以 CSP-SVM 分类器的交叉验证准确率作为奖励函数，通过维护状态 - 动作价值表迭代优化时间窗参数。在 BCI Competition IV 2a 数据集上的实验结果表明，所提方法在九名被试上的平均分类准确率为 62.68\%，与深度 Q 网络（62.70\%）相当（$p = 0.981$），但在训练时间、推理延迟和内存占用方面分别降低了 3 倍、1000 倍和 125 倍。研究表明，在状态空间有限的 BCI 优化任务中，表格型强化学习可在保证性能的同时显著提升系统轻量化与可解释性，为便携式 BCI 设备的在线自适应提供了新思路。
 
-\keywords{脑机接口；运动想象；脑电信号；时间窗优化；强化学习；表格型 Q-Learning；轻量化设计}
+\keywords{脑机接口；运动想象；时间窗优化；强化学习；表格型 Q-Learning；轻量化设计}
 \end{abstract}
 
 % 英文摘要
 \begin{enabstract}
 Motor Imagery Brain-Computer Interface (MI-BCI) realizes user intention recognition by decoding the event-related desynchronization (ERD) phenomenon induced by motor imagery, where time window selection plays a critical role in classification performance. To address the limitations of existing adaptive time window optimization methods (such as deep reinforcement learning), including high model complexity, training instability, and poor interpretability, this thesis proposes a lightweight time window optimization method based on Tabular Q-Learning. The proposed method formulates time window selection as a Markov Decision Process with a finite state space of 136 states, uses the cross-validated accuracy of the CSP-SVM classifier as the reward function, and iteratively optimizes time window parameters by maintaining a state-action value table. Experimental results on the BCI Competition IV 2a dataset show that the proposed method achieves an average classification accuracy of 62.68\% across nine subjects, which is comparable to Deep Q-Network (62.70\%, $p = 0.981$), while reducing training time, inference latency, and memory consumption by 3-fold, 1000-fold, and 125-fold, respectively. The study demonstrates that in BCI optimization tasks with limited state space, tabular reinforcement learning can significantly improve system lightweight and interpretability while maintaining performance, providing a novel approach for online adaptation of portable BCI devices.
 
-\enkeywords{Brain-Computer Interface; Motor Imagery; EEG; Time Window Optimization; Reinforcement Learning; Tabular Q-Learning; Lightweight Design}
+\enkeywords{Brain-Computer Interface; Motor Imagery; Time Window Optimization; Reinforcement Learning; Tabular Q-Learning; Lightweight Design}
 \end{enabstract}

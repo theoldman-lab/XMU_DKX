@@ -1,0 +1,84 @@
+% ============================================================================
+% 厦门大学 Beamer 主题配置
+% ============================================================================
+
+\mode<presentation>
+
+% ---------- 主题颜色定义 ----------
+% 默认：厦大蓝，无背景
+\xdefinecolor{xmu}{RGB}{30 , 55 , 113}
+\xdefinecolor{xmu@orange}{RGB}{240,140,0}
+
+% ---------- 外部主题 ----------
+\useoutertheme[footline=authorinstitutetitle,subsection=false]{smoothbars}
+
+% ---------- 页脚模板 ----------
+\makeatletter
+\newcommand{\frameofframes}{/}
+\newcommand{\setframeofframes}[1]{\renewcommand{\frameofframes}{#1}}
+
+\defbeamertemplate*{footline}{xmu_beamer}{%
+	\leavevmode%
+	\hbox{%
+		\begin{beamercolorbox}[wd=.25\paperwidth,ht=2.5ex,dp=1.125ex,center]{title in head/foot}%
+			\usebeamerfont{author in head/foot}\insertshortauthor
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.25\paperwidth,ht=2.5ex,dp=1.125ex,center]{title in head/foot}%
+			\usebeamerfont{author in head/foot}\insertshortdate
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.435\paperwidth,ht=2.5ex,dp=1.125ex,center]{author in head/foot}%
+			\usebeamerfont{title in head/foot}\insertshorttitle
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=0.065\paperwidth,ht=2.5ex,dp=1.125ex,right]{author in head/foot}%
+			\insertframenumber{} / \inserttotalframenumber\hspace*{1ex}
+	\end{beamercolorbox}}%
+	\vskip0pt%
+}
+\makeatother
+
+% ---------- 内部主题 ----------
+\useinnertheme{circles}
+\usefonttheme{professionalfonts}
+
+% ---------- 颜色设置 ----------
+\setbeamercolor{footline}{bg=xmu}
+\setbeamercolor{frametitle}{bg=xmu,fg=white}
+\setbeamercolor{title}{bg=xmu}
+\setbeamertemplate{bibliography item}[text]
+\setbeamertemplate{caption}[numbered]
+
+\setbeamercolor{palette primary}{use=structure,fg=white,bg=structure.fg}
+\setbeamercolor{palette secondary}{use=structure,fg=white,bg=structure.fg!75!black}
+\setbeamercolor{palette tertiary}{use=structure,fg=white,bg=structure.fg!50!black}
+\setbeamercolor{palette quaternary}{fg=white,bg=structure.fg!50!black}
+\setbeamercolor{titlelike}{parent=palette primary}
+
+% Block 颜色
+\setbeamercolor{block title}{bg=xmu,fg=white}
+\setbeamercolor{block title alerted}{use=alerted text,fg=white,bg=xmu@orange}
+\setbeamercolor{block title example}{use={normal text,example text},bg=white,fg=xmu}
+
+% 其他颜色
+\setbeamercolor{fine separation line}{}
+\setbeamercolor{item projected}{fg=white}
+\setbeamercolor{palette sidebar primary}{use=normal text,fg=normal text.fg}
+\setbeamercolor{palette sidebar quaternary}{use=structure,fg=structure.fg}
+\setbeamercolor{palette sidebar secondary}{use=structure,fg=structure.fg}
+\setbeamercolor{palette sidebar tertiary}{use=normal text,fg=normal text.fg}
+\setbeamercolor{section in sidebar}{fg=brown}
+\setbeamercolor{section in sidebar shaded}{fg=grey}
+\setbeamercolor{separation line}{}
+\setbeamercolor{sidebar}{bg=xmu}
+\setbeamercolor{sidebar}{parent=palette primary}
+\setbeamercolor{structure}{fg=xmu}
+\setbeamercolor{subsection in sidebar}{fg=brown}
+\setbeamercolor{subsection in sidebar shaded}{fg=grey}
+
+% ---------- 章节开始时显示目录 ----------
+\AtBeginSection[]{
+	\begin{frame}
+		\tableofcontents[sectionstyle=show/shaded,subsectionstyle=hide,subsubsectionstyle=hide]
+	\end{frame}
+}
+
+\mode<all>

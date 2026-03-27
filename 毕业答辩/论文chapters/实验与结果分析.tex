@@ -51,7 +51,13 @@
 
 \textbf{CSP 特征提取}。本研究采用共空间模式（Common Spatial Pattern, CSP）方法提取空间滤波特征\cite{blankertz2008optimizing, mcfarland1997spatial}。CSP 通过优化空间滤波器，使不同类别信号的方差差异最大化，是运动想象 BCI 中最有效的特征提取方法之一。
 
-本研究使用的 BCI Competition IV 2a 数据集包含 4 类运动想象任务（左手、右手、脚、舌头）。对于 $C$ 类任务，采用近似对角化（Approximate Diagonalization）方法进行多类别 CSP 扩展\cite{blankertz2008optimizing}：首先计算各类别的平均协方差矩阵 $\bar{\mathbf{C}} = \frac{1}{C}\sum_{c=1}^{C} \mathbf{C}_c$，其中 $\mathbf{C}_c = \frac{1}{N_c}\sum_{i \in \text{class}_c} \frac{\mathbf{X}_i \mathbf{X}_i^{\text{T}}}{\text{tr}(\mathbf{X}_i \mathbf{X}_i^{\text{T}})}$；然后对 $\bar{\mathbf{C}}$ 进行特征分解构造白化矩阵 $\mathbf{W}$，使得 $\mathbf{W} \bar{\mathbf{C}} \mathbf{W}^{\text{T}} = \mathbf{I}$；在白化空间中对第一类协方差矩阵进行特征分解，选择最大和最小特征值对应的特征向量作为空间滤波器。本研究使用 4 个 CSP 分量（2 对），提取滤波后信号的对数方差作为特征向量：
+给定两类 EEG 信号 $\mathbf{X}_1$ 和 $\mathbf{X}_2$，CSP 的目标是找到空间滤波器 $\mathbf{w}$，使得以下目标函数最大化：
+\begin{equation}
+J(\mathbf{w}) = \frac{\mathbf{w}^{\text{T}} \Sigma_1 \mathbf{w}}{\mathbf{w}^{\text{T}} \Sigma_2 \mathbf{w}}
+\end{equation}
+其中，$\Sigma_1$ 和 $\Sigma_2$ 分别为两类信号的平均协方差矩阵。具体而言，$\Sigma_1 = \frac{1}{N_1}\sum_{i=1}^{N_1}\frac{X_iX_i^T}{trace(X_iX_i^T)}$，即对每一类的协方差矩阵进行归一化平均，以消除幅值差异的影响。该优化问题的解可通过广义特征值分解获得。
+
+本研究使用 4 个 CSP 分量（对应最大和最小的 2 个特征值），提取对数方差作为特征向量：
 \begin{equation}
 \mathbf{f}_i = \log \left( \text{var}(\mathbf{W} \mathbf{X}_i^{\text{window}}) \right)
 \end{equation}

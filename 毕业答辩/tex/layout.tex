@@ -1,0 +1,56 @@
+% ============================================================================
+% 版式配置文件 (layout.tex)
+% 包含：包导入、页面布局、列表样式、代码块设置等
+% ============================================================================
+
+% ---------- 基础宏包 ----------
+\usepackage{ctex, hyperref}
+\usepackage[T1]{fontenc}
+
+% 数学与表格宏包
+\usepackage{latexsym,amsmath,xcolor,multicol,booktabs,calligra}
+\usepackage{graphicx,listings,stackengine}
+\usepackage{caption, subfigure}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
+
+% PSTricks (可选，用于绘制图形示例)
+% 如果缺少 pstricks，请安装：texlive-pstricks 或 miktex-pstricks
+\IfFileExists{pstricks.sty}{\usepackage{pstricks}}{}
+
+% ---------- 厦门大学主题 ----------
+% 主题颜色：厦大蓝（默认）
+\xdefinecolor{xmu}{RGB}{30 , 55 , 113}
+
+\input{tex/XMUBeamer.sty}
+
+% ---------- 列表环境设置 ----------
+% 设置 itemize 的标记符号
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize subitem}{--}
+
+% ---------- 代码 listings 设置 ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries\color{red!0!green!0!blue!100},
+    emphstyle=\ttfamily\color{red!100!green!0!blue!0},
+    stringstyle=\color{red!0!green!100!blue!0},
+    numbers=left,
+    numberstyle=\small\color{gray!50},
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    frame=shadowbox,
+    breaklines=true,
+    breakatwhitespace=true,
+}
+
+% ---------- 图片路径设置 ----------
+\graphicspath{{pic/}{../pic/}}
+
+% ---------- 超链接设置 ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=xmu,
+    filecolor=magenta,
+    urlcolor=xmu,
+    citecolor=xmu,
+}
