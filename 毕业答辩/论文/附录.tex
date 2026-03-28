@@ -8,6 +8,41 @@
 
 本附录详细列出本研究中所有实验的超参数设置与软件环境配置，以确保研究的可复现性。所有超参数均在统一的配置文件中管理，便于调试和修改。
 
+\section{实验任务说明}
+\label{sec:task_description}
+\ensection{Experimental Task Description}
+
+本研究涉及\textbf{两个独立但相关的任务}：时间窗优化任务与分类预测任务。明确区分两者的边界与依赖关系，对于理解整体实验流程至关重要。现明确区分如表~\ref{tab:task_comparison} 所示。
+
+\begin{table}[H]
+\centering
+\caption{时间窗优化任务与分类预测任务对比}
+\label{tab:task_comparison}
+\begin{tabular}{lll}
+\hline
+\textbf{维度} & \textbf{任务一：时间窗优化} & \textbf{任务二：分类预测} \\
+\hline
+任务目标 & 找到最优时间窗参数 $(t_{\text{start}}^*, t_{\text{end}}^*)$ & 预测运动想象类别（左手/右手/脚/舌头） \\
+执行阶段 & 训练阶段（离线） & 测试阶段（在线/离线） \\
+输入 & EEG 训练数据（288 试次）+ 标签 & 新的 EEG 测试试次 \\
+输出 & 最优时间窗参数 & 类别标签预测 \\
+方法 & Q-Learning 强化学习 & CSP 特征提取 + SVM 分类 \\
+执行频率 & 每名被试仅需执行一次 & 每个测试试次都需要执行 \\
+耗时 & 约 30 秒--1 分钟 & 约 1 毫秒/试次 \\
+\hline
+\end{tabular}
+\end{table}
+
+时间窗优化是\textbf{辅助任务（预处理）}，分类预测是\textbf{主任务（最终目标）}。任务一（时间窗优化）的输出作为任务二（分类预测）的输入参数。任务一服务于任务二，是手段而非目的。
+
+\label{subsec:clarification}
+
+\textbf{混淆点一：都在用 EEG 数据}。澄清：训练阶段用训练集优化时间窗；测试阶段用测试集进行分类，数据来源不同。
+
+\textbf{混淆点二：都涉及分类准确率}。澄清：时间窗优化时用交叉验证准确率作为奖励；分类预测时用测试集准确率评估最终性能，目的不同。
+
+\textbf{混淆点三：代码中交织在一起}。澄清：代码实现时，时间窗优化的奖励计算需要调用分类流程，但逻辑上是两个独立任务。
+
 \section{EEG 数据参数}
 \label{sec:eeg_params}
 \ensection{EEG Data Parameters}
@@ -136,12 +171,14 @@ $t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
 \noindent\textbf{神经网络架构}：
 
 DQN 使用两层全连接网络近似 Q 函数：
-\begin{itemize}
-    \item \textbf{输入层}：状态维度（时间窗参数编码）
-    \item \textbf{隐藏层 1}：64 隐藏单元 + ReLU 激活
-    \item \textbf{隐藏层 2}：32 隐藏单元 + ReLU 激活
-    \item \textbf{输出层}：动作空间维度（4 维，对应 4 个动作的 Q 值）
-\end{itemize}
+
+\textbf{输入层}：状态维度（时间窗参数编码）；
+
+\textbf{隐藏层 1}：64 隐藏单元 + ReLU 激活；
+
+\textbf{隐藏层 2}：32 隐藏单元 + ReLU 激活；
+
+\textbf{输出层}：动作空间维度（4 维，对应 4 个动作的 Q 值）。
 
 \section{Dueling 架构参数}
 \label{sec:dueling_params}
@@ -204,8 +241,6 @@ CSP 分量数 & 4 \\
 \end{tabular}
 \end{table}
 
-
-
 \section{数据集信息}
 \label{sec:dataset_info}
 \ensection{Dataset Information}
@@ -233,7 +268,6 @@ EEG 通道数 & 22 通道 \\
 \end{tabular}
 \end{table}
 
-
 \section{源代码仓库}
 \label{sec:source_code}
 \ensection{Source Code Repository}
@@ -241,10 +275,8 @@ EEG 通道数 & 22 通道 \\
 本研究的全部源代码、实验配置及数据处理脚本均已开源，托管于 GitHub 平台。
 
 \subsection{仓库地址}
-\begin{itemize}
-    \item \textbf{GitHub 仓库}: \url{https://github.com/theoldman-lab/XMU_DKX.git}
-\end{itemize}
 
+\textbf{GitHub 仓库}：\url{https://github.com/theoldman-lab/XMU_DKX.git}
 
 \subsection{仓库截图}
 
@@ -255,3 +287,4 @@ EEG 通道数 & 22 通道 \\
 \label{fig:github_repo}
 \end{figure}
 
+\end{document}

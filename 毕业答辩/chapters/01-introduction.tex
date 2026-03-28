@@ -1,228 +1,261 @@
 % ============================================================================
-% 第一章：研究背景与意义
+% 第一章：引言（压缩版）
+% 优化说明：使用\small 字体，减小间距，合并页面
+\section{引言}
 % ============================================================================
 
-\section{研究背景}
+{\small
+
+\subsection{研究背景}
 
 \begin{frame}{研究背景}
-    \begin{block}{运动想象脑机接口 (MI-BCI)}
-        \begin{itemize}
-            \item 通过解码运动想象诱发的 ERD 现象实现用户意图识别
-            \item 为运动功能障碍患者提供重建运动功能的可能性
-            \item 无需外部刺激、用户可自主控制
-        \end{itemize}
+    \begin{block}{BCI 技术发展\cite{vidal1973toward,lotte2018review,tangermann2012review}}
+        \begin{center}
+        \begin{tabular}{c@{$\rightarrow$}c@{$\rightarrow$}c}
+            \textbf{1970s} & \textbf{2000s} & \textbf{2010s--} \\
+            Vidal 提出概念 & 三大范式确立 & 临床应用探索
+        \end{tabular}
+        \end{center}
     \end{block}
-    
-    \vspace{0.5cm}
-    \begin{alertblock}{关键问题：时间窗选择}
-        \begin{itemize}
-            \item ERD 动态特性存在显著的\textbf{个体间差异}
-            \item 时间窗长度需在\textbf{信息完整性}与\textbf{噪声抑制}之间平衡
-            \item 在线 BCI 系统需要\textbf{毫秒级响应}
-        \end{itemize}
-    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{columns}[T]
+        \column{0.32\textwidth}
+        \begin{block}{\centering 主动式 (MI)}
+            \footnotesize
+            用户自主产生\\
+            \textcolor{green!60!black}{$\checkmark$ 无需刺激}
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{\centering 反应式 (P300)}
+            \footnotesize
+            依赖奇偶刺激\\
+            \textcolor{red}{$\times$ 易疲劳}
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{\centering 稳态诱发 (SSVEP)}
+            \footnotesize
+            需持续视觉刺激\\
+            \textcolor{red}{$\times$ 光敏风险}
+        \end{block}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{时间窗选择的重要性}
-    \begin{center}
-    \begin{tabular}{|c|c|c|}
-        \hline
-        \textbf{因素} & \textbf{影响} & \textbf{挑战} \\
-        \hline
-        个体差异 & ERD 模式不同 & 固定窗口无法适应 \\
-        \hline
-        信噪比 & 窗口长度影响 & 需要权衡 \\
-        \hline
-        实时性 & 响应延迟 & 在线决策要求 \\
-        \hline
-    \end{tabular}
-    \end{center}
-    
-    \vspace{0.5cm}
-    \begin{exampleblock}{结论}
-        自适应时间窗优化是提升 MI-BCI 分类性能的关键途径
+\begin{frame}{运动想象 BCI 与时间窗挑战}
+    \begin{columns}[T]
+        \column{0.4\textwidth}
+        \begin{block}{ERD 现象\cite{pfurtscheller1999event}}
+            \begin{itemize}
+                \item \textbf{机制}：运动想象激活感觉运动皮层
+                \item \textbf{频段}：$\mu$ (8--13 Hz)、$\beta$ (13--30 Hz) 功率抑制
+                \item \textbf{任务}：左手、右手、双脚、舌头
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{时间窗选择挑战}
+            \renewcommand{\arraystretch}{1.2}
+            \begin{tabular}{l|l}
+                \hline
+                \textbf{因素} & \textbf{挑战} \\
+                \hline
+                个体差异 & 固定窗无法适应 \\
+                信噪比 & 长度需权衡 \\
+                实时性 & 起止点影响延迟 \\
+                \hline
+            \end{tabular}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{评测基准}
+        \textbf{BCI Competition IV 2a}\cite{tangermann2012review}：4 类任务 $\times$ 9 名被试
     \end{exampleblock}
 \end{frame}
 
 % ============================================================================
 % 问题提出
 % ============================================================================
-\section{问题提出}
+\subsection{问题提出}
 
-\begin{frame}{现有方法及其局限}
-    \begin{table}[h]
-        \centering
-        \footnotesize
-        \begin{tabular}{l|c|c|c}
-            \hline
-            \textbf{方法} & \textbf{计算开销} & \textbf{适应性} & \textbf{可解释性} \\
-            \hline
-            固定时间窗 & 低 & 差 & 好 \\
-            滑动窗 & 中 & 中 & 中 \\
-            贝叶斯优化 & 高 & 中 & 中 \\
-            深度强化学习 & 很高 & 好 & 差 \\
-            \hline
-        \end{tabular}
-    \end{table}
-    
-    \vspace{0.5cm}
-    \begin{alertblock}{深度强化学习的困境}
-        \begin{itemize}
-            \item 百万级参数 $\rightarrow$ 难以嵌入式部署
-            \item 训练不稳定 $\rightarrow$ 对超参数敏感
-            \item 黑盒决策 $\rightarrow$ 难以调试分析
-            \item 数据需求大 $\rightarrow$ 与 BCI 数据稀缺矛盾
-        \end{itemize}
+\begin{frame}{问题提出}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{BCI 系统约束\cite{lotte2007review,lotte2011regularizing}}
+            \begin{itemize}
+                \item \textbf{数据稀缺}：50--100 试次校准
+                \item \textbf{资源受限}：KB--MB 级内存
+                \item \textbf{延迟要求}：毫秒级响应
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{时间窗方法对比\cite{mcfarland1997spatial,yang2015time,chen2019dynamic,zhang2021mars}}
+            \renewcommand{\arraystretch}{1.1}
+            \begin{tabular}{l|l}
+                \hline
+                \textbf{方法} & \textbf{局限} \\
+                \hline
+                固定时间窗 & 无法适应个体差异 \\
+                滑动窗 & 计算复杂度线性增长 \\
+                贝叶斯优化 & 高维参数效率低 \\
+                深度强化学习 & 百万参数、黑盒 \\
+                \hline
+            \end{tabular}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{核心矛盾}
+        DQN 的资源需求 \textbf{vs} BCI 系统受限现实
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{核心研究问题}
+\begin{frame}{研究问题与方案}
     \begin{alertblock}{研究问题}
-        在运动想象时间窗优化任务中，是否存在一种方法，能够在保持与深度强化学习相当性能的同时，显著降低模型复杂度、提升训练稳定性和可解释性？
+        \centering
+        是否存在一种方法，能在保持与 DQN 相当性能的同时，\\
+        \textbf{降低模型复杂度}、\textbf{提升稳定性}和\textbf{可解释性}？
     \end{alertblock}
-    
-    \vspace{0.5cm}
-    \begin{exampleblock}{核心矛盾}
-        \begin{center}
-        深度强化学习对大量训练数据和高计算资源的依赖 \\
-        \vspace{0.3cm}
-        \Large\textbf{vs} \\
-        \vspace{0.3cm}
-        BCI 系统中数据稀缺、设备资源受限的现实
-        \end{center}
-    \end{exampleblock}
+
+    \vspace{0.2cm}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{核心洞察}
+            时间窗优化任务的状态空间是\textbf{有限的}：
+            \centering\large\textbf{136 个离散状态}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{研究方案}
+            使用\textbf{表格型 Q-Learning}\cite{watkins1992q}替代 DQN
+            \begin{itemize}
+                \item 维护 Q 表，无需函数近似
+                \item $\varepsilon$-贪婪策略
+                \item CSP-SVM 准确率为奖励
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
 \end{frame}
 
 % ============================================================================
 % 研究内容
 % ============================================================================
-\section{研究内容}
+\subsection{研究内容}
 
-\begin{frame}{研究思路}
-    \begin{block}{核心洞察}
-        时间窗优化任务的状态空间是\textbf{有限的}（136 个状态）
-    \end{block}
-    
-    \vspace{0.5cm}
-    \begin{exampleblock}{关键问题}
-        在状态空间有限的特定任务中，是否真的需要复杂的深度神经网络？
-    \end{exampleblock}
-    
-    \vspace{0.5cm}
-    \begin{alertblock}{本研究方案}
-        使用\textbf{表格型 Q-Learning}替代深度 Q 网络
-        \begin{itemize}
-            \item 维护状态 - 动作价值表（Q 表）
-            \item 无需函数近似
-            \item 理论收敛保证
-        \end{itemize}
-    \end{alertblock}
-\end{frame}
+\begin{frame}{研究内容与技术路线}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{研究内容\cite{sutton2018reinforcement}}
+            \begin{enumerate}
+                \item \textbf{问题形式化}：MDP 建模
+                \item \textbf{算法设计}：表格型 Q-Learning
+                \item \textbf{理论分析}：收敛性、复杂度
+                \item \textbf{实验验证}：BCI Competition IV 2a
+            \end{enumerate}
+        \end{block}
 
-\begin{frame}{研究目标}
-    \begin{block}{总体目标}
-        设计一种轻量化的时间窗优化方法，在保持性能的同时满足便携式 BCI 设备的资源约束
-    \end{block}
-    
-    \vspace{0.5cm}
-    \begin{itemize}
-        \item \textbf{性能目标}: 与深度强化学习方法相当（准确率差异不显著）
-        \item \textbf{效率目标}: 显著降低计算资源需求（训练时间、推理延迟、内存占用）
-        \item \textbf{可解释性目标}: 决策过程可追踪、可分析
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{技术路线}
-    \begin{enumerate}
-        \item \textbf{问题建模}
-        \begin{itemize}
-            \item 将时间窗优化形式化为马尔可夫决策过程 (MDP)
-            \item 定义状态空间、动作空间、奖励函数
-        \end{itemize}
-        
-        \item \textbf{算法设计}
-        \begin{itemize}
-            \item 设计表格型 Q-Learning 算法
-            \item 采用$\varepsilon$-贪婪策略平衡探索与利用
-        \end{itemize}
-        
-        \item \textbf{实验验证}
-        \begin{itemize}
-            \item 在 BCI Competition IV 2a 数据集上评估
-            \item 与多种基线方法进行对比分析
-        \end{itemize}
-    \end{enumerate}
+        \column{0.48\textwidth}
+        \begin{block}{技术路线}
+            \centering
+            \resizebox{0.9\linewidth}{!}{%
+            \begin{tikzpicture}[
+                node distance=0.4cm,
+                block/.style={rectangle, draw, rounded corners, minimum width=1.6cm, minimum height=0.5cm, align=center}
+            ]
+            \node[block, fill=blue!10] (mdp) {MDP 建模};
+            \node[block, fill=green!10, right=of mdp] (algo) {算法设计};
+            \node[block, fill=yellow!10, right=of algo] (theory) {理论分析};
+            \node[block, fill=red!10, right=of theory] (exp) {实验验证};
+            \draw[->, thick] (mdp) -- (algo);
+            \draw[->, thick] (algo) -- (theory);
+            \draw[->, thick] (theory) -- (exp);
+            \end{tikzpicture}%
+            }
+            
+            \vspace{0.2cm}
+            \footnotesize
+            EEG 信号 $\rightarrow$ Q-Learning 优化 $\rightarrow$ 最优时间窗
+        \end{block}
+    \end{columns}
 \end{frame}
 
 % ============================================================================
-% 主要贡献
+% 研究意义
 % ============================================================================
-\section{主要贡献}
+\subsection{研究意义}
 
-\begin{frame}{主要贡献}
-    \begin{enumerate}
-        \item \textbf{轻量化设计范式}
-        \begin{itemize}
-            \item 将深度强化学习简化为表格型强化学习
-            \item 544 个参数 vs DQN 百万级参数
-        \end{itemize}
-        
-        \item \textbf{算法选择准则}
-        \begin{itemize}
-            \item 状态空间 $< 10^4$ 时，表格型方法优于 DQN
-            \item 收敛性保证、样本效率高、可解释性强
-        \end{itemize}
-        
-        \item \textbf{实验验证}
-        \begin{itemize}
-            \item BCI Competition IV 2a 数据集
-            \item 性能与 DQN 相当 ($p = 0.981$)
-            \item 训练加速 3 倍、推理延迟降低 1000 倍
-        \end{itemize}
-    \end{enumerate}
-\end{frame}
+\begin{frame}{研究意义}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{理论贡献}
+            \begin{itemize}
+                \item \textbf{算法选择准则}：状态空间 $< 10^4$ 时表格型优于 DQN
+                \item \textbf{经典方法再发现}：挑战"深度模型必然优于浅层"认知
+            \end{itemize}
+        \end{block}
 
-\begin{frame}{核心实验结果}
-    \begin{table}[h]
+        \column{0.48\textwidth}
+        \begin{block}{实践价值}
+            \begin{itemize}
+                \item \textbf{轻量化 BCI}：针对便携式设备
+                \item \textbf{可解释性}：Q 值表可可视化分析
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{实验结果}
         \centering
+        \renewcommand{\arraystretch}{1.2}
         \begin{tabular}{lcc}
             \hline
             \textbf{指标} & \textbf{Table Q} & \textbf{DQN} \\
             \hline
             准确率 & 62.68\% & 62.70\% \\
-            统计检验 & \multicolumn{2}{c}{$p = 0.981$} \\
-            训练时间 & \textbf{快 3 倍} & 慢 \\
-            推理延迟 & \textbf{低 1000 倍} & 高 \\
-            内存占用 & \textbf{低 125 倍} & 高 \\
-            收敛性 & \checkmark 理论保证 & $\times$ 无保证 \\
-            可解释性 & \checkmark 完全可解释 & $\times$ 黑盒 \\
+            训练时间 & \textbf{快 3 倍} & 基准 \\
+            推理延迟 & \textbf{低 1000 倍} & 基准 \\
+            内存占用 & \textbf{低 125 倍} & 基准 \\
             \hline
         \end{tabular}
-    \end{table}
-    
-    \vspace{0.5cm}
-    \begin{alertblock}{核心结论}
-        表格型 Q-Learning 在保持与 DQN 相当性能的同时，显著降低了计算资源需求
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{本章小结}
-    \begin{block}{研究背景}
-        时间窗选择是 MI-BCI 性能的关键影响因素
-    \end{block}
-    
-    \vspace{0.3cm}
-    \begin{block}{核心问题}
-        如何在保持性能的前提下实现轻量化、可解释的时间窗优化
-    \end{block}
-    
-    \vspace{0.3cm}
-    \begin{block}{研究方案}
-        使用表格型 Q-Learning 替代深度 Q 网络
-    \end{block}
-    
-    \vspace{0.3cm}
-    \begin{block}{主要贡献}
-        轻量化设计范式、算法选择准则、实验验证
-    \end{block}
+% ============================================================================
+% 论文结构
+% ============================================================================
+\subsection{论文结构}
+
+\begin{frame}{论文结构与本章小结}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{论文结构}
+            \renewcommand{\arraystretch}{1.2}
+            \begin{tabular}{cl}
+                \hline
+                \textbf{章节} & \textbf{内容} \\
+                \hline
+                第 1 章 & 背景、问题、内容、意义 \\
+                第 2 章 & 特征提取、分类、优化 \\
+                第 3 章 & 形式化、设计、分析 \\
+                第 4 章 & 设置、对比、结果 \\
+                第 5 章 & 总结、局限、展望 \\
+                \hline
+            \end{tabular}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{本章小结}
+            \begin{itemize}
+                \item 时间窗选择是 MI-BCI 性能关键
+                \item 核心问题：轻量化、可解释优化
+                \item 方案：表格型 Q-Learning (136 状态)
+                \item 贡献：轻量化范式、算法准则
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
 \end{frame}
+
+} % end of \small

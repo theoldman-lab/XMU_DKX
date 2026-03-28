@@ -88,10 +88,6 @@ Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a} Q(s
 \end{equation}
 其中，$\alpha \in (0, 1]$ 为学习率，控制新信息覆盖旧信息的程度；$r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a)$ 为 TD 目标，表示基于经验估计的真实 Q 值；方括号内的差值称为\textbf{TD 误差}，表示当前估计值与目标值之间的差距。
 
-% \textbf{探索与利用的权衡}。Q-Learning 采用$\varepsilon$-贪婪策略平衡探索与利用：以概率 $1-\varepsilon$ 选择当前 Q 值最大的动作（利用），以概率 $\varepsilon$ 随机选择动作（探索）\cite{sutton2018reinforcement}。训练初期设置较高的$\varepsilon$ 值鼓励充分探索状态空间；随训练进行，$\varepsilon$ 按指数衰减，逐步转向利用已知的高 Q 值动作。
-
-% \textbf{收敛性保证}。Watkins 和 Dayan（1992）证明了 Q-Learning 在有限马尔可夫决策过程下的收敛性\cite{watkins1992q}：若所有状态 - 动作对被无限次访问，且学习率序列满足 Robbins-Monro 条件，则 Q 值序列以概率 1 收敛到最优动作价值函数 $Q^*$。
-
 \subsection{算法设计}
 \label{subsec:design}
 

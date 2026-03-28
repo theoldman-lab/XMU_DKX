@@ -1,0 +1,351 @@
+% ============================================================================
+% 第三章：基于表格型 Q-Learning 的时间窗优化方法
+% 优化说明：修复页面超出问题，添加奖励计算和预测流程
+\section{方法}
+% ============================================================================
+
+{\small
+
+\subsection{问题形式化}
+
+\begin{frame}{问题形式化：MDP 建模}
+    \begin{block}{马尔可夫决策过程五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$}
+        \begin{itemize}
+            \item \textbf{状态空间 $\mathcal{S}$}\cite{blankertz2008optimizing}：$(t_{\text{start}}, t_{\text{end}})$
+            \begin{itemize}
+                \item 步长$\Delta t = 0.2$秒，$t_{\text{end}} - t_{\text{start}} \geq 0.5$秒
+                \item 有效状态：\textbf{136 个}
+            \end{itemize}
+            \item \textbf{动作空间 $\mathcal{A}$}：$\{a_0, a_1, a_2, a_3\}$（边界调整）
+            \item \textbf{奖励函数 $\mathcal{R}$}：$r(s, a) = \text{Accuracy}_{\text{CV}}(s')$
+            \item \textbf{状态转移 $\mathcal{P}$}：确定性过程
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{优化目标}
+        \centering
+        $\pi^* = \arg\max_{\pi} \mathbb{E}_{\pi} \left[ \sum_{t=0}^{\infty} \gamma^t r_t \right]$
+    \end{alertblock}
+\end{frame}
+
+% ============================================================================
+% 表格型 Q-Learning 算法
+% ============================================================================
+\subsection{表格型 Q-Learning 算法}
+
+\begin{frame}{Q-Learning 算法原理}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Q 函数定义\cite{watkins1992q}}
+            \footnotesize
+            $Q(s, a)$ 表示状态$s$执行动作$a$后的期望累积奖励：
+            \begin{equation*}
+            \footnotesize
+            Q(s, a) = \mathbb{E}\left[\sum_{t=0}^{\infty} \gamma^t r_t\right]
+            \end{equation*}
+            最优 Q 函数满足 Bellman 方程：
+            \begin{equation*}
+            \footnotesize
+            Q^*(s, a) = \mathbb{E}\left[ r + \gamma \max_{a'} Q^*(s', a') \right]
+            \end{equation*}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{时序差分更新}
+            \footnotesize
+            Q 值更新规则：
+            \begin{equation*}
+            \footnotesize
+            Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \cdot \text{TD}_t
+            \end{equation*}
+            其中 TD 误差：
+            \begin{equation*}
+            \footnotesize
+            \text{TD}_t = r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t)
+            \end{equation*}
+        \end{block}
+    \end{columns}
+
+    \begin{exampleblock}{核心思想}
+        \footnotesize
+        \begin{itemize}
+            \item 维护 Q 表，无需函数近似
+            \item 通过 TD 误差迭代更新，自举学习
+            \item $\varepsilon$-贪婪策略平衡探索与利用
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Q-Learning 时间窗优化算法伪代码}
+    \begin{algorithm}[H]
+    \scriptsize
+    \begin{algorithmic}[1]
+    \REQUIRE EEG 训练数据$\mathcal{D}$，状态空间$\mathcal{S}$，动作空间$\mathcal{A}$
+    \ENSURE 最优时间窗$(t_{\text{start}}^*, t_{\text{end}}^*)$
+
+    \STATE 初始化$Q[s, a] \leftarrow 0, \forall s, a$
+    \FOR{$\text{episode} = 1$ \TO $N$}
+        \STATE 随机初始化状态$s_0$
+        \FOR{$t = 0$ \TO $T-1$}
+            \IF{$\text{random} < \varepsilon$}
+                \STATE 随机选择动作$a_t$
+            \ELSE
+                \STATE $a_t \leftarrow \arg\max_a Q[s_t, a]$
+            \ENDIF
+            \STATE 执行动作：$s_{t+1} \leftarrow f(s_t, a_t)$
+            \STATE 计算奖励：$r_t \leftarrow \text{EvaluateWindow}(s_{t+1}, \mathcal{D})$
+            \STATE 更新 Q 值：$Q[s_t, a_t] \leftarrow Q[s_t, a_t] + \alpha[r_t + \gamma\max_a Q[s_{t+1}, a] - Q[s_t, a_t]]$
+            \STATE $s_t \leftarrow s_{t+1}$
+        \ENDFOR
+        \STATE $\varepsilon \leftarrow \max(\varepsilon_{\text{min}}, \varepsilon \times \text{decay})$
+    \ENDFOR
+    \STATE \RETURN $s^* = \arg\max_s \max_a Q[s, a]$
+    \end{algorithmic}
+    \end{algorithm}
+\end{frame}
+
+\begin{frame}{算法流程图}
+    \begin{center}
+    \resizebox{1.0\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.4cm,
+        block/.style={rectangle, draw, rounded corners, minimum width=2cm, minimum height=0.45cm, align=center},
+        decision/.style={diamond, draw, aspect=2, minimum width=1.8cm, minimum height=0.45cm, align=center},
+        arrow/.style={->, thick}
+    ]
+    % 第一行
+    \node[block, fill=blue!10] (init) {初始化 Q 表};
+    \node[block, fill=green!10, right=of init] (episode) {开始 Episode};
+    \node[block, fill=yellow!10, right=of episode] (action) {$\varepsilon$-贪婪\\选择动作};
+    
+    % 第二行
+    \node[block, fill=orange!10, below=of action] (transition) {状态转移};
+    \node[block, fill=red!10, left=of transition] (reward) {计算奖励};
+    \node[block, fill=purple!10, right=of transition] (update) {更新 Q 值};
+    
+    % 第三行
+    \node[decision, below=of transition] (check) {达到最大\\步数？};
+    \node[block, fill=gray!10, below=of check] (end) {返回最优$s^*$};
+    
+    % 连接箭头
+    \draw[arrow] (init) -- (episode);
+    \draw[arrow] (episode) -- (action);
+    \draw[arrow] (action) -- (transition);
+    \draw[arrow] (transition) -- (reward);
+    \draw[arrow] (transition) -- (update);
+    \draw[arrow] (update) |- (check);
+    \draw[arrow] (reward) |- (check);
+    \draw[arrow] (check.east) -- ++(0.6,0) |- (action);
+    \draw[arrow] (check) -- (end);
+    \end{tikzpicture}%
+    }
+    \end{center}
+\end{frame}
+
+% ============================================================================
+% 奖励计算与预测
+% ============================================================================
+\subsection{奖励计算与预测}
+
+\begin{frame}{奖励计算：EvaluateWindow}
+    \begin{block}{输入与输出}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{输入}：状态$s = (t_{\text{start}}, t_{\text{end}})$，EEG 训练数据$\mathcal{D}$
+            \item \textbf{输出}：5 折交叉验证准确率$\text{acc}$
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{计算步骤\cite{blankertz2008optimizing}}
+        \footnotesize
+        \begin{enumerate}
+            \item \textbf{截取时间窗}：$\mathbf{X}_i^{\text{window}} \leftarrow \mathbf{X}_i[:, t_{\text{start}}:t_{\text{end}}]$
+            \item \textbf{多类别 CSP 特征提取}：
+            \begin{itemize}
+                \item 计算各类别协方差矩阵：$\mathbf{C}_c = \frac{1}{N_c}\sum_{i \in \text{class}_c} \mathbf{X}_i^{\text{window}} (\mathbf{X}_i^{\text{window}})^\top$
+                \item 近似对角化：$\mathbf{C}_1 \mathbf{w} = \lambda (\mathbf{C}_1 + \mathbf{C}_2 + \mathbf{C}_3 + \mathbf{C}_4) \mathbf{w}$
+                \item 构建空间滤波器$\mathbf{W}$（4 个分量）
+            \end{itemize}
+            \item \textbf{对数方差特征}：$\mathbf{f}_i = \log(\text{var}(\mathbf{W} \mathbf{X}_i^{\text{window}}))$
+            \item \textbf{Z-score 标准化}：$\mathbf{f}_i \leftarrow (\mathbf{f}_i - \mu_f) / \sigma_f$
+            \item \textbf{5 折交叉验证}：训练线性 SVM（4 类分类），计算平均准确率
+        \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{预测流程}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{训练阶段（离线）}
+            \footnotesize
+            \begin{enumerate}
+                \item 初始化 Q 表
+                \item 执行 Q-Learning 算法
+                \item 每步调用 EvaluateWindow
+                \item 迭代更新 Q 值
+                \item 输出最优时间窗$s^*$
+            \end{enumerate}
+            
+            \vspace{0.2cm}
+            \textbf{计算开销}：4000 次奖励评估（一次性）
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{推理阶段（在线）}
+            \footnotesize
+            \begin{enumerate}
+                \item 加载训练好的 Q 表
+                \item 查表找到最优状态：
+                \begin{equation*}
+                \footnotesize
+                s^* = \arg\max_{s} \max_{a} Q(s, a)
+                \end{equation*}
+                \item 使用$s^*$截取 EEG 信号
+                \item CSP-SVM 分类预测
+            \end{enumerate}
+            
+            \vspace{0.2cm}
+            \textbf{时间复杂度}：$O(544) \approx O(1)$
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{效率对比}
+        \footnotesize
+        \begin{tabular}{l|c|c}
+            \hline
+            \textbf{阶段} & \textbf{表格型 Q-Learning} & \textbf{DQN}\cite{mnih2015human} \\
+            \hline
+            训练 & 4000 次评估 & 百万级参数训练 \\
+            推理 & $O(1)$查表 & $O(\text{网络前向传播})$ \\
+            \hline
+        \end{tabular}
+    \end{exampleblock}
+\end{frame}
+
+% ============================================================================
+% 收敛性分析
+% ============================================================================
+\subsection{收敛性分析}
+
+\begin{frame}{收敛性保证}
+    \begin{block}{Q-Learning 收敛性定理\cite{watkins1992q}}
+        \footnotesize
+        对于有限 MDP，若满足：
+        \begin{itemize}
+            \item 所有状态 - 动作对被无限次访问
+            \item 学习率序列满足 Robbins-Monro 条件
+            \item 采用适当探索策略（如$\varepsilon$-贪婪）
+        \end{itemize}
+        则 Q 值序列以概率 1 收敛到最优动作价值函数$Q^*$
+    \end{block}
+
+    \begin{alertblock}{本研究的收敛性条件}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{有限状态空间}：136 状态 × 4 动作 = 544 个 Q 值条目
+            \item \textbf{充分探索}：$\varepsilon$-贪婪策略，4000 步充分访问
+            \item \textbf{确定性转移}：时间窗参数调整是可预测的离散操作
+        \end{itemize}
+    \end{alertblock}
+
+    \begin{exampleblock}{结论}
+        \footnotesize
+        本研究算法在理论上保证收敛到最优时间窗选择策略
+    \end{exampleblock}
+\end{frame}
+
+% ============================================================================
+% 与 DQN 的理论对比
+% ============================================================================
+\subsection{与 DQN 的理论对比}
+
+\begin{frame}{表格型 Q-Learning vs DQN}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{l|cc}
+        \hline
+        \textbf{维度} & \textbf{表格型 Q-Learning} & \textbf{DQN}\cite{mnih2015human} \\
+        \hline
+        价值函数表示 & $Q(s,a)$表格存储 & $Q(s,a;\theta)$神经网络近似 \\
+        更新规则 & $Q \leftarrow Q + \alpha \cdot \text{TD}$ & $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$ \\
+        收敛性保证 & 理论保证\cite{watkins1992q} & 经验性收敛 \\
+        样本效率 & 单步传播奖励 & 批量梯度下降 \\
+        推理复杂度 & $O(1)$查表 & $O(\text{网络前向传播})$ \\
+        可解释性 & Q 值透明可视 & 黑盒决策 \\
+        \hline
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{DQN 损失函数}
+        \footnotesize
+        \begin{equation*}
+        \mathcal{L}(\theta) = \mathbb{E}\left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^-) - Q(s, a; \theta) \right)^2 \right]
+        \end{equation*}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{方法选择依据}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{本任务特性}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{状态空间规模}：$|\mathcal{S}| = 136$（小规模）
+                \item \textbf{状态可离散化}：时间窗参数精确离散
+                \item \textbf{转移确定性}：参数调整可预测
+                \item \textbf{数据稀缺}：BCI 试次有限
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{选择表格型的理由}
+            \footnotesize
+            \begin{itemize}
+                \item Q 表仅 544 条目（约 4 KB 内存）
+                \item 严格收敛性保证
+                \item 单步奖励传播，样本效率高
+                \item Q 值表可直接可视化分析
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{核心结论}
+        \footnotesize
+        在时间窗优化（136 状态）任务中，表格型 Q-Learning 是更合适的选择
+    \end{exampleblock}
+\end{frame}
+
+% ============================================================================
+% 本章小结
+% ============================================================================
+\subsection{本章小结}
+
+\begin{frame}{本章小结}
+    \begin{block}{方法创新点}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{问题建模简洁性}：离散化避免深度强化学习复杂性
+            \item \textbf{理论保证严格性}：有限状态空间下收敛性保证
+            \item \textbf{计算效率优势}：离线训练 4000 次评估，在线推理$O(1)$查表
+            \item \textbf{可解释性强}：Q 值表可直接可视化和分析
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{局限性}
+        \footnotesize
+        \begin{itemize}
+            \item 状态空间需人工离散化，可能丢失连续信息
+            \item 奖励计算依赖 5 折交叉验证，训练开销较大
+            \item 仅适用于时间窗优化特定任务
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+} % end of \small

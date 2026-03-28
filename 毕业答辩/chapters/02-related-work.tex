@@ -1,0 +1,203 @@
+% ============================================================================
+% 第二章：相关工作
+% 优化说明：使用\small 字体，减小间距，合并页面
+\section{相关工作}
+% ============================================================================
+
+{\small
+
+\subsection{运动想象 BCI 系统}
+
+\begin{frame}{运动想象 BCI 系统}
+    \begin{block}{ERD/ERS 现象\cite{pfurtscheller1999event}}
+        \begin{itemize}
+            \item \textbf{运动想象 (MI)}：个体在头脑中模拟执行特定动作的心理过程
+            \item \textbf{ERD 现象}：$\mu$ (8--13 Hz) 和$\beta$ (13--30 Hz) 频段功率显著降低
+            \item \textbf{空间分布}：具有任务特异性，为分类提供神经生理基础
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{关键挑战}
+        ERD 的时间动态特性存在显著的\textbf{个体间差异}\cite{lotte2011regularizing}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{BCI 系统架构\cite{tangermann2012review}}
+        数据采集 $\rightarrow$ 预处理 $\rightarrow$ 特征提取 $\rightarrow$ 特征选择 $\rightarrow$ 分类
+        
+        时间窗选择属于\textbf{特征选择}子任务
+    \end{exampleblock}
+\end{frame}
+
+% ============================================================================
+% EEG 特征提取与分类
+% ============================================================================
+\subsection{EEG 特征提取与分类}
+
+\begin{frame}{EEG 特征提取与分类}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{共空间模式 (CSP)\cite{blankertz2008optimizing}}
+            \begin{itemize}
+                \item \textbf{核心思想}：最大化两类任务方差差异
+                \item \textbf{步骤}：
+                \begin{enumerate}
+                    \item 计算平均协方差矩阵$\mathbf{C}_c$
+                    \item 求解$\mathbf{C}_1 \mathbf{w} = \lambda (\mathbf{C}_1 + \mathbf{C}_2) \mathbf{w}$
+                    \item 构建空间滤波器$\mathbf{W}$
+                    \item 提取对数方差$\mathbf{f} = \log(\text{var}(\mathbf{W}\mathbf{X}))$
+                \end{enumerate}
+                \item \textbf{多类别扩展}：近似对角化方法
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{支持向量机 (SVM)\cite{lotte2007review}}
+            \begin{itemize}
+                \item \textbf{目标函数}：
+                \begin{equation*}
+                \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_{i=1}^N \xi_i
+                \end{equation*}
+                \item \textbf{优势}：最大间隔、小样本稳健
+                \item \textbf{局限}：性能依赖特征质量
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{CSP-SVM 流水线}
+        CSP 提取特征 $\rightarrow$ SVM 分类 -- 经典 MI-BCI 方案
+    \end{exampleblock}
+\end{frame}
+
+% ============================================================================
+% 时间窗优化方法
+% ============================================================================
+\subsection{时间窗优化方法}
+
+\begin{frame}{时间窗优化方法}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{block}{固定时间窗方法\cite{lotte2007review}}
+            \renewcommand{\arraystretch}{1.2}
+            \begin{tabular}{l|l}
+                \hline
+                \textbf{策略} & \textbf{局限} \\
+                \hline
+                刺激后固定延迟 & 忽略个体差异 \\
+                基于 ERD 峰值 & 需额外校准 \\
+                经验时间窗 & 缺乏理论依据 \\
+                \hline
+            \end{tabular}
+
+            \vspace{0.2cm}
+            \textbf{局限性}：无法适应个体差异、依赖经验调参
+        \end{block}
+
+        \column{0.45\textwidth}
+        \begin{block}{基于优化的方法}
+            \begin{itemize}
+                \item \textbf{贝叶斯优化}\cite{yang2015time}：高斯过程 + 采集函数，$O(n^3)$复杂度
+                \item \textbf{网格/随机搜索}：效率低
+                \item \textbf{遗传算法}：收敛慢
+                \item \textbf{稀疏组空间模式}\cite{zhang2019temporally}：增加复杂度
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{评估标准\cite{tangermann2012review}}
+        分类准确率、Kappa 系数、计算效率、稳定性
+    \end{alertblock}
+\end{frame}
+
+% ============================================================================
+% 强化学习在 BCI 中的应用
+% ============================================================================
+\subsection{强化学习在 BCI 中的应用}
+
+\begin{frame}{强化学习基础}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{MDP 五元组\cite{sutton2018reinforcement}}
+            $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$
+            \begin{itemize}
+                \item $\mathcal{S}$：状态空间
+                \item $\mathcal{A}$：动作空间
+                \item $\mathcal{R}$：奖励函数
+                \item $\mathcal{P}$：转移概率
+                \item $\gamma$：折扣因子
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{Q-Learning\cite{watkins1992q}}
+            \begin{itemize}
+                \item 维护 Q 表
+                \item TD 误差迭代更新
+                \item 有限状态收敛保证
+                \item 无需环境模型
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{深度 Q 网络 (DQN)}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{DQN\cite{mnih2015human}}
+            \begin{itemize}
+                \item \textbf{核心}：深度网络近似 Q 函数
+                \item \textbf{技术}：经验回放、目标网络
+                \item \textbf{局限}：百万参数、需大量数据、可解释性差
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{改进方法}
+            \begin{itemize}
+                \item Double Q-Learning\cite{van2016deep}
+                \item Dueling 架构\cite{wang2016dueling}
+                \item Rainbow\cite{hessel2018rainbow}
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{强化学习在 BCI 中的应用}
+    \begin{enumerate}
+        \item \textbf{动态窗口选择}\cite{chen2019dynamic}：SSVEP 范式，Q-Learning 学习最优窗口
+        \item \textbf{多智能体特征选择 (MARS)}\cite{zhang2021mars}：联合优化空间 - 频谱 - 时间特征，计算复杂
+        \item \textbf{自适应 BCI 控制}\cite{jayaram2016transfer}：迁移学习减少校准时间
+    \end{enumerate}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{现有方法局限}
+        MARS 等方法计算开销大，难以应用于资源受限的在线 BCI 系统
+    \end{alertblock}
+\end{frame}
+
+% ============================================================================
+% 本章小结
+% ============================================================================
+\subsection{本章小结}
+
+\begin{frame}{本章小结与研究问题}
+    \begin{block}{文献总结}
+        \begin{itemize}
+            \item 时间窗选择是 MI-BCI 性能的关键
+            \item 现有方法难以平衡性能与效率
+            \item 强化学习展现潜力但计算开销大
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{核心研究问题}
+        \centering
+        在状态空间有限 (136 状态) 的时间窗优化任务中，\\
+        能否采用\textbf{表格型 Q-Learning}在避免复杂性的同时保留自适应能力？
+    \end{exampleblock}
+\end{frame}
+
+} % end of \small
