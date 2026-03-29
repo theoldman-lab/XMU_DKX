@@ -9,24 +9,59 @@
 \subsection{问题形式化}
 
 \begin{frame}{问题形式化：MDP 建模}
-    \begin{block}{马尔可夫决策过程五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$}
-        \begin{itemize}
-            \item \textbf{状态空间 $\mathcal{S}$}\cite{blankertz2008optimizing}：$(t_{\text{start}}, t_{\text{end}})$
-            \begin{itemize}
-                \item 步长$\Delta t = 0.2$秒，$t_{\text{end}} - t_{\text{start}} \geq 0.5$秒
-                \item 有效状态：\textbf{136 个}
-            \end{itemize}
-            \item \textbf{动作空间 $\mathcal{A}$}：$\{a_0, a_1, a_2, a_3\}$（边界调整）
-            \item \textbf{奖励函数 $\mathcal{R}$}：$r(s, a) = \text{Accuracy}_{\text{CV}}(s')$
-            \item \textbf{状态转移 $\mathcal{P}$}：确定性过程
-        \end{itemize}
-    \end{block}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+        \begin{block}{状态空间 $\mathcal{S}$}
+            \scriptsize
+            状态定义为离散化的时间窗参数对 $(t_{\text{start}}, t_{\text{end}})$\cite{blankertz2008optimizing}。
+            
+            \textbf{离散化}：$\Delta t = 0.2$ s，$t_{\text{end}} - t_{\text{start}} \geq 0.5$ s
+            
+            \textbf{有效状态数}：\textbf{136 个}
+        \end{block}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{优化目标}
-        \centering
-        $\pi^* = \arg\max_{\pi} \mathbb{E}_{\pi} \left[ \sum_{t=0}^{\infty} \gamma^t r_t \right]$
-    \end{alertblock}
+        \begin{block}{动作空间 $\mathcal{A}$}
+            \scriptsize
+            动作定义为离散的时间窗边界调整操作：
+
+            $a_0$：$t_{\text{start}}$ 提前 $\Delta t$\\
+            $a_1$：$t_{\text{start}}$ 延后 $\Delta t$\\
+            $a_2$：$t_{\text{end}}$ 提前 $\Delta t$\\
+            $a_3$：$t_{\text{end}}$ 延后 $\Delta t$
+        \end{block}
+
+        \begin{block}{状态转移 $\mathcal{P}$}
+            \scriptsize
+            状态转移为确定性过程：
+            \begin{equation*}
+            \mathcal{P}(s' \mid s, a) =
+            \begin{cases}
+            1, & \text{if } s' = f(s, a) \\
+            0, & \text{otherwise}
+            \end{cases}
+            \end{equation*}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{奖励函数 $\mathcal{R}$}
+            \scriptsize
+            奖励函数定义为状态 - 动作对的即时反馈信号：
+            \begin{equation*}
+            r(s, a) = \text{Accuracy}_{\text{CV}}(s'; \mathcal{D}_{\text{train}})
+            \end{equation*}
+            其中，$s' = f(s, a)$ 为动作执行后的新状态，$\text{Accuracy}_{\text{CV}}$ 表示 5 折交叉验证准确率。
+        \end{block}
+
+        \begin{alertblock}{优化目标}
+            \scriptsize
+            找到最优策略 $\pi^*$，使得期望累积奖励最大化：
+            \begin{equation*}
+            \pi^* = \arg\max_{\pi} \mathbb{E}_{\pi} \left[ \sum_{t=0}^{\infty} \gamma^t r_t \right]
+            \end{equation*}
+            在本任务中，等价于找到最优时间窗 $(t_{\text{start}}^*, t_{\text{end}}^*)$ 使分类准确率最高。
+        \end{alertblock}
+    \end{columns}
+
 \end{frame}
 
 % ============================================================================
@@ -35,46 +70,42 @@
 \subsection{表格型 Q-Learning 算法}
 
 \begin{frame}{Q-Learning 算法原理}
+    Q-Learning 是一种经典的无模型强化学习算法，由 Watkins 和 Dayan 于 1992 年提出\cite{watkins1992q}。
+
+    \vspace{0.25cm}
     \begin{columns}[T]
         \column{0.48\textwidth}
-        \begin{block}{Q 函数定义\cite{watkins1992q}}
-            \footnotesize
-            $Q(s, a)$ 表示状态$s$执行动作$a$后的期望累积奖励：
+        \begin{block}{Q 函数定义}
+            \scriptsize
+            $Q(s, a)$ 表示在状态 $s$ 执行动作 $a$ 后的期望累积奖励：
             \begin{equation*}
-            \footnotesize
-            Q(s, a) = \mathbb{E}\left[\sum_{t=0}^{\infty} \gamma^t r_t\right]
+            Q(s, a) = \mathbb{E} \left[ \sum_{t=0}^{\infty} \gamma^t r_t \mid s_0 = s, a_0 = a \right]
             \end{equation*}
-            最优 Q 函数满足 Bellman 方程：
+            最优 Q 函数 $Q^*(s, a)$ 满足 Bellman 最优方程：
             \begin{equation*}
-            \footnotesize
-            Q^*(s, a) = \mathbb{E}\left[ r + \gamma \max_{a'} Q^*(s', a') \right]
+            Q^*(s, a) = \mathbb{E} \left[ r + \gamma \max_{a'} Q^*(s', a') \right]
             \end{equation*}
         \end{block}
 
         \column{0.48\textwidth}
-        \begin{block}{时序差分更新}
-            \footnotesize
-            Q 值更新规则：
+        \begin{block}{Q 值更新规则}
+            \scriptsize
+            Q 值通过时序差分误差迭代更新：
             \begin{equation*}
-            \footnotesize
             Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \cdot \text{TD}_t
             \end{equation*}
             其中 TD 误差：
             \begin{equation*}
-            \footnotesize
             \text{TD}_t = r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t)
             \end{equation*}
         \end{block}
+
+        \begin{block}{$\varepsilon$-贪婪}
+            \scriptsize
+            以概率 $\varepsilon$ 随机探索，以概率 $1-\varepsilon$ 选择最优动作。
+        \end{block}
     \end{columns}
 
-    \begin{exampleblock}{核心思想}
-        \footnotesize
-        \begin{itemize}
-            \item 维护 Q 表，无需函数近似
-            \item 通过 TD 误差迭代更新，自举学习
-            \item $\varepsilon$-贪婪策略平衡探索与利用
-        \end{itemize}
-    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Q-Learning 时间窗优化算法伪代码}
@@ -103,44 +134,6 @@
     \STATE \RETURN $s^* = \arg\max_s \max_a Q[s, a]$
     \end{algorithmic}
     \end{algorithm}
-\end{frame}
-
-\begin{frame}{算法流程图}
-    \begin{center}
-    \resizebox{1.0\textwidth}{!}{%
-    \begin{tikzpicture}[
-        node distance=0.4cm,
-        block/.style={rectangle, draw, rounded corners, minimum width=2cm, minimum height=0.45cm, align=center},
-        decision/.style={diamond, draw, aspect=2, minimum width=1.8cm, minimum height=0.45cm, align=center},
-        arrow/.style={->, thick}
-    ]
-    % 第一行
-    \node[block, fill=blue!10] (init) {初始化 Q 表};
-    \node[block, fill=green!10, right=of init] (episode) {开始 Episode};
-    \node[block, fill=yellow!10, right=of episode] (action) {$\varepsilon$-贪婪\\选择动作};
-    
-    % 第二行
-    \node[block, fill=orange!10, below=of action] (transition) {状态转移};
-    \node[block, fill=red!10, left=of transition] (reward) {计算奖励};
-    \node[block, fill=purple!10, right=of transition] (update) {更新 Q 值};
-    
-    % 第三行
-    \node[decision, below=of transition] (check) {达到最大\\步数？};
-    \node[block, fill=gray!10, below=of check] (end) {返回最优$s^*$};
-    
-    % 连接箭头
-    \draw[arrow] (init) -- (episode);
-    \draw[arrow] (episode) -- (action);
-    \draw[arrow] (action) -- (transition);
-    \draw[arrow] (transition) -- (reward);
-    \draw[arrow] (transition) -- (update);
-    \draw[arrow] (update) |- (check);
-    \draw[arrow] (reward) |- (check);
-    \draw[arrow] (check.east) -- ++(0.6,0) |- (action);
-    \draw[arrow] (check) -- (end);
-    \end{tikzpicture}%
-    }
-    \end{center}
 \end{frame}
 
 % ============================================================================
@@ -211,18 +204,6 @@
         \end{alertblock}
     \end{columns}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{效率对比}
-        \footnotesize
-        \begin{tabular}{l|c|c}
-            \hline
-            \textbf{阶段} & \textbf{表格型 Q-Learning} & \textbf{DQN}\cite{mnih2015human} \\
-            \hline
-            训练 & 4000 次评估 & 百万级参数训练 \\
-            推理 & $O(1)$查表 & $O(\text{网络前向传播})$ \\
-            \hline
-        \end{tabular}
-    \end{exampleblock}
 \end{frame}
 
 % ============================================================================

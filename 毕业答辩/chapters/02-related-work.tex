@@ -8,26 +8,48 @@
 
 \subsection{运动想象 BCI 系统}
 
-\begin{frame}{运动想象 BCI 系统}
-    \begin{block}{ERD/ERS 现象\cite{pfurtscheller1999event}}
+\begin{frame}{运动想象的神经生理基础}
+    \textbf{运动想象（Motor Imagery, MI）}是个体在头脑中模拟执行特定动作的心理过程，无需实际肢体运动即可在大脑感觉运动皮层产生可检测的神经活动变化\cite{pfurtscheller1999event}。
+
+    \begin{block}{事件相关去同步化（ERD）}
+        \scriptsize
+        ERD 是指特定频段脑电功率谱密度在运动准备和执行过程中的抑制性变化：
         \begin{itemize}
-            \item \textbf{运动想象 (MI)}：个体在头脑中模拟执行特定动作的心理过程
-            \item \textbf{ERD 现象}：$\mu$ (8--13 Hz) 和$\beta$ (13--30 Hz) 频段功率显著降低
-            \item \textbf{空间分布}：具有任务特异性，为分类提供神经生理基础
+            \item \textbf{$\mu$频段} (8--13 Hz)：与感觉运动皮层静息状态相关，运动想象时功率显著降低
+            \item \textbf{$\beta$频段} (13--30 Hz)：与运动维持和反馈处理相关，运动想象后出现反弹现象（ERS）
         \end{itemize}
     \end{block}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{关键挑战}
-        ERD 的时间动态特性存在显著的\textbf{个体间差异}\cite{lotte2011regularizing}
-    \end{alertblock}
+    \begin{block}{空间分布特性}
+        \scriptsize
+        不同肢体运动想象激活对侧感觉运动皮层：这种任务特异性为多分类 BCI 提供了神经生理学基础\cite{mcfarland1997spatial}。
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{BCI 系统架构\cite{tangermann2012review}}
-        数据采集 $\rightarrow$ 预处理 $\rightarrow$ 特征提取 $\rightarrow$ 特征选择 $\rightarrow$ 分类
-        
-        时间窗选择属于\textbf{特征选择}子任务
-    \end{exampleblock}
+    \begin{alertblock}{个体间差异挑战}
+        \scriptsize
+        ERD 的出现时间、持续时长、频段特性和空间分布存在显著的被试间差异，使得固定时间窗策略难以适应所有用户\cite{lotte2011regularizing}。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{BCI 系统的基本架构}
+    典型的运动想象 BCI 系统包含以下五个核心模块\cite{tangermann2012review}：
+    
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.5cm,
+        block/.style={rectangle, draw, rounded corners, minimum width=4.5cm, minimum height=0.9cm, align=center, fill=blue!10}
+    ]
+    \node[block] (acq) {\textbf{数据采集}\\ \tiny 多通道 EEG 放大器};
+    \node[block, below=of acq] (pre) {\textbf{预处理}\\ \tiny 滤波、去噪、伪迹去除};
+    \node[block, below=of pre] (feat) {\textbf{特征提取}\\ \tiny CSP、PSD、小波变换};
+    \node[block, below=of feat, fill=red!10] (sel) {\textbf{特征选择}\\ \tiny \textbf{时间窗优化}、通道选择};
+    \node[block, below=of sel] (cls) {\textbf{分类}\\ \tiny SVM、LDA、深度学习};
+    \draw[->, thick] (acq) -- (pre);
+    \draw[->, thick] (pre) -- (feat);
+    \draw[->, thick] (feat) -- (sel);
+    \draw[->, thick] (sel) -- (cls);
+    \end{tikzpicture}
+    
 \end{frame}
 
 % ============================================================================
@@ -35,40 +57,75 @@
 % ============================================================================
 \subsection{EEG 特征提取与分类}
 
-\begin{frame}{EEG 特征提取与分类}
+\begin{frame}{共空间模式（CSP）特征提取}
+    CSP 是运动想象 BCI 中最常用的特征提取方法\cite{blankertz2008optimizing}，通过寻找最优空间滤波器使得两类任务的方差差异最大化。
+
+    \begin{block}{CSP 算法步骤}
+        \scriptsize
+        \begin{enumerate}
+            \item \textbf{计算协方差矩阵}：$\mathbf{C}_c = \frac{1}{N_c} \sum_{i \in \text{class}_c} \mathbf{X}_i \mathbf{X}_i^\top$
+            \item \textbf{求解广义特征值问题}：$\mathbf{C}_1 \mathbf{w} = \lambda (\mathbf{C}_1 + \mathbf{C}_2) \mathbf{w}$
+            \item \textbf{构建空间滤波器}：选择最大和最小特征值对应的特征向量构建 $\mathbf{W}$
+            \item \textbf{提取特征}：$\mathbf{f} = \log(\text{var}(\mathbf{W}\mathbf{X}))$
+        \end{enumerate}
+    \end{block}
+
+    \begin{alertblock}{多类别 CSP 扩展}
+        \scriptsize
+        经典 CSP 仅适用于二分类场景。对于\textbf{4 类运动想象任务}（左手、右手、双脚、舌头），需采用多类别扩展方法\cite{blankertz2008optimizing}：
+        \begin{itemize}
+            \item \textbf{近似对角化方法}：通过白化变换将多类别协方差矩阵同时对角化
+            \item \textbf{本研究设置}：使用 4 个 CSP 分量（2 对），提取滤波后信号的对数方差作为特征
+        \end{itemize}
+    \end{alertblock}
+
+\end{frame}
+
+\begin{frame}{支持向量机（SVM）分类}
     \begin{columns}[T]
-        \column{0.48\textwidth}
-        \begin{block}{共空间模式 (CSP)\cite{blankertz2008optimizing}}
-            \begin{itemize}
-                \item \textbf{核心思想}：最大化两类任务方差差异
-                \item \textbf{步骤}：
-                \begin{enumerate}
-                    \item 计算平均协方差矩阵$\mathbf{C}_c$
-                    \item 求解$\mathbf{C}_1 \mathbf{w} = \lambda (\mathbf{C}_1 + \mathbf{C}_2) \mathbf{w}$
-                    \item 构建空间滤波器$\mathbf{W}$
-                    \item 提取对数方差$\mathbf{f} = \log(\text{var}(\mathbf{W}\mathbf{X}))$
-                \end{enumerate}
-                \item \textbf{多类别扩展}：近似对角化方法
-            \end{itemize}
+        \column{0.55\textwidth}
+        \begin{block}{支持向量机}
+            \scriptsize
+            SVM 通过寻找最大间隔超平面实现分类，在小样本场景下表现稳健。\cite{lotte2007review}
+            
+            \vspace{0.2cm}
+            \textbf{目标函数}：
+            \begin{equation*}
+            \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_{i=1}^N \xi_i
+            \end{equation*}
+            
+            \vspace{0.2cm}
+            其中，$\mathbf{w}$ 为超平面法向量，$b$ 为偏置，$C$ 为正则化参数，$\xi_i$ 为松弛变量。
+            
+            \vspace{0.2cm}
+            \textbf{优势}：最大间隔、小样本稳健 \\
+            \textbf{局限}：性能依赖特征质量
         \end{block}
 
-        \column{0.48\textwidth}
-        \begin{block}{支持向量机 (SVM)\cite{lotte2007review}}
-            \begin{itemize}
-                \item \textbf{目标函数}：
-                \begin{equation*}
-                \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_{i=1}^N \xi_i
-                \end{equation*}
-                \item \textbf{优势}：最大间隔、小样本稳健
-                \item \textbf{局限}：性能依赖特征质量
-            \end{itemize}
+        \column{0.45\textwidth}
+        \begin{block}{CSP-SVM 流水线}
+            \scriptsize
+            本研究采用经典的 CSP-SVM 流水线作为基础分类器：
+            
+            \vspace{0.3cm}
+            \centering
+            \begin{tikzpicture}[
+                node distance=0.4cm,
+                block/.style={rectangle, draw, rounded corners, minimum width=3.5cm, minimum height=0.7cm, align=center, fill=blue!10}
+            ]
+            \node[block] (csp) {CSP 特征提取};
+            \node[block, below=of csp] (svm) {SVM 分类};
+            \draw[->, thick] (csp) -- (svm);
+            \end{tikzpicture}
+            
+            \vspace{0.3cm}
+            这是经典 MI-BCI 方案，但 SVM 性能上限高度依赖输入特征质量，而这正是由\textbf{时间窗选择}所决定的。
         \end{block}
     \end{columns}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{CSP-SVM 流水线}
-        CSP 提取特征 $\rightarrow$ SVM 分类 -- 经典 MI-BCI 方案
-    \end{exampleblock}
+    
+    \vspace{0.3cm}
+    \scriptsize
+    除 CSP-SVM 外，还有 PSD、小波变换等特征提取方法，以及 LDA、深度学习等分类算法\cite{lotte2007review}。然而，这些方法的性能均受时间窗选择的影响。
 \end{frame}
 
 % ============================================================================
@@ -76,40 +133,87 @@
 % ============================================================================
 \subsection{时间窗优化方法}
 
-\begin{frame}{时间窗优化方法}
-    \begin{columns}[T]
-        \column{0.55\textwidth}
-        \begin{block}{固定时间窗方法\cite{lotte2007review}}
-            \renewcommand{\arraystretch}{1.2}
-            \begin{tabular}{l|l}
-                \hline
-                \textbf{策略} & \textbf{局限} \\
-                \hline
-                刺激后固定延迟 & 忽略个体差异 \\
-                基于 ERD 峰值 & 需额外校准 \\
-                经验时间窗 & 缺乏理论依据 \\
-                \hline
-            \end{tabular}
+\begin{frame}{固定时间窗方法}
+    早期 BCI 研究通常采用固定时间窗策略，即根据先验知识选择固定的时间段用于特征提取\cite{lotte2007review}。
 
-            \vspace{0.2cm}
-            \textbf{局限性}：无法适应个体差异、依赖经验调参
+    \begin{columns}[T]
+        \column{0.32\textwidth}
+        \begin{block}{刺激后固定延迟}
+            \scriptsize
+            \textbf{方法}：选择刺激呈现后固定延迟（如 0.5--3.5 秒）\cite{tangermann2012review}
+            
+            \vspace{0.15cm}
+            \textbf{局限}：假设所有被试 ERD 在相同时间范围出现，忽略个体差异性
         \end{block}
 
-        \column{0.45\textwidth}
-        \begin{block}{基于优化的方法}
-            \begin{itemize}
-                \item \textbf{贝叶斯优化}\cite{yang2015time}：高斯过程 + 采集函数，$O(n^3)$复杂度
-                \item \textbf{网格/随机搜索}：效率低
-                \item \textbf{遗传算法}：收敛慢
-                \item \textbf{稀疏组空间模式}\cite{zhang2019temporally}：增加复杂度
-            \end{itemize}
+        \column{0.32\textwidth}
+        \begin{block}{基于 ERD 峰值}
+            \scriptsize
+            \textbf{方法}：分析被试平均 ERD 时间曲线，选择 ERD 最强时间段\cite{pfurtscheller1999event}
+            
+            \vspace{0.15cm}
+            \textbf{局限}：需额外校准实验，ERD 峰值可能随任务状态变化
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{经验时间窗}
+            \scriptsize
+            \textbf{方法}：根据文献报道或研究者经验选择（如 2--4 秒）\cite{lotte2007review}
+            
+            \vspace{0.15cm}
+            \textbf{局限}：实现简单，但缺乏理论依据
         \end{block}
     \end{columns}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{评估标准\cite{tangermann2012review}}
-        分类准确率、Kappa 系数、计算效率、稳定性
-    \end{alertblock}
+    \begin{block}{共同局限性}
+        \scriptsize
+        \begin{itemize}
+            \item \textbf{无法适应个体间差异}：不同被试的最优时间窗可能不同
+            \item \textbf{无法适应个体内差异}：同一被试在不同试次或 session 的 ERD 时间动态可能变化
+            \item \textbf{依赖手动调参}：需要研究者经验，缺乏自适应性
+        \end{itemize}
+    \end{block}
+
+    \footnotesize
+    \textbf{优势}：实现简单、计算高效 \quad | \quad \textbf{不足}：性能受限
+\end{frame}
+
+\begin{frame}{基于优化的时间窗选择}
+    为克服固定时间窗的局限性，研究者提出了基于优化的自适应时间窗选择方法。
+
+    \begin{block}{贝叶斯优化}
+        \scriptsize
+        Yang 等人（2015）提出使用贝叶斯优化搜索最优时间窗参数\cite{yang2015time}。构建高斯过程代理模型，近似时间窗参数与分类准确率的映射关系，通过采集函数（如期望改进 EI）平衡探索与利用。
+        
+        \textbf{局限}：计算复杂度 $O(n^3)$，难以处理高维参数空间，对于需要快速校准的在线 BCI 系统难以接受
+    \end{block}
+
+    \begin{columns}[T]
+        \column{0.32\textwidth}
+        \begin{block}{网格/随机搜索}
+            \scriptsize
+            \textbf{方法}：遍历所有可能的时间窗组合（网格搜索）或随机采样参数（随机搜索），选择验证集准确率最高的参数
+            
+            \textbf{局限}：计算效率低，参数空间较大时不可行
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{遗传算法}
+            \scriptsize
+            \textbf{方法}：模拟自然选择过程搜索最优时间窗参数
+            
+            \textbf{局限}：收敛速度慢，需设计合适的编码和变异策略
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{稀疏组空间模式}
+            \scriptsize
+            Zhang 等人（2019）提出时间约束稀疏组空间模式方法\cite{zhang2019temporally}。通过正则化项鼓励时间窗稀疏性和连续性，将时间窗选择嵌入 CSP 优化过程
+            
+            \textbf{局限}：增加 CSP 计算复杂度，正则化参数需手动调优
+        \end{block}
+    \end{columns}
+
 \end{frame}
 
 % ============================================================================
@@ -118,63 +222,151 @@
 \subsection{强化学习在 BCI 中的应用}
 
 \begin{frame}{强化学习基础}
+    强化学习（Reinforcement Learning, RL）是机器学习的一个分支，关注智能体如何通过与环境交互学习最优策略\cite{sutton2018reinforcement}。
+    \begin{block}{马尔可夫决策过程（MDP）}
+        \scriptsize
+        强化学习问题通常建模为 MDP，形式化定义为五元组 $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$：
+        \begin{itemize}
+            \item \textbf{$\mathcal{S}$（状态空间）}：所有可能状态的集合
+            \item \textbf{$\mathcal{A}$（动作空间）}：所有可能动作的集合
+            \item \textbf{$\mathcal{R}$（奖励函数）}：状态转移后的即时奖励
+            \item \textbf{$\mathcal{P}$（转移概率）}：状态转移的概率分布
+            \item \textbf{$\gamma$（折扣因子）}：未来奖励的权重，$0 \leq \gamma \leq 1$
+        \end{itemize}
+    \end{block}
+    \begin{alertblock}{优化目标}
+        \scriptsize
+        学习最优策略 $\pi^*$，最大化期望累积奖励：
+        \begin{equation*}
+        \pi^* = \arg\max_{\pi} \mathbb{E}_{\pi} \left[ \sum_{t=0}^{\infty} \gamma^t r_t \right]
+        \end{equation*}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Q-Learning 算法}
+    Q-Learning 是一种经典的无模型强化学习算法，由 Watkins 和 Dayan 于 1992 年提出\cite{watkins1992q}。
+
     \begin{columns}[T]
-        \column{0.48\textwidth}
-        \begin{block}{MDP 五元组\cite{sutton2018reinforcement}}
-            $(\mathcal{S}, \mathcal{A}, \mathcal{R}, \mathcal{P}, \gamma)$
+        \column{0.5\textwidth}
+        \begin{block}{核心思想}
+            \scriptsize
             \begin{itemize}
-                \item $\mathcal{S}$：状态空间
-                \item $\mathcal{A}$：动作空间
-                \item $\mathcal{R}$：奖励函数
-                \item $\mathcal{P}$：转移概率
-                \item $\gamma$：折扣因子
+                \item \textbf{Q 表}：维护状态 - 动作价值表 $Q(s,a)$
+                \item \textbf{TD 误差更新}：使用时序差分误差迭代更新 Q 值
+                \item \textbf{$\varepsilon$-贪婪策略}：平衡探索与利用
             \end{itemize}
         \end{block}
 
-        \column{0.48\textwidth}
-        \begin{block}{Q-Learning\cite{watkins1992q}}
-            \begin{itemize}
-                \item 维护 Q 表
-                \item TD 误差迭代更新
-                \item 有限状态收敛保证
-                \item 无需环境模型
-            \end{itemize}
+        \begin{block}{Q 值更新公式}
+            \scriptsize
+            \begin{equation*}
+            Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \cdot \text{TD}_t
+            \end{equation*}
+            其中 TD 误差：
+            \begin{equation*}
+            \text{TD}_t = r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t)
+            \end{equation*}
         \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{算法优势}
+            \scriptsize
+            \begin{itemize}
+                \item \textbf{无需环境模型}：无模型（model-free）方法
+                \item \textbf{收敛性保证}：有限状态空间下保证收敛到最优策略
+                \item \textbf{实现简单}：仅需维护 Q 表，无需复杂网络结构
+                \item \textbf{样本效率高}：单步奖励传播，更新高效
+            \end{itemize}
+            \scriptsize
+                状态空间有限（如 $< 10^4$）、状态 - 动作对可充分访问的任务，在资源受限场景中具有独特优势。
+
+        \end{block}
+
     \end{columns}
 \end{frame}
 
-\begin{frame}{深度 Q 网络 (DQN)}
+\begin{frame}{深度 Q 网络（DQN）}
+    深度 Q 网络（Deep Q-Network, DQN）是强化学习与深度学习结合的典型代表，由 Mnih 等人（2015）提出\cite{mnih2015human}。
+
+    \scriptsize
+    \begin{itemize}
+        \item \textbf{深度网络近似 Q 函数}：使用神经网络 $Q(s,a;\theta)$ 近似 Q 值，可处理高维状态空间
+        \item \textbf{经验回放（Experience Replay）}：存储转移样本 $(s,a,r,s')$，随机采样打破数据相关性
+        \item \textbf{目标网络（Target Network）}：使用独立网络计算目标 Q 值，提升训练稳定性
+    \end{itemize}
+
     \begin{columns}[T]
-        \column{0.48\textwidth}
-        \begin{block}{DQN\cite{mnih2015human}}
+        \column{0.5\textwidth}
+        \begin{block}{DQN 局限性}
+            \scriptsize
             \begin{itemize}
-                \item \textbf{核心}：深度网络近似 Q 函数
-                \item \textbf{技术}：经验回放、目标网络
-                \item \textbf{局限}：百万参数、需大量数据、可解释性差
+                \item \textbf{百万级参数}：深度网络需要大量存储空间
+                \item \textbf{需大量训练数据}：依赖经验回放缓冲器，样本效率低
+                \item \textbf{可解释性差}：黑盒决策，难以理解决策依据
+                \item \textbf{训练不稳定}：对超参数敏感，需精心调优
             \end{itemize}
         \end{block}
 
-        \column{0.48\textwidth}
+        \column{0.5\textwidth}
         \begin{block}{改进方法}
+            \scriptsize
             \begin{itemize}
-                \item Double Q-Learning\cite{van2016deep}
-                \item Dueling 架构\cite{wang2016dueling}
-                \item Rainbow\cite{hessel2018rainbow}
+                \item \textbf{Double Q-Learning}\cite{van2016deep}：解决 Q 值过高估计问题
+                \item \textbf{Dueling 架构}\cite{wang2016dueling}：将 Q 函数分解为状态价值函数和优势函数
+                \item \textbf{Rainbow}\cite{hessel2018rainbow}：集成多种改进技术
             \end{itemize}
         \end{block}
+        \footnotesize
+            这些改进进一步增加了模型的复杂度和计算开销。
     \end{columns}
 \end{frame}
 
 \begin{frame}{强化学习在 BCI 中的应用}
-    \begin{enumerate}
-        \item \textbf{动态窗口选择}\cite{chen2019dynamic}：SSVEP 范式，Q-Learning 学习最优窗口
-        \item \textbf{多智能体特征选择 (MARS)}\cite{zhang2021mars}：联合优化空间 - 频谱 - 时间特征，计算复杂
-        \item \textbf{自适应 BCI 控制}\cite{jayaram2016transfer}：迁移学习减少校准时间
-    \end{enumerate}
+    近年来，强化学习被应用于 BCI 系统的多个方面\cite{zhang2021mars}。
 
-    \vspace{0.3cm}
-    \begin{alertblock}{现有方法局限}
-        MARS 等方法计算开销大，难以应用于资源受限的在线 BCI 系统
+    \vspace{0.25cm}
+    \begin{columns}[T]
+        \column{0.32\textwidth}
+        \begin{block}{动态窗口选择}
+            \scriptsize
+            Chen 等人（2019）提出基于强化学习的动态窗口方法\cite{chen2019dynamic}，用于 SSVEP 识别。
+            
+            \vspace{0.15cm}
+            \textbf{方法}：将窗口长度选择建模为 MDP，使用 Q-Learning 学习最优策略
+            
+            \vspace{0.1cm}
+            \textbf{局限}：针对 SSVEP 范式，而非运动想象
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{自适应 BCI 控制}
+            \scriptsize
+            强化学习用于调整分类器参数、选择最优 BCI 范式和优化神经反馈策略\cite{jayaram2016transfer}。
+            
+            \vspace{0.15cm}
+            \textbf{方法}：迁移学习减少新被试的校准时间
+            
+            \vspace{0.1cm}
+            \textbf{挑战}：领域偏移和负迁移
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{多智能体特征选择}
+            \scriptsize
+            Zhang 等人（2021）提出 MARS 方法\cite{zhang2021mars}，使用多智能体强化学习联合优化 EEG 的空间、频谱和时间特征。
+            
+            \vspace{0.15cm}
+            \textbf{优势}：在多个 BCI 数据集上取得先进性能
+            
+            \vspace{0.1cm}
+            \textbf{局限}：计算复杂度高、需要大量训练数据、可解释性较差
+        \end{block}
+    \end{columns}
+
+    \vspace{0.25cm}
+    \begin{alertblock}{现有方法的共同挑战}
+        \scriptsize
+        现有强化学习方法（如 MARS）虽在 BCI 特征选择中表现优异，但其复杂的多智能体设置和深度网络结构带来了巨大的计算开销，难以应用于资源受限的在线 BCI 系统。
     \end{alertblock}
 \end{frame}
 

@@ -47,6 +47,10 @@
 \setbeamertemplate{bibliography item}[text]
 \setbeamertemplate{caption}[numbered]
 
+% 引用颜色设置为红色
+\setbeamercolor{bibliography entry}{fg=red}
+\setbeamercolor{citation}{fg=red}
+
 \setbeamercolor{palette primary}{use=structure,fg=white,bg=structure.fg}
 \setbeamercolor{palette secondary}{use=structure,fg=white,bg=structure.fg!75!black}
 \setbeamercolor{palette tertiary}{use=structure,fg=white,bg=structure.fg!50!black}
@@ -77,8 +81,9 @@
 % ---------- 章节开始时显示目录 ----------
 \AtBeginSection[]{
 	\begin{frame}
-		\tableofcontents[sectionstyle=show/shaded,subsectionstyle=hide,subsubsectionstyle=hide]
+		\tableofcontents[sectionstyle=show/shaded,subsectionstyle=show/shaded/hide,subsubsectionstyle=hide]
 	\end{frame}
 }
+
 
 \mode<all>
