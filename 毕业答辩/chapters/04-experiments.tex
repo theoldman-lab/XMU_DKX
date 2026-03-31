@@ -8,67 +8,180 @@
 
 \subsection{实验设计}
 
-\begin{frame}{实验环境与数据集}
+\begin{frame}{实验环境配置}
     \begin{columns}[T]
         \column{0.48\textwidth}
-        \begin{block}{实验环境}
+        \begin{block}{硬件环境}
             \footnotesize
             \begin{itemize}
-                \item \textbf{硬件}：AMD Ryzen 7 6800H, NVIDIA RTX 2050
-                \item \textbf{软件}：Ubuntu 25.10, CUDA 12.8
-                \item \textbf{框架}：PyTorch 2.10, scikit-learn 1.8, MNE 1.11
+                \item \textbf{CPU}：AMD Ryzen 7 6800H (8 核 16 线程，3.2 GHz)
+                \item \textbf{GPU}：NVIDIA GeForce RTX 2050 (4 GB GDDR6)
+                \item \textbf{内存}：16 GB
             \end{itemize}
         \end{block}
 
         \column{0.48\textwidth}
+        \begin{block}{软件环境}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{OS}：Ubuntu 25.10 (内核 6.17.0)
+                \item \textbf{CUDA/cuDNN}：12.8 / 9.10.2.21
+                \item \textbf{Python}：3.13.7
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \begin{alertblock}{主要依赖库}
+        \footnotesize
+        PyTorch 2.10.0 (深度学习) \quad|\quad scikit-learn 1.8.0 (机器学习) \quad|\quad 
+        MNE-Python 1.11.0 (EEG 预处理) \quad|\quad NumPy 2.4.2, SciPy 1.17.1, Pandas 3.0.1, Matplotlib 3.10.8
+    \end{alertblock}
+
+    \begin{exampleblock}{可复现性设置}
+        \footnotesize
+        随机种子 = 42；每名被试 5 次重复实验 (种子 0--4)，报告平均值 $\pm$ 标准差
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{数据集与预处理}
+    \begin{columns}[T]
+        \column{0.5\textwidth}
         \begin{alertblock}{BCI Competition IV 2a 数据集\cite{tangermann2012review}}
             \footnotesize
             \begin{itemize}
                 \item \textbf{被试}：9 名健康被试
                 \item \textbf{任务}：4 类运动想象（左手、右手、脚、舌头）
-                \item \textbf{采集}：22 通道 EEG, 250 Hz
-                \item \textbf{数据}：训练集 288 试次，测试集 288 试次
+                \item \textbf{范式}：基于 cue，试次$\approx$6 秒，想象阶段 0--4 秒
+                \item \textbf{采集}：22 通道 EEG, 250 Hz, 10-20 系统
+                \item \textbf{划分}：训练集 (session T) 288 试次，测试集 (session E) 288 试次
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{block}{预处理流程\cite{delorme2004eeglab}}
+            \footnotesize
+            \begin{enumerate}
+                \item \textbf{带通滤波}：8--30 Hz (FIR)\\保留$\mu$(8--13 Hz)和$\beta$(13--30 Hz)节律，捕捉 ERD/ERS 现象\cite{pfurtscheller1999event}
+                \item \textbf{陷波滤波}：50 Hz (IIR)\\消除工频干扰
+                \item \textbf{平均参考}：所有通道平均值\\提高空间分辨率
+                \item \textbf{时间窗截取}：$[t_{\text{start}}, t_{\text{end}}]$\\用于特征提取
+            \end{enumerate}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{特征提取与分类}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+        \begin{block}{CSP 特征提取\cite{blankertz2008optimizing,mcfarland1997spatial}}
+            \footnotesize
+            \vspace{0.1cm}
+            \textbf{共空间模式 (CSP)}：使不同类别信号方差差异最大化
+            
+            \vspace{0.15cm}
+            \textbf{多类别扩展}（近似对角化）：
+            \begin{itemize}
+                \item 计算各类别平均协方差矩阵 $\bar{\mathbf{C}} = \frac{1}{C}\sum_{c=1}^{C} \mathbf{C}_c$
+                \item 特征分解构造白化矩阵 $\mathbf{W}$，使 $\mathbf{W} \bar{\mathbf{C}} \mathbf{W}^{\text{T}} = \mathbf{I}$
+                \item 选择最大/最小特征值对应特征向量作为空间滤波器
+            \end{itemize}
+
+            \vspace{0.1cm}
+            \textbf{特征向量}：$\mathbf{f}_i = \log \left( \text{var}(\mathbf{W} \mathbf{X}_i^{\text{window}}) \right)$
+            
+            \vspace{0.1cm}
+            \textbf{配置}：4 个 CSP 分量（2 对）
+        \end{block}
+
+        \column{0.42\textwidth}
+        \begin{alertblock}{分类器设计\cite{lotte2007review}}
+            \footnotesize
+            \textbf{分类器}：线性核 SVM ($C=1.0$)
+            
+            \vspace{0.15cm}
+            \textbf{特征标准化}：Z-score
+            \begin{equation*}
+                \mathbf{f}_i \leftarrow \frac{\mathbf{f}_i - \mu_{\mathbf{f}}}{\sigma_{\mathbf{f}}}
+            \end{equation*}
+
+            \vspace{0.15cm}
+            \textbf{交叉验证}：5 折交叉验证
+            \begin{itemize}
+                \item 训练集划分为 5 份
+                \item 4 份训练，1 份验证
+                \item 重复 5 次取平均
             \end{itemize}
         \end{alertblock}
     \end{columns}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{预处理流程}
-        \footnotesize
-        带通滤波 (8--30 Hz) $\rightarrow$ 陷波滤波 (50 Hz) $\rightarrow$ 平均参考 $\rightarrow$ 时间窗截取
-    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{对比方法与评估协议}
     \begin{columns}[T]
-        \column{0.48\textwidth}
+        \column{0.5\textwidth}
         \begin{block}{10 种对比方法}
             \footnotesize
             \begin{itemize}
-                \item \textbf{固定时间窗}：FL-2s, FL-1.5s, FL-1s
-                \item \textbf{搜索优化}：Grid-Search, Random-Search
-                \item \textbf{强化学习}：Standard Q-Learning, Double Q-Learning, Dueling Q-Learning, Dueling Double Q-Learning, DQN
+                \item \textbf{固定时间窗}（3 种）
+                \begin{itemize}
+                    \scriptsize
+                    \item FL-2s：窗口 2.0 s (5 候选)
+                    \item FL-1.5s：窗口 1.5 s (6 候选)
+                    \item FL-1s：窗口 1.0 s (7 候选)
+                \end{itemize}
+                \item \textbf{搜索优化}（2 种）
+                \begin{itemize}
+                    \scriptsize
+                    \item Grid-Search：步长 0.2 s (136 候选)
+                    \item Random-Search：50 采样
+                \end{itemize}
+                \item \textbf{强化学习}（5 种）
+                \begin{itemize}
+                    \scriptsize
+                    \item Standard Q-Learning
+                    \item Double Q-Learning
+                    \item Dueling Q-Learning
+                    \item Dueling Double Q-Learning
+                    \item DQN (64+32 全连接网络)
+                \end{itemize}
             \end{itemize}
         \end{block}
 
-        \column{0.48\textwidth}
-        \begin{alertblock}{评估指标\cite{tangermann2012review,cohen1960coefficient}}
+        \column{0.5\textwidth}
+        \begin{alertblock}{评估协议\cite{tangermann2012review,cohen1960coefficient}}
             \footnotesize
+            \textbf{重复实验}：每名被试 5 次重复 (种子 0--4)，报告均值 $\pm$ 标准差
+            
+            \textbf{评价指标}：
             \begin{itemize}
-                \item \textbf{准确率}：分类正确试次比例
-                \item \textbf{Cohen's Kappa}：考虑随机猜测的一致性系数
-                \item \textbf{F1 分数}：精确率和召回率调和平均
-                \item \textbf{标准差}：跨被试性能波动
-                \item \textbf{变异系数}：标准差/平均值
+                \item 准确率 (Accuracy)
+                \item Cohen's Kappa (一致性系数)
+                \item F1 分数 (宏平均)
+                \item 标准差 (Std Dev)、变异系数 (CV)
+            \end{itemize}
+
+            \textbf{统计检验}：配对样本 $t$ 检验 ($\alpha=0.05$) + Cohen's $d$ 效应量
+            \begin{itemize}
+                \item $|d|<0.2$ 小效应，$0.2\leq|d|<0.5$ 中效应，$|d|\geq0.5$ 大效应
             \end{itemize}
         \end{alertblock}
     \end{columns}
+\end{frame}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{统计检验}
+\begin{frame}{实验流程概述}
+    \begin{block}{四层实验分析体系}
         \footnotesize
-        配对样本$t$检验 ($\alpha=0.05$) + Cohen's $d$效应量
-    \end{exampleblock}
+        \begin{enumerate}
+            \item \textbf{基线方法对比}: 对比固定时间窗与搜索优化方法，验证自适应策略优于固定策略
+            \item \textbf{Q-Learning 与基线方法对比}: 将 Q-Learning 方法族与基线方法对比，评估强化学习相对优势
+            \item \textbf{表格型 Q-Learning 与 DQN 对比}: 验证表格型方法可在不显著牺牲性能前提下替代 DQN
+            \item \textbf{Q-Learning 变体消融实验}: 对比 Standard Q-Learning 与改进变体，验证其为最优选择
+        \end{enumerate}
+    \end{block}
+
+    \begin{alertblock}{实验验证目标}
+        \footnotesize
+        系统验证表格型 Q-Learning 方法在运动想象时间窗优化任务中的有效性
+    \end{alertblock}
 \end{frame}
 
 % ============================================================================
@@ -82,21 +195,22 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{基线方法性能分析}
-    \begin{alertblock}{主要发现}
+\begin{frame}{基线方法性能对比分析}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{准确率}：搜索策略 (61.9\%--63.3\%) 显著优于固定窗口 (约 45\%)
-            \item \textbf{提升百分比}：Grid-Search 和 Random-Search 分别实现 +18.3\% 和 +16.9\%
-            \item \textbf{Kappa 系数}：搜索策略 (0.49--0.51) 中等一致性，优于固定窗口 (0.27)
-            \item \textbf{F1 分数}：搜索策略 (0.61--0.63) 较固定窗口 (0.43) 提升约 44\%
+            \item \textbf{分类准确率}：误差线表示标准差，搜索策略（61.9\%--63.3\%）显著优于固定窗口（约 45\%）
+            \item \textbf{准确率提升百分比}：相对于 Fixed-2s，Grid-Search 和 Random-Search 分别实现 +18.3\% 和 +16.9\%，Fixed-1s 仅 +0.4\%
+            \item \textbf{Cohen's Kappa}：搜索策略（0.492--0.511）中等一致性，优于固定窗口（0.27）
+            \item \textbf{F1 分数}：搜索策略（0.611--0.625）较固定窗口（0.43）提升约 44\%
         \end{itemize}
     \end{alertblock}
 
-    \vspace{0.2cm}
     \begin{exampleblock}{结果分析}
         \footnotesize
-        搜索优化方法显著优于固定窗口策略。Grid-Search 准确率达 63.35\%，较 Fixed-2s 提升 18.3\%（相对提升 40.6\%）。Kappa 系数从 0.27 提升至 0.51，F1 分数从 0.43 提升至 0.63。这表明\textbf{自适应时间窗口能有效捕捉最优信号片段}，克服固定窗口无法适应 EEG 信号动态变化的局限。
+        \textbf{性能提升}：搜索优化方法显著优于固定窗口策略。Grid-Search 准确率达 63.35\%，较 Fixed-2s 提升 18.3\%（\textbf{相对提升 40.6\%}）。Kappa 系数从 0.27 提升至 0.51，F1 分数从 0.43 提升至 0.63。这表明\textbf{自适应时间窗口能有效捕捉最优信号片段}，克服固定窗口无法适应 EEG 信号动态变化的局限。
+        
+        \textbf{固定窗口局限}：三种固定窗口长度性能几乎相同（45.05\%--45.47\%），表明\textbf{简单调整窗口长度无法解决固定窗口的固有局限}，自适应策略是必然选择。
     \end{exampleblock}
 \end{frame}
 
@@ -107,20 +221,21 @@
 \end{frame}
 
 \begin{frame}{基线方法稳定性分析}
-    \begin{exampleblock}{稳定性评估}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{标准差}：搜索策略显著降低性能波动
-            \item \textbf{变异系数}：搜索策略 (13.5\%--13.9\%) vs 固定窗口 (19.8\%--23.9\%)
-            \item \textbf{最小准确率}：搜索方法 (约 47\%) 远高于固定窗口 (28\%--33\%)
-            \item \textbf{结论}：搜索策略有效提升性能下限保障
+            \item \textbf{标准差}：衡量预测结果的绝对波动性
+            \item \textbf{变异系数 (CV)}：反映数据的相对离散程度，消除量纲影响
+            \item \textbf{箱线图}：展示中位数、四分位距及离群值分布
+            \item \textbf{最小/最大准确性范围}：展示性能边界
         \end{itemize}
-    \end{exampleblock}
+    \end{alertblock}
 
-    \vspace{0.2cm}
     \begin{alertblock}{结果分析}
         \footnotesize
-        尽管搜索方法的绝对标准差与 Fixed-2s 相近，但其变异系数显著降低（13.5\%--13.9\% vs 19.8\%--23.9\%）。更重要的是，搜索方法的最小准确率（约 47\%）远高于固定窗口（约 28\%--33\%），\textbf{有效避免了极端差性能的出现}，提高了方法的下限保障。
+        \textbf{稳定性改善}：尽管搜索方法的绝对标准差与 Fixed-2s 相近，但其\textbf{变异系数显著降低}（13.5\%--13.9\% vs 19.8\%--23.9\%）。更重要的是，搜索方法的最小准确率（约 47\%）远高于固定窗口（约 28\%--33\%），\textbf{有效避免了极端差性能的出现}，提高了方法的下限保障。
+        
+        \textbf{搜索策略比较}：Grid-Search 略优于 Random-Search（+1.4\%），但差异微小（< 2.3\%）。考虑到 Random-Search 的计算效率优势，\textbf{在实时 BCI 系统中可能更具实用价值}。
     \end{alertblock}
 \end{frame}
 
@@ -131,20 +246,22 @@
 \end{frame}
 
 \begin{frame}{各被试准确率分布分析}
-    \begin{alertblock}{个体差异分析}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{固定窗口}：被试间差异大 (30\%--70\%)，平均停滞在 45\%
-            \item \textbf{Random-Search}：同一被试多次运行高度聚集，均值提升至 61.9\%
-            \item \textbf{Grid-Search}：最高平均准确率 63.3\%
-            \item \textbf{结论}：搜索策略有效缓解个体差异带来的性能波动
+            \item 每个子图代表一种实验配置，散点表示单个被试的实验结果
+            \item 红色虚线表示整体平均准确率
+            \item \textbf{(a)--(c) 固定窗口策略}：数据点在纵轴方向分布广泛（范围约 30\%--70\%）
+            \item \textbf{(d) Random-Search}：同一被试的多次运行结果（每列多个点）高度聚集
+            \item \textbf{(e) Grid-Search}：最高平均准确率（63.3\%）
         \end{itemize}
     \end{alertblock}
 
-    \vspace{0.2cm}
     \begin{exampleblock}{结果分析}
         \footnotesize
-        固定窗口方法在被试间表现出极大波动（30\%--70\%），而 Random-Search 在同一被试的多次运行中高度一致。这验证了\textbf{个体间神经响应模式的异质性}，搜索策略通过为每个样本独立优化窗口，有效适应了这种差异。
+        \textbf{个体差异适应}：固定窗口方法在被试间表现出极大波动（30\%--70\%），而 Random-Search 在同一被试的多次运行中高度一致。这验证了\textbf{个体间神经响应模式的异质性}（Inter-subject variability），搜索策略通过为每个样本独立优化窗口，有效适应了这种差异。
+        
+        \textbf{鲁棒性提升}：相较于固定窗口方法，基于搜索的优化策略不仅显著提升了分类性能，还有效缓解了个体差异带来的性能波动，展现了更强的鲁棒性。
     \end{exampleblock}
 \end{frame}
 
@@ -167,19 +284,25 @@
 \end{frame}
 
 \begin{frame}{基线方法结果分析}
-    \begin{alertblock}{结果分析}
+    \begin{alertblock}{核心发现}
         \footnotesize
         \begin{itemize}
-            \item Grid-Search 准确率达 63.35\%，较 Fixed-2s 提升 18.3\%
-            \item Kappa 系数从 0.27 提升至 0.51，F1 从 0.43 提升至 0.63
-            \item 搜索策略变异系数显著降低，有效避免极端差性能
+            \item \textbf{性能提升}：Grid-Search 准确率 63.35\%，较 Fixed-2s 提升 18.3\%（相对提升 40.6\%）
+            \item \textbf{一致性改善}：Kappa 系数从 0.27 提升至 0.51，F1 从 0.43 提升至 0.63
+            \item \textbf{稳定性增强}：变异系数降低约 40\%，最小准确率从 28\% 提升至 47\%
         \end{itemize}
     \end{alertblock}
 
     \vspace{0.2cm}
     \begin{exampleblock}{搜索策略比较}
         \footnotesize
-        Grid-Search 略优于 Random-Search（+1.4\%），但差异微小（< 2.3\%）。考虑到 Random-Search 的计算效率优势，\textbf{在实时 BCI 系统中可能更具实用价值}。三种固定窗口长度性能几乎相同（45.05\%--45.47\%），表明\textbf{简单调整窗口长度无法解决固定窗口的固有局限}，自适应策略是必然选择。
+        Grid-Search 略优于 Random-Search（+1.4\%），但差异微小（< 2.3\%）。考虑到 Random-Search 的计算效率优势，\textbf{在实时 BCI 系统中可能更具实用价值}。
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{固定窗口局限}
+        \footnotesize
+        三种固定窗口长度性能几乎相同（45.05\%--45.47\%），表明\textbf{简单调整窗口长度无法解决固定窗口的固有局限}，自适应策略是必然选择。
     \end{exampleblock}
 \end{frame}
 
@@ -194,21 +317,20 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Q-Learning 与基线方法性能分析}
-    \begin{exampleblock}{性能对比}
+\begin{frame}{Q-Learning 与基线方法性能对比分析}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{准确率}：所有方法相近 (61.7\%--63.3\%)，Grid-Search 略居首位
-            \item \textbf{相对改进}：强化学习方法略低于 Grid-Search (-0.6\% 至 -1.6\%)
-            \item \textbf{Kappa 系数}：各方法集中在 0.49--0.51，一致性水平相当
-            \item \textbf{雷达图}：Grid-Search 在准确率和 F1 最优，强化学习在稳定性略有优势
+            \item \textbf{分类准确率}：所有方法性能相近（61.7\%--63.3\%），Grid-Search 以 63.3\% 略居首位
+            \item \textbf{准确率改进}：相对于 Grid-Search，强化学习方法略低（-0.6\% 至 -1.6\%），Random-Search 差距 -1.4\%
+            \item \textbf{Cohen's Kappa}：各方法 Kappa 系数集中在 0.49--0.51，分类一致性水平相当
+            \item \textbf{雷达图}：综合展示准确率、Kappa、F1 和稳定性（变异系数倒数归一化），Grid-Search 在准确率和 F1 最优，强化学习在稳定性略有优势
         \end{itemize}
-    \end{exampleblock}
+    \end{alertblock}
 
-    \vspace{0.2cm}
     \begin{alertblock}{结果分析}
         \footnotesize
-        Grid-Search 以 63.3\% 的准确率位居首位，所有强化学习方法的性能均略低于 Grid-Search（-0.6\% 至 -1.6\%），Random-Search 差距为 -1.4\%。各方法 Kappa 系数集中在 0.49--0.51 之间，分类一致性水平相当。实验结果表明，强化学习方法能够以较低的计算成本达到与网格搜索相近的性能水平，为实时自适应时间窗口选择提供了可行方案。
+        Grid-Search 以 63.3\% 的准确率位居首位，所有强化学习方法的性能均略低于 Grid-Search（-0.6\% 至 -1.6\%），Random-Search 差距为 -1.4\%。各方法 Kappa 系数集中在 0.49--0.51 之间，分类一致性水平相当。实验结果表明，\textbf{强化学习方法能够以较低的计算成本达到与网格搜索相近的性能水平}，为实时自适应时间窗口选择提供了可行方案。
     \end{alertblock}
 \end{frame}
 
@@ -219,21 +341,21 @@
 \end{frame}
 
 \begin{frame}{统计显著性分析}
-    \begin{alertblock}{统计评估}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{效应量}：所有方法效应量远小于小效应阈值 ($|d| < 0.2$)
-            \item \textbf{性能排名}：Grid-Search (63.3\%) 第一，Q-Learning 变体 (62.7\%) 并列第二
-            \item \textbf{稳定性}：各方法准确率分布范围相近 (45\%--75\%)
-            \item \textbf{成功率}：所有方法均达 100\% 成功率
+            \item \textbf{(a) Cohen's d 效应量}：以 Grid-Search 为基准，所有方法 $|d| < 0.2$（小效应阈值）
+            \item \textbf{(b) 性能排名}：Grid-Search (63.3\%) 第一，Dueling/DQN/Standard Q-Learning (62.7\%) 并列第二
+            \item \textbf{(c) 稳定性箱线图}：各方法准确率分布范围相近（约 45\%--75\%），中位数集中在 65\%
+            \item \textbf{(d) 成功率}：所有方法均达 100\% 成功率，表明各方法在不同实验条件下均能稳定收敛
         \end{itemize}
     \end{alertblock}
 
     \vspace{0.2cm}
-    \begin{exampleblock}{结果分析}
+    \begin{alertblock}{结果分析}
         \footnotesize
         所有 Q-Learning 方法与 Grid-Search 的 Cohen's d 值均远小于小效应阈值（$|d| < 0.2$），其中 Dueling Double Q-Learning 的效应量最大（$d=-0.11$）。这表明\textbf{尽管 Grid-Search 在数值上略优，但差异在统计学上不显著}，Q-Learning 方法可视为与 Grid-Search 性能等效。
-    \end{exampleblock}
+    \end{alertblock}
 \end{frame}
 
 \begin{frame}{时间窗选择模式分析}
@@ -243,15 +365,24 @@
 \end{frame}
 
 \begin{frame}{时间窗选择模式分析}
-    \begin{exampleblock}{时间窗分析}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{位置分布}：所有方法倾向选择试验后期 ($t_{start} \approx 2.2$s, $t_{end} \approx 3.3$s)
-            \item \textbf{关键发现}：运动想象关键神经特征主要分布在 trials 后半段
-            \item \textbf{窗口长度与性能}：显著负相关，较短窗口 (约 0.9s) 准确率更高
-            \item \textbf{结论}：精简时间窗口有助于减少噪声干扰并提升分类性能
+            \item \textbf{(a) 时间窗口位置分布}：展示各方法选择的起始时间 ($t_{start}$) 和结束时间 ($t_{end}$)
+            \item \textbf{(b) 窗口长度与准确率关系}：散点图展示窗口长度与分类准确率的关系
         \end{itemize}
-    \end{exampleblock}
+    \end{alertblock}
+
+    % \vspace{0.2cm}
+    % \begin{exampleblock}{时间窗分析}
+    %     \footnotesize
+    %     \begin{itemize}
+    %         \item \textbf{位置分布}：所有方法倾向选择试验后期 ($t_{start} \approx 2.2$s, $t_{end} \approx 3.3$s)
+    %         \item \textbf{关键发现}：运动想象关键神经特征主要分布在 trials 后半段
+    %         \item \textbf{窗口长度与性能}：显著负相关，较短窗口 (约 0.9s) 准确率更高
+    %         \item \textbf{Grid-Search}：以 0.89s 的最短窗口实现 63.3\% 的最高准确率
+    %     \end{itemize}
+    % \end{exampleblock}
 
     \vspace{0.2cm}
     \begin{alertblock}{结果分析}
@@ -308,18 +439,17 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Q-Learning 变体性能分析}
-    \begin{exampleblock}{变体对比}
+\begin{frame}{Q-Learning 变体性能对比分析}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{准确率}：各变体高度接近 (61.7\%--62.7\%)
-            \item \textbf{最佳性能}：Standard Q-Learning、Dueling Q-Learning 和 DQN 并列 (62.7\%)
-            \item \textbf{多指标}：所有变体在准确率、Kappa、F1 上表现一致
-            \item \textbf{结论}：Standard Q-Learning 已足以捕捉策略，复杂变体未带来显著增益
+            \item \textbf{(a) 分类准确率}：各变体性能高度接近（61.7\%--62.7\%），Standard/Dueling Q-Learning 和 DQN 并列最佳
+            \item \textbf{(b) 性能排名}：确认 Standard Q-Learning 等三种方法的领先地位，Dueling Double Q-Learning 略低
+            \item \textbf{(c) 多指标对比}：综合展示 Accuracy、Kappa、F1，未见特定变体在某项指标上有显著优势
+            \item \textbf{(d) 稳定性箱线图}：各方法准确率分布范围和中位数基本重合
         \end{itemize}
-    \end{exampleblock}
+    \end{alertblock}
 
-    \vspace{0.2cm}
     \begin{alertblock}{结果分析}
         \footnotesize
         各变体性能高度接近（61.7\%--62.7\%），Standard Q-Learning、Dueling Q-Learning 和 DQN 并列最佳（62.7\%）。性能排名进一步确认了 Standard Q-Learning 等三种方法的领先地位，Dueling Double Q-Learning 略低（61.7\%）。多指标综合对比显示，所有变体在各项指标上表现一致，未见特定变体在某项指标上有显著优势。结果表明，在本任务中，\textbf{Standard Q-Learning 已足以捕捉时间窗口选择的策略，复杂的变体改进并未带来显著的性能增益}。
@@ -333,21 +463,20 @@
 \end{frame}
 
 \begin{frame}{Table Q-Learning 与 DQN 深度对比分析}
-    \begin{alertblock}{深度对比}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{准确率}：所有方法高度接近 (61.7\%--62.7\%)
-            \item \textbf{效应量}：所有 $|d| < 0.2$，Standard Q 与 DQN 几乎无差异 ($d=0.00$)
-            \item \textbf{时间窗}：DQN 选较短窗口 (约 1.0s)，Table Q 分布在 0.9s--1.1s
-            \item \textbf{结论}：简单 Table Q-Learning 与复杂 DQN 性能相当
+            \item \textbf{(a) 分类准确率}：所有方法高度接近（61.7\%--62.7\%），Standard/Dueling Q-Learning 和 DQN 均达 62.7\%
+            \item \textbf{(b) 效应量分析}：以 Standard Q 为基准，所有 $|d| < 0.2$，Double Q-Learning ($d=-0.10$) 和 Dueling Double ($d=-0.11$) 显示微小负效应
+            \item \textbf{(c) 时间窗口选择}：DQN 倾向较短窗口（约 1.0s），Table Q 分布在 0.9s--1.1s
+            \item \textbf{(d) 多指标雷达图}：所有方法在准确率和 F1 相近，稳定性指标存在一定差异
         \end{itemize}
     \end{alertblock}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{结果分析}
+    \begin{alertblock}{结果分析}
         \footnotesize
-        所有方法性能高度接近（61.7\%--62.7\%），Standard Q-Learning、Dueling Q-Learning 和 DQN 均达到 62.7\% 的最高准确率。效应量分析显示，所有方法的效应量均远低于小效应阈值（$|d| < 0.2$），其中 Double Q-Learning ($d=-0.10$) 和 Dueling Double Q-Learning ($d=-0.11$) 显示出微小的负效应。结果表明，\textbf{在本任务中，简单的 Table Q-Learning 与复杂的 DQN 性能相当}，说明状态空间离散化策略已足够有效。
-    \end{exampleblock}
+        Standard Q-Learning ($d=0.00$)、Dueling Q-Learning ($d=0.01$) 和 DQN ($d=0.00$) 与基准几乎无差异。结果表明，\textbf{在本任务中，简单的 Table Q-Learning 与复杂的 DQN 性能相当}，说明状态空间离散化策略已足够有效，深度神经网络的优势未能充分体现。
+    \end{alertblock}
 \end{frame}
 
 \begin{frame}{训练收敛特性分析}
@@ -357,25 +486,33 @@
 \end{frame}
 
 \begin{frame}{训练收敛特性分析}
-    \begin{exampleblock}{训练动态}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{最终准确率}：Standard Q-Learning、Dueling Q-Learning 和 DQN 均达 62.7\%
-            \item \textbf{收敛速度}：所有方法在 0--50 Episodes 快速收敛至 60\%
-            \item \textbf{训练方差}：Double Q-Learning 方差大，Standard Q-Learning 和 DQN 更稳定
-            \item \textbf{结论}：Standard Q-Learning 保持高性能同时，具有更优训练稳定性
+            \item \textbf{(a) 最终准确率}：Standard/Dueling Q-Learning 和 DQN 均达 62.7\%，Double Q-Learning 及其变体略低
+            \item \textbf{(b) 训练学习曲线}：200 Episodes，细线表示独立运行轨迹，粗线表示平均趋势
         \end{itemize}
-    \end{exampleblock}
+    \end{alertblock}
+
+    % \vspace{0.2cm}
+    % \begin{exampleblock}{训练动态}
+    %     \footnotesize
+    %     \begin{itemize}
+    %         \item \textbf{最终准确率}：Standard Q-Learning、Dueling Q-Learning 和 DQN 均达 62.7\%
+    %         \item \textbf{收敛速度}：所有方法在 0--50 Episodes 快速收敛至 60\%
+    %         \item \textbf{训练方差}：Double Q-Learning 方差大，Standard Q-Learning 和 DQN 更稳定
+    %         \item \textbf{结论}：Standard Q-Learning 保持高性能同时，具有更优训练稳定性
+    %     \end{itemize}
+    % \end{exampleblock}
 
     \vspace{0.2cm}
     \begin{alertblock}{结果分析}
         \footnotesize
-        所有方法在初始阶段（0--50 Episodes）均表现出快速收敛特性，准确率迅速攀升至 60\% 左右。在 Episode 100 处观察到的性能波动后，各方法均能迅速恢复并趋于稳定。观察发现，Double Q-Learning 显示出较大的训练方差（细线离散度高），而 Standard Q-Learning 和 DQN 表现出更平滑、稳定的收敛过程。结果表明，Standard Q-Learning 在保持高性能的同时，具有更优的训练稳定性和收敛效率。
+        所有方法在初始阶段（0--50 Episodes）均表现出快速收敛特性，准确率迅速攀升至 60\% 左右。在 Episode 100 处观察到的性能波动（可能源于实验协议中的策略重置或环境参数调整）后，各方法均能迅速恢复并趋于稳定。观察发现，Double Q-Learning 显示出较大的训练方差（细线离散度高），而 Standard Q-Learning 和 DQN 表现出更平滑、稳定的收敛过程。结果表明，Standard Q-Learning 在保持高性能的同时，具有更优的训练稳定性和收敛效率。
     \end{alertblock}
 \end{frame}
 
 \begin{frame}{Table Q-Learning vs DQN 详细对比}
-    \begin{center}
     \footnotesize
     \renewcommand{\arraystretch}{1.1}
     \begin{tabular}{lcccc}
@@ -387,7 +524,6 @@
         \textbf{$\Delta$ (Q - DQN)} & \textbf{-0.02} & -0.0003 & +0.0001 & \textbf{-1.01}  \\
         \hline
     \end{tabular}
-    \end{center}
 \end{frame}
 
 \begin{frame}{Table Q-Learning vs DQN 结果分析}
@@ -412,7 +548,6 @@
 \end{frame}
 
 \begin{frame}{被试级别性能对比}
-    \begin{center}
     \footnotesize
     \renewcommand{\arraystretch}{1.1}
     \begin{tabular}{lcccccc}
@@ -430,7 +565,6 @@
         S09 & 68.69 $\pm$ 1.06 & 68.27 $\pm$ 0.85 & +0.42 & 0.582 & 0.577 & +0.006 \\
         \hline
     \end{tabular}
-    \end{center}
 \end{frame}
 
 \begin{frame}{被试级别性能分析}
@@ -489,22 +623,21 @@
 \end{frame}
 
 \begin{frame}{Q-Learning 改进策略消融实验分析}
-    \begin{alertblock}{性能演变}
+    \begin{alertblock}{子图说明}
         \footnotesize
         \begin{itemize}
-            \item \textbf{Baseline}：62.7\% 准确率
-            \item \textbf{+ Double Q}：下降至 61.9\% (-0.8\%)
-            \item \textbf{+ Dueling}：恢复至 62.7\% (+0.9\%)
-            \item \textbf{+ Both}：略降至 61.7\% (-1.0\%)
-            \item \textbf{结论}：Dueling 架构维持性能，Double Q 未带来预期收益
+            \item \textbf{(a) 准确率演变}：Baseline (62.7\%) $\rightarrow$ + Double Q (61.9\%, -0.8\%) $\rightarrow$ + Dueling (62.7\%, +0.9\%) $\rightarrow$ + Both (61.7\%, -1.0\%)
+            \item \textbf{(b) Kappa 系数演变}：趋势与准确率一致，Baseline (0.502) 与 + Dueling (0.503) 最佳
+            \item \textbf{(c) F1 分数演变}：Baseline 和 + Dueling 均达 0.620，涉及 Double Q 的变体略低
+            \item \textbf{(d) 综合得分}：Baseline (59.39)，+ Dueling (59.41)，+ Double Q 和 + Both 分别下降 1.6\% 和 1.8\%
         \end{itemize}
     \end{alertblock}
 
     \vspace{0.2cm}
-    \begin{exampleblock}{结果分析}
+    \begin{alertblock}{结果分析}
         \footnotesize
-        Baseline 准确率为 62.7\%，引入 Double Q 后略微下降至 61.9\% (-0.8\%)，引入 Dueling 架构后恢复至 62.7\% (+0.9\%)，而两者结合（Dueling Double Q-Learning）略降至 61.7\% (-1.0\%)。Kappa 系数和 F1 分数趋势与准确率一致，Baseline (0.502) 与 + Dueling (0.503) 表现最佳，涉及 Double Q 的变体略低（0.491 和 0.489）。结果表明，在本任务中，\textbf{Dueling 架构能维持基线性能，但 Double Q 机制并未带来预期收益}，Standard Q-Learning 已是最优选择。
-    \end{exampleblock}
+        结果表明，在本任务中，\textbf{Dueling 架构能维持基线性能，但 Double Q 机制并未带来预期收益}，Standard Q-Learning 已是最优选择。
+    \end{alertblock}
 \end{frame}
 
 \begin{frame}{时间窗口选择演变分析}
@@ -514,6 +647,15 @@
 \end{frame}
 
 \begin{frame}{时间窗口选择演变分析}
+    \begin{alertblock}{子图说明}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{(a) 时间窗口位置演变}：展示 Baseline 及引入 Double Q、Dueling 架构后的 $t_{start}$ 和 $t_{end}$
+            \item \textbf{(b) 窗口长度与准确率关系}：散点图展示窗口长度与分类准确率的负相关趋势
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
     \begin{exampleblock}{窗口模式}
         \footnotesize
         \begin{itemize}
@@ -525,11 +667,6 @@
         \end{itemize}
     \end{exampleblock}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{结果分析}
-        \footnotesize
-        所有方法均一致地选择试验后期的时间片段（起始约 2.2s，结束约 3.2s--3.3s），验证了运动想象关键特征分布的时间稳定性。窗口长度与分类准确率的关系散点图显示显著的负相关趋势：Standard Q-Learning 和 Dueling Q-Learning 选择了较短的窗口（约 0.9s），取得了更高的准确率（62.7\%）；而引入 Double Q 机制的变体倾向于选择较长的窗口（1.05s--1.1s），准确率略低（61.7\%--61.9\%）。这表明\textbf{精简的时间窗口（约 0.9s）更有利于捕捉判别性特征并抑制噪声干扰}。
-    \end{alertblock}
 \end{frame}
 
 \begin{frame}{改进策略详细分析}
@@ -539,7 +676,18 @@
 \end{frame}
 
 \begin{frame}{改进策略详细分析}
-    \begin{alertblock}{综合分析}
+    \begin{alertblock}{子图说明}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{(a) 相对提升}：Dueling (+0.11\%)，Double Q (-1.3\%)，Both (-1.5\%)
+            \item \textbf{(b) 效应量}：所有$|d| < 0.2$，+ Double Q ($d=-0.10$) 和 + Both ($d=-0.11$) 显示微小负效应
+            \item \textbf{(c) 稳定性}：Baseline 最优 (Std Dev = 8.20\%)，+ Both 波动最大 (9.11\%)
+            \item \textbf{(d) 性能分布箱线图}：各方法中位数相近（约 65\%），+ Both 的 IQR 和分布范围略宽
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{综合分析}
         \footnotesize
         \begin{itemize}
             \item \textbf{相对提升}：Dueling (+0.11\%)，Double Q (-1.3\%)，Both (-1.5\%)
@@ -547,13 +695,8 @@
             \item \textbf{稳定性}：Baseline 最优 (8.20\%)，Both 波动最大 (9.11\%)
             \item \textbf{结论}：Standard Q-Learning 已是最优选择，复杂机制增加开销
         \end{itemize}
-    \end{alertblock}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{结果分析}
-        \footnotesize
-        Dueling 架构带来了微小的正向提升（+0.11\%），而引入 Double Q 机制（-1.3\%）及两者结合（Both, -1.5\%）均导致性能下降。所有变体与基线的效应量均远小于小效应阈值（$|d| < 0.2$）。Baseline 表现出最佳的稳定性（Std Dev = 8.20\%），而 + Both 的波动性最大（9.11\%）。综合分析表明，\textbf{Standard Q-Learning 已足以有效解决本任务的时间窗口选择问题}，引入 Double Q 或 Dueling 等复杂机制不仅未能提升性能，反而可能增加计算复杂度并略微降低稳定性。
     \end{exampleblock}
+
 \end{frame}
 
 \begin{frame}{消融实验详细对比}
