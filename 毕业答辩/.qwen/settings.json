@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xelatex *)",
+      "Bash(biber *)",
+      "Bash(rm *)",
+      "Bash(bibtex *)"
+    ]
+  },
+  "$version": 3
+}

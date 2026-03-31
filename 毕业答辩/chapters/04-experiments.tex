@@ -58,7 +58,7 @@
         \end{alertblock}
 
         \column{0.5\textwidth}
-        \begin{block}{预处理流程\cite{delorme2004eeglab}}
+        \begin{alertblock}{标准预处理流程\cite{delorme2004eeglab}}
             \footnotesize
             \begin{enumerate}
                 \item \textbf{带通滤波}：8--30 Hz (FIR)\\保留$\mu$(8--13 Hz)和$\beta$(13--30 Hz)节律，捕捉 ERD/ERS 现象\cite{pfurtscheller1999event}
@@ -66,14 +66,14 @@
                 \item \textbf{平均参考}：所有通道平均值\\提高空间分辨率
                 \item \textbf{时间窗截取}：$[t_{\text{start}}, t_{\text{end}}]$\\用于特征提取
             \end{enumerate}
-        \end{block}
+        \end{alertblock}
     \end{columns}
 \end{frame}
 
 \begin{frame}{特征提取与分类}
     \begin{columns}[T]
         \column{0.55\textwidth}
-        \begin{block}{CSP 特征提取\cite{blankertz2008optimizing,mcfarland1997spatial}}
+        \begin{alertblock}{CSP 特征提取\cite{blankertz2008optimizing,mcfarland1997spatial}}
             \footnotesize
             \vspace{0.1cm}
             \textbf{共空间模式 (CSP)}：使不同类别信号方差差异最大化
@@ -91,7 +91,7 @@
             
             \vspace{0.1cm}
             \textbf{配置}：4 个 CSP 分量（2 对）
-        \end{block}
+        \end{alertblock}
 
         \column{0.42\textwidth}
         \begin{alertblock}{分类器设计\cite{lotte2007review}}

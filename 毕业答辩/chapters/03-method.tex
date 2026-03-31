@@ -212,7 +212,7 @@
 \subsection{收敛性分析}
 
 \begin{frame}{收敛性保证}
-    \begin{block}{Q-Learning 收敛性定理\cite{watkins1992q}}
+    \begin{block}{Q-Learning 收敛性定理}
         \footnotesize
         对于有限 MDP，若满足：
         \begin{itemize}
@@ -220,13 +220,13 @@
             \item 学习率序列满足 Robbins-Monro 条件
             \item 采用适当探索策略（如$\varepsilon$-贪婪）
         \end{itemize}
-        则 Q 值序列以概率 1 收敛到最优动作价值函数$Q^*$
+        则 Q 值序列以概率 1 收敛到最优动作价值函数$Q^*$\cite{watkins1992q}
     \end{block}
 
     \begin{alertblock}{本研究的收敛性条件}
         \footnotesize
         \begin{itemize}
-            \item \textbf{有限状态空间}：136 状态 × 4 动作 = 544 个 Q 值条目
+            \item \textbf{有限状态空间}：136 状态 $\times$ 4 动作 = 544 个 Q 值条目
             \item \textbf{充分探索}：$\varepsilon$-贪婪策略，4000 步充分访问
             \item \textbf{确定性转移}：时间窗参数调整是可预测的离散操作
         \end{itemize}
