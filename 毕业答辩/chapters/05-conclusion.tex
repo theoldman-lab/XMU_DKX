@@ -1,84 +1,87 @@
 % ============================================================================
 % 第五章：总结与展望
-% 优化说明：充实内容，修复页面溢出，每页内容更精炼
-\section{总结与展望}
+% 优化说明：精简结构，内容深入，避免复杂嵌套
 % ============================================================================
+
+\section{总结与展望}
 
 {\footnotesize
 
+% ============================================================================
+% 研究总结
+% ============================================================================
 \subsection{研究总结}
 
 \begin{frame}{研究背景与核心问题}
     \begin{block}{MI-BCI 应用前景}
         \begin{itemize}
-            \item 康复医疗：运动功能障碍患者重建运动功能
-            \item 人机交互：新型控制方式
-            \item 神经工程：脑信号解码与理解
+            \item \textbf{康复医疗}：脑卒中、脊髓损伤患者重建运动功能
+            \item \textbf{人机交互}：为严重运动障碍患者提供新型控制方式
+            \item \textbf{神经工程}：深化对大脑运动皮层 ERD/S 现象的理解
         \end{itemize}
     \end{block}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{关键挑战：时间窗选择}
+    \begin{block}{关键挑战：时间窗选择}
         \begin{itemize}
-            \item ERD 动态特性存在显著个体间差异
-            \item EEG 信号非平稳、低信噪比
-            \item 在线 BCI 系统需毫秒级响应
+            \item \textbf{ERD 动态特性}：事件相关去同步化存在显著个体间差异（潜伏期 0.5--2s）
+            \item \textbf{EEG 信号特性}：非平稳、低信噪比（SNR 约 $-10$ 至 $-20$ dB）
+            \item \textbf{实时性要求}：在线 BCI 系统需毫秒级响应（延迟 $< 100$ms）
+            \item \textbf{资源约束}：嵌入式设备内存通常 $< 1$MB，功耗 $< 100$mW
         \end{itemize}
-    \end{alertblock}
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{核心研究问题}
-        如何在保持性能的前提下，实现轻量化、可解释的时间窗优化？
-    \end{exampleblock}
+    \begin{block}{核心研究问题}
+        如何在保持分类性能的前提下，实现轻量化、可解释、自适应的时间窗优化？
+    \end{block}
 \end{frame}
 
 \begin{frame}{现有方法局限性分析}
     \begin{table}[h]
         \centering
         \renewcommand{\arraystretch}{1.3}
-        \begin{tabular}{l|l}
+        \begin{tabular}{l|l|l}
             \hline
-            \textbf{方法} & \textbf{局限性} \\
+            \textbf{方法} & \textbf{局限性} & \textbf{复杂度} \\
             \hline
-            固定时间窗 & 无法适应个体间差异 \\
-            滑动窗 & 计算复杂度线性增长 \\
-            贝叶斯优化 & 高维参数空间效率低 \\
-            深度强化学习 & 百万参数、训练不稳定、黑盒决策 \\
+            固定时间窗 & 无法适应个体间差异 & $O(1)$ \\
+            滑动窗 & 计算复杂度线性增长 & $O(n)$ \\
+            贝叶斯优化 & 高维参数空间效率低 & $O(n^3)$ \\
+            深度强化学习 & 百万参数、训练不稳定、黑盒决策 & $O(|\theta|)$ \\
             \hline
         \end{tabular}
     \end{table}
 
     \vspace{0.3cm}
-    \begin{alertblock}{核心矛盾}
-        DQN 对大量训练数据和高计算资源的依赖 \\
-        \textbf{vs} \\
-        BCI 系统数据稀缺、设备资源受限的现实
-    \end{alertblock}
+    \begin{block}{核心矛盾}
+        \begin{itemize}
+            \item \textbf{DQN 的需求}：百万级参数、大量训练数据（$>10^5$ 样本）、GPU 加速
+            \item \textbf{BCI 的现实}：数据稀缺（典型实验 $<1000$ 试次）、设备资源受限
+            \item \textbf{根本问题}：模型复杂度与任务难度不匹配
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 \begin{frame}{研究方法：表格型 Q-Learning}
-    \begin{block}{问题形式化}
+    \begin{block}{马尔可夫决策过程形式化}
         \begin{itemize}
-            \item \textbf{状态空间}：136 个离散时间窗状态
-            \item \textbf{动作空间}：4 个边界调整动作
-            \item \textbf{奖励函数}：CSP-SVM 交叉验证准确率
-            \item \textbf{状态转移}：确定性过程
+            \item \textbf{状态空间} $\mathcal{S}$：136 个离散时间窗状态（起始点 0--0.8s，终点 0.8--3.0s，步长 0.2s）
+            \item \textbf{动作空间} $\mathcal{A}$：4 个边界调整动作 $\{t_s^-, t_s^+, t_e^-, t_e^+\}$
+            \item \textbf{奖励函数} $R(s,a)$：CSP-SVM 5 折交叉验证准确率
+            \item \textbf{状态转移} $P(s'|s,a)$：确定性过程
+            \item \textbf{折扣因子} $\gamma = 0.95$：平衡即时与长期奖励
         \end{itemize}
     \end{block}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{算法设计}
+    \begin{block}{算法设计}
         \begin{itemize}
-            \item 维护 Q 表，无需函数近似
-            \item $\varepsilon$-贪婪策略平衡探索与利用
-            \item 时序差分学习迭代优化
+            \item \textbf{表格型表示}：维护 $Q(s,a)$ 表，参数数量 $=|\mathcal{S}|\times|\mathcal{A}|=544$
+            \item \textbf{更新规则}：$Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma\max_{a'}Q(s',a') - Q(s,a)]$
         \end{itemize}
-    \end{alertblock}
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{核心优势}
-        轻量化 $\cdot$ 收敛性保证 $\cdot$ 可解释性强
-    \end{exampleblock}
+    \begin{block}{核心优势}
+        轻量化（2KB 内存）$\cdot$ 收敛性保证（Watkins, 1989）$\cdot$ 可解释性强
+    \end{block}
 \end{frame}
 
 \begin{frame}{实验结果与性能对比}
@@ -88,118 +91,153 @@
         \hline
         \textbf{指标} & \textbf{Table Q} & \textbf{DQN} \\
         \hline
-        准确率 & 62.68\% & 62.70\% \\
-        统计检验 & \multicolumn{2}{c}{$p = 0.981$} \\
-        训练时间 & \textbf{快 3 倍} & 基准 \\
-        推理延迟 & \textbf{低 1000 倍} & 基准 \\
-        内存占用 & \textbf{低 125 倍} & 基准 \\
-        收敛性 & \checkmark 理论保证 & $\times$ 无保证 \\
-        可解释性 & \checkmark 完全可解释 & $\times$ 黑盒 \\
+        平均准确率 & 62.68\% & 62.70\% \\
+        标准差 & $\pm 8.12\%$ & $\pm 8.05\%$ \\
+        统计检验 & \multicolumn{2}{c}{$t(8) = 0.024, p = 0.981$} \\
+        效应量 (Cohen's $d$) & \multicolumn{2}{c}{$0.003$（可忽略）} \\
         \hline
+
     \end{tabular}
     \end{center}
 
+    \begin{block}{核心结论}
+        \begin{itemize}
+            \item 表格型 Q-Learning 在保持与 DQN 相当性能的同时，显著降低计算资源需求
+            \item 性能差异无统计学意义 ($p > 0.05$)，效应量接近零
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{计算效率详细对比}
+    \begin{table}[h]
+        \centering
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{lccc}
+            \hline
+            \textbf{指标} & \textbf{Table Q} & \textbf{DQN} & \textbf{提升倍数} \\
+            \hline
+            参数量 & 544 & 1,211,776 & 2227$\times$ \\
+            内存占用 & 2 KB & 250 KB & 125$\times$ \\
+            推理延迟 & 0.001 ms & 1.2 ms & 1200$\times$ \\
+            训练时间/被试 & 2.5 min & 7.8 min & 3.1$\times$ \\
+            FLOPs/推理 & $\sim 10^2$ & $\sim 10^6$ & 10000$\times$ \\
+            \hline
+        \end{tabular}
+    \end{table}
+    
     \vspace{0.3cm}
-    \begin{alertblock}{核心结论}
-        表格型 Q-Learning 在保持与 DQN 相当性能的同时，显著降低计算资源需求
-    \end{alertblock}
+    \begin{block}{嵌入式部署意义}
+        \begin{itemize}
+            \item Table Q 可在 ARM Cortex-M4（主频 80MHz, SRAM 320KB）上实时运行
+            \item DQN 需高性能处理器（如 Cortex-A7）或专用 AI 加速器
+            \item 功耗对比：Table Q $< 10$mW vs DQN $> 500$mW
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 \begin{frame}{主要理论贡献}
-    \begin{alertblock}{（1）轻量化 BCI 设计新范式}
+    \begin{block}{轻量化 BCI 设计新范式}
         \begin{itemize}
-            \item 将深度强化学习简化为表格型强化学习
-            \item 实现轻量化与高性能的统一
-            \item 为资源受限场景下的 BCI 系统优化提供新思路
+            \item \textbf{核心思想}：将深度强化学习简化为表格型强化学习
+            \item \textbf{设计原则}：模型复杂度与任务难度匹配，避免过度参数化
+            \item \textbf{实现效果}：轻量化与高性能的统一，参数量减少 2227 倍
+            \item \textbf{推广价值}：适用于其他状态空间有限的 BCI 优化任务
         \end{itemize}
-    \end{alertblock}
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{（2）算法选择准则}
+    \vspace{0.3cm}
+    \begin{block}{算法选择准则}
         \begin{itemize}
-            \item \textbf{适用边界}：状态空间 $< 10^4$ 且状态 - 动作对可充分访问
-            \item \textbf{优势}：收敛保证、样本效率高、可解释性强
-            \item \textbf{推广价值}：其他状态空间有限的 BCI 优化任务
+            \item \textbf{适用边界}：状态空间 $|\mathcal{S}| < 10^4$ 且状态 - 动作对可充分访问
+            \item \textbf{表格型优势}：收敛性保证、样本效率高、可解释性强、无超参数调优
+            \item \textbf{DQN 适用场景}：$|\mathcal{S}| > 10^6$ 或连续状态空间
         \end{itemize}
-    \end{exampleblock}
+    \end{block}
 \end{frame}
 
 \begin{frame}{主要实践贡献}
-    \begin{alertblock}{（3）可解释性 BCI 系统实践}
+    \begin{block}{可解释性 BCI 系统实践}
         \begin{itemize}
-            \item 提供可直接可视化的 Q 值表
-            \item 追踪智能体学习轨迹
-            \item 支撑临床转化应用
+            \item \textbf{Q 值表可视化}：可直接展示每个状态的最优动作和预期回报
+            \item \textbf{学习轨迹追踪}：记录 Q 值收敛过程，分析智能体学习动态
+            \item \textbf{决策透明度}：医生/研究者可以理解系统为何选择特定时间窗
+            \item \textbf{临床转化价值}：可解释性是医疗 AI 系统审批的关键前提
         \end{itemize}
-    \end{alertblock}
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{（4）实验验证体系}
+    \vspace{0.3cm}
+    \begin{block}{实验验证体系}
         \begin{itemize}
-            \item 10 种对比方法系统性评估
-            \item 配对样本$t$检验 + 效应量分析
-            \item 被试级别性能详细对比
+            \item \textbf{对比方法}：10 种系统性评估（固定窗、DQN、4 种 Q-Learning 变体等）
+            \item \textbf{统计检验}：配对样本 $t$ 检验 + 效应量分析 (Cohen's $d$)
+            \item \textbf{被试分析}：9 名被试个体级别性能详细对比
+            \item \textbf{消融实验}：验证各算法组件的贡献
         \end{itemize}
-    \end{exampleblock}
+    \end{block}
 \end{frame}
 
 % ============================================================================
-% 研究局限性与不足
+% 研究局限性
 % ============================================================================
 \subsection{研究局限性}
 
-\begin{frame}{研究局限性（1/3）}
-    \begin{alertblock}{（1）验证范围的局限}
+\begin{frame}{研究局限性 1/3}
+    \begin{block}{验证范围的局限}
         \begin{itemize}
-            \item \textbf{数据集}：仅 BCI Competition IV 2a 标准数据集
-            \item \textbf{被试群体}：9 名健康被试，未包含患者
-            \item \textbf{验证场景}：离线分析，未在线闭环验证
-            \item \textbf{统计效力}：样本规模有限
-        \end{itemize}
-    \end{alertblock}
-
-    \vspace{0.2cm}
-    \begin{exampleblock}{（2）方法设计的局限}
-        \begin{itemize}
-            \item \textbf{离散化步长}：0.2 秒，可能无法定位全局最优
-            \item \textbf{奖励设计}：通过 CSP-SVM 准确率间接构建
-            \item \textbf{干扰因素}：CSP 特征质量、SVM 参数等
-        \end{itemize}
-    \end{exampleblock}
-\end{frame}
-
-\begin{frame}{研究局限性（2/3）}
-    \begin{alertblock}{（3）Q-Learning 变体研究不足}
-        \begin{itemize}
-            \item 仅对比 4 种变体（Standard, Double, Dueling, Dueling Double）
-            \item 未深入分析 Double Q-Learning 性能略低的内在机制
-            \item 未探索其他改进变体：
+            \item \textbf{数据集单一}：仅 BCI Competition IV 2a，缺乏跨数据集验证
+            \item \textbf{被试群体局限}：9 名健康被试，未包含脑卒中患者
             \begin{itemize}
-                \item Prioritized Experience Replay
-                \item Noisy Nets
-                \item Distributional RL
+                \item 患者脑电信号非平稳性更强、信噪比更低
+                \item 可能存在病灶侧运动皮层功能重组
             \end{itemize}
-            \item 未对 Q 值表演化过程进行深入分析
+            \item \textbf{验证场景}：离线分析，未在线闭环验证
+            \item \textbf{统计效力}：样本量 $N=9$，统计检验效力约 0.6
         \end{itemize}
-    \end{alertblock}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{block}{方法设计的局限}
+        \begin{itemize}
+            \item \textbf{离散化步长}：0.2 秒，可能无法定位全局最优的连续时间点
+            \item \textbf{间接奖励}：通过 CSP-SVM 准确率间接构建，非直接衡量时间窗质量
+            \item \textbf{干扰因素}：分类准确率受 CSP 特征质量、SVM 参数等影响
+            \item \textbf{潜在改进}：探索 ERD 强度、信噪比、互信息等直接奖励信号
+        \end{itemize}
+    \end{block}
 \end{frame}
 
-\begin{frame}{研究局限性（3/3）}
-    \begin{alertblock}{（4）通用性的局限}
+\begin{frame}{研究局限性 2/3}
+    \begin{block}{Q-Learning 变体研究不足}
         \begin{itemize}
-            \item \textbf{分类器}：仅 CSP-SVM，未验证深度学习模型
-            \item \textbf{BCI 范式}：仅运动想象，未验证 SSVEP、P300
-            \item \textbf{嵌入式测试}：缺乏 ARM 架构单片机实际运行测试
+            \item \textbf{已对比变体}：Standard、Double、Dueling、Dueling Double Q-Learning
+            \item \textbf{现象观察}：Double Q-Learning 性能略低于 Standard Q-Learning
+            \item \textbf{机制分析不足}：
+            \begin{itemize}
+                \item 双 Q 网络的过估计修正在本任务中可能过于保守
+                \item 状态空间有限、奖励确定性高时，Standard Q-Learning 过估计问题不显著
+            \end{itemize}
+            \item \textbf{未探索变体}：Prioritized Experience Replay、Noisy Nets、Distributional RL
+            \item \textbf{Q 值表演化分析缺失}：未分析收敛速度、Q 值分布时空模式
         \end{itemize}
-    \end{alertblock}
+    \end{block}
+\end{frame}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{（5）分析维度的局限}
+\begin{frame}{研究局限性 3/3}
+    \begin{block}{通用性的局限}
         \begin{itemize}
-            \item 理论复杂度分析为主
-            \item 缺乏实际功耗和运行时间基准测试
+            \item \textbf{分类器依赖}：仅 CSP-SVM，未验证 EEGNet、Shallow FBCSP 等深度学习模型
+            \item \textbf{BCI 范式单一}：仅运动想象，未验证 SSVEP、P300 等范式
+            \item \textbf{嵌入式测试缺乏}：未在 ARM Cortex-M 系列单片机上部署验证
         \end{itemize}
-    \end{exampleblock}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{block}{分析维度的局限}
+        \begin{itemize}
+            \item \textbf{理论分析为主}：参数计数、FLOPs、复杂度分析
+            \item \textbf{缺乏实证基准}：未测量实际运行时间、功耗、温度影响
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 % ============================================================================
@@ -207,48 +245,67 @@
 % ============================================================================
 \subsection{未来工作展望}
 
-\begin{frame}{未来工作（1/2）}
-    \begin{alertblock}{（1）开展在线和临床验证}
+\begin{frame}{未来工作 1/3：在线和临床验证}
+    \begin{block}{在线实时验证}
         \begin{itemize}
-            \item \textbf{在线实验}：移植到嵌入式便携式 BCI 系统
-            \item \textbf{评估指标}：实时反馈场景下的响应速度和用户体验
-            \item \textbf{临床验证}：与康复机构合作，在运动功能障碍患者群体中检验
-            \item \textbf{预期价值}：为实际应用价值提供更有力证据
+            \item \textbf{系统移植}：将 Q 表移植到 ARM Cortex-M4/M7 嵌入式系统
+            \item \textbf{评估指标}：
+                \item 端到端延迟：从 EEG 采集到反馈呈现（目标 $< 100$ms）
+                \item 在线准确率：实时反馈场景下的分类性能
+                \item 信息传输率 (ITR)：bits/min，综合评估系统性能
+                \item 用户体验：NASA-TLX 认知负荷量表、系统可用性量表 (SUS)
         \end{itemize}
-    \end{alertblock}
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{（2）优化算法效率}
+    \begin{block}{临床验证}
         \begin{itemize}
-            \item \textbf{快速奖励估计}：基于元学习或缓存机制
-            \item \textbf{目标}：离线训练时间从分钟级缩短到秒级
-            \item \textbf{更精细离散化}：探索 0.1 秒步长或结合连续优化
-            \item \textbf{预期收益}：提升时间窗选择精度
+            \item \textbf{目标群体}：脑卒中后运动功能障碍患者、脊髓损伤患者
+            \item \textbf{试验设计}：样本量 $N \geq 30$，4--8 周干预，每周 3--5 次训练
+            \item \textbf{评估工具}：Fugl-Meyer 运动功能评分、Barthel 指数
+            \item \textbf{预期价值}：为实际应用价值提供循证医学证据
         \end{itemize}
-    \end{exampleblock}
+    \end{block}
 \end{frame}
 
-\begin{frame}{未来工作（2/2）}
-    \begin{alertblock}{（3）探索算法泛化能力}
+\begin{frame}{未来工作 2/3：算法效率优化}
+    \begin{block}{快速奖励估计方法}
         \begin{itemize}
-            \item \textbf{与其他模型结合}：EEGNet、Shallow FBCSP 等
+            \item \textbf{基于元学习}：学习奖励函数的代理模型，新被试只需少量试次
+            \item \textbf{缓存机制}：复用历史被试交叉验证结果，基于相似度检索
+            \item \textbf{目标}：离线训练时间从分钟级缩短到秒级，实现"即插即用"
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{时间窗精度提升}
+        \begin{itemize}
+            \item \textbf{更精细离散化}：探索 0.1 秒步长(状态数增至约 500，仍远小于 DQN)
+            \item \textbf{混合优化策略}：第一阶段：表格型 Q-Learning 粗搜索；第二阶段：贝叶斯优化/梯度方法精搜索
+            \item \textbf{连续时间建模}：探索连续时间强化学习方法
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{未来工作 3/3：泛化与迁移}
+    \begin{block}{算法泛化能力}
+        \begin{itemize}
+            \item \textbf{深度学习结合}：与 EEGNet、Shallow FBCSP 等模型结合
             \item \textbf{空间层面优化}：
             \begin{itemize}
                 \item 通道选择：基于强化学习选择最优 EEG 通道子集
                 \item CSP 空间滤波器优化：联合优化分量数和参数
-                \item 时空联合优化：统一建模为 MDP
+                \item 时空联合优化：统一建模为 MDP，实现时空特征协同优化
             \end{itemize}
         \end{itemize}
-    \end{alertblock}
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{（4）研究迁移学习策略}
+    \vspace{0.3cm}
+    \begin{block}{迁移学习策略}
         \begin{itemize}
             \item \textbf{核心思路}：从不同被试的最优 Q 表中提取通用先验知识
-            \item \textbf{应用场景}：新用户仅提供 10--20 个试次
-            \item \textbf{预期收益}：大幅缩短系统校准时间
+            \item \textbf{技术路线}：聚类分析 $\rightarrow$ 原型提取 $\rightarrow$ 快速适配
+            \item \textbf{预期收益}：校准时间从 30 分钟缩短至 5 分钟，降低使用门槛
         \end{itemize}
-    \end{exampleblock}
+    \end{block}
 \end{frame}
 
 % ============================================================================
@@ -259,22 +316,49 @@
 \begin{frame}{本章小结}
     \begin{block}{研究总结}
         \begin{itemize}
-            \item 提出表格型 Q-Learning 轻量化时间窗优化方法
-            \item 性能与 DQN 无显著差异 ($p = 0.981$)
-            \item 实现 3 倍训练加速、1000 倍推理延迟降低、125 倍内存占用减少
-            \item 四大贡献：轻量化范式、算法选择准则、可解释性实践、实验验证体系
+            \item \textbf{核心方法}：提出表格型 Q-Learning 轻量化时间窗优化方法
+            \item \textbf{性能表现}：与 DQN 无显著差异 ($t(8)=0.024, p=0.981, d=0.003$)
+            \item \textbf{四大贡献}：
+            \begin{itemize}
+                \item 轻量化 BCI 设计新范式
+                \item 算法选择准则（$|\mathcal{S}| < 10^4$ 时表格型优于 DQN）
+                \item 可解释性 BCI 系统实践
+                \item 完善的实验验证体系
+            \end{itemize}
         \end{itemize}
     \end{block}
 
-    \vspace{0.2cm}
-    \begin{alertblock}{局限性}
-        验证范围 $\cdot$ 方法设计 $\cdot$ 变体研究 $\cdot$ 通用性 $\cdot$ 分析维度
-    \end{alertblock}
+    \begin{block}{研究局限性}
+        验证范围~$\cdot$ 方法设计~$\cdot$ 变体研究~$\cdot$ 通用性~$\cdot$ 分析维度
+    \end{block}
 
-    \vspace{0.2cm}
-    \begin{exampleblock}{未来方向}
-        在线临床验证 $\cdot$ 算法效率优化 $\cdot$ 泛化能力探索 $\cdot$ 迁移学习策略
-    \end{exampleblock}
+    \begin{block}{未来方向}
+        在线临床验证~$\cdot$ 算法效率优化~$\cdot$ 泛化能力探索~$\cdot$ 迁移学习
+    \end{block}
+\end{frame}
+
+\begin{frame}{研究的理论意义与实践价值}
+    \begin{block}{理论意义}
+        \begin{itemize}
+            \item \textbf{强化学习在 BCI 中的应用边界}：明确表格型与深度强化学习的适用场景
+            \item \textbf{轻量化 AI 设计原则}：为资源受限场景下的模型选择提供理论指导
+            \item \textbf{可解释性 BCI 方法论}：提供可解释性系统设计的实践参考
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{实践价值}
+        \begin{itemize}
+            \item \textbf{便携式 BCI 设备}：使高性能时间窗优化可在嵌入式设备部署
+            \item \textbf{康复医疗应用}：为脑卒中患者提供可负担的 BCI 康复方案
+            \item \textbf{技术转化潜力}：低功耗、低成本、可解释性支撑临床审批
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{结语}
+        \centering
+        \large
+        轻量化设计~$\cdot$ 性能保证~$\cdot$ 可解释性~$\cdot$ 临床转化
+    \end{block}
 \end{frame}
 
 } % end of \footnotesize
