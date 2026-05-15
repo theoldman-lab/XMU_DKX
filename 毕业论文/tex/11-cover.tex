@@ -4,57 +4,55 @@
 
 %% 绘制封面
 \newcommand\makecover{
-	\setstretch{1.78889} % 设置行间距
+	\setstretch{1.78889}
 	\newpage
 	\cleardoublepage
 	\thispagestyle{empty}
 	\pdfbookmark[0]{封面}{cover}
 
-	% \ifxmu@pdf
-		% \includepdf[pages=-]{pdf_files/cover.pdf}
-	% \else
+	\vspace*{20pt}
+	\begin{center}
+		% 校徽
+		\includegraphics[width=4.82cm]{figures/xmu-logo.pdf}
 
-		{\heiti \zihao{-4} \noindent \xmu@label@schoolserialnumber \xmu@value@schoolserialnumber}  \\
-		{\heiti \zihao{-4} \xmu@label@studentnumber \xmu@value@studentnumber}
+		\vskip 3em
 
-		\vskip 20pt
+		% 本科毕业论文（设计）
+		{\bfseries\songti \zihao{-2} \xmu@value@thesistype}
 
-		\begin{figure}[htb!]
-			\centering
-			\includegraphics[width=4.82cm]{figures/xmu-logo.pdf}
-		\end{figure}
+		\vskip 2em
 
-		\begin{center}
-			{\heiti \zihao{2} \xmu@value@thesistype}
-			\vskip 35pt
-				{\heiti \zihao{-2} \xmu@value@title}
-			\vskip 15pt
-				{\bfseries \zihao{3} \xmu@value@entitle}
-			\vskip 55pt
-				{\kaishu \zihao{-2} \xmu@value@author}
-			\vskip 30pt
+		% 主修专业
+		{\heiti \zihao{3} \xmu@value@major}
 
-				{\kaishu \zihao{-3}
-					\begin{tabular}{r p{1mm} l}
-						\xmu@label@advisor    &  & \xmu@value@advisor
-						\\
-						\xmu@label@major      &  & \xmu@value@major
-						\\
-						\xmu@label@submitdate &  & \xmu@value@submitdate
-						\\
-						\xmu@label@defenddate &  & \xmu@value@defenddate
-						\\
-						\xmu@label@grantdate  &  & \xmu@value@grantdate
-					\end{tabular}}
+		\vskip 2em
 
-			\vskip 100pt
-				{\heiti \zihao{-4} \xmu@value@printdate}
-		\end{center}
+		% 中文标题
+		{\heiti \zihao{-2} \xmu@value@title}
 
-		\vfill
+		\vskip 1ex
 
-	% \fi
+		% 英文标题
+		{\bfseries \zihao{3} \xmu@value@entitle}
 
+		\vskip 2em
+
+		% 学生和指导教师信息
+		{\songti \zihao{4}\mdseries
+		\renewcommand\arraystretch{1.2}
+		\begin{tabular}{r@{：\quad}l}
+			\makebox[7em][r]{姓\qquad 名}       & \xmu@value@author \\
+			\makebox[7em][r]{学\qquad 号}       & \xmu@value@studentnumber \\
+			\makebox[7em][r]{学\qquad 院}       & \xmu@value@college \\
+			\makebox[7em][r]{专\qquad 业}       & \xmu@value@major \\
+			\makebox[7em][r]{年\qquad 级}       & \xmu@value@grade \\
+			\makebox[7em][r]{校内指导教师} & \xmu@value@advisor（\xmu@value@advisortitle）\\
+			\makebox[7em][r]{校外指导教师} & \xmu@value@externaladvisor（\xmu@value@externaladvisortitle）\\
+			\makebox[7em][r]{时间}       & \xmu@value@coverdate
+		\end{tabular}}
+	\end{center}
+
+	\vfill
 	\clearpage
 }
 
@@ -75,7 +73,7 @@
 			{\songti\zihao{4} \par \xmu@label@originality@content}
 		\vskip 20pt
 		\hspace{8cm}{\zihao{4}\xmu@label@originality@authorsign\par}
-		\hspace{8cm}{\zihao{4}\xmu@label@originality@supervisorsign\par}
+		% \hspace{8cm}{\zihao{4}\xmu@label@originality@supervisorsign\par}
 		\vskip 20pt
 		\hspace{8.4cm} {\zihao{4}\xmu@label@originality@signdate}
 	% \fi

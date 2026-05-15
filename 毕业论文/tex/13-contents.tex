@@ -50,6 +50,11 @@
 \newcommand\ensubsection[1]{\addcontentsline{etoc}{subsection}{\protect\numberline{\thesubsection}#1}}
 \newcommand\ensubsubsection[1]{\addcontentsline{etoc}{subsubsection}{\protect\numberline{\thesubsubsection}#1}}
 
+%% 双语文档结构宏（同时写入中文和英文目录）
+\newcommand\xmuchapter[2]{\chapter{#1}\enchapter{#2}}
+\newcommand\xmusection[2]{\section{#1}\ensection{#2}}
+\newcommand\xmusubsection[2]{\subsection{#1}\ensubsection{#2}}
+
 %% 英文目录
 \newcommand\entableofcontents{
 	\setstretch{1} % 设置行间距

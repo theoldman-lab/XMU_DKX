@@ -2,10 +2,10 @@
 %% 第 1 章 引言
 %%=============================================================================
 
-\chapter{引言}
+\xmuchapter{引言}{Introduction}
 \label{chap:introduction}
 
-\section{研究背景}
+\xmusection{研究背景}{Research Background}
 \label{sec:background}
 
 脑机接口（Brain-Computer Interface, BCI）技术通过采集和解码脑电信号（Electroencephalogram, EEG），在大脑与外部环境之间建立通信通道，为运动功能障碍患者提供了重建运动功能的可能性\cite{tangermann2012review}。自 1970 年代 Vidal 首次提出 BCI 概念以来\cite{vidal1973toward}，经过半个世纪的发展，BCI 技术已从实验室研究逐步走向临床应用。根据信号诱发机制的不同，BCI 可分为主动式（如运动想象）、反应式（如 P300）和稳态诱发（如 SSVEP）三大范式\cite{lotte2018review}。
@@ -18,7 +18,7 @@
 
 在运动想象 BCI 系统中，时间窗选择的重要性源于三方面：首先，ERD 动态特性存在显著的个体间差异，固定时间窗策略难以适应所有被试\cite{zhang2019temporally}；其次，EEG 信号具有非平稳性和低信噪比特性，时间窗长度需要在信息完整性与噪声抑制之间取得平衡\cite{blankertz2008optimizing}；最后，在线 BCI 系统需要在毫秒级延迟内完成决策，时间窗的起始点和终点直接影响系统响应性\cite{tangermann2012review}。因此，自适应时间窗优化是提升运动想象 BCI 分类性能的关键途径。
 
-\section{问题提出}
+\xmusection{问题提出}{Problem Statement}
 \label{sec:problem_statement}
 
 BCI 技术在实际应用中面临多重约束。首先是\textbf{数据稀缺性}：EEG 数据采集成本高昂，BCI 研究通常仅能获取数十至数百个试次的训练数据，难以支撑深度神经网络等数据密集型模型的有效训练\cite{lotte2007review}。此外，EEG 信号具有显著的\textbf{个体间差异性}（inter-subject variability），要求 BCI 模型必须能够根据特定用户的早期校准数据（通常仅 50--100 个试次）进行快速独立训练\cite{lotte2011regularizing}。
@@ -39,10 +39,10 @@ BCI 技术在实际应用中面临多重约束。首先是\textbf{数据稀缺�
 
 针对上述问题，本研究的核心研究问题是：\textbf{在运动想象时间窗优化任务中，是否存在一种方法，能够在保持与深度强化学习相当性能的同时，显著降低模型复杂度、提升训练稳定性和可解释性？}
 
-\section{研究内容与意义}
+\xmusection{研究内容与意义}{Research Content and Significance}
 \label{sec:research_content}
 
-\subsection{研究内容}
+\xmusubsection{研究内容}{Research Content}
 \label{subsec:research_content}
 
 针对上述问题，本研究提出一种基于\textbf{表格型 Q-Learning}的运动想象脑电信号时间窗优化方法。核心主张是：在运动想象时间窗优化这一状态空间有限（136 个状态）的特定任务中，表格型 Q-Learning 可在保持与 DQN 相当性能的同时，显著降低模型复杂度，提升系统稳定性和可解释性。
@@ -57,7 +57,7 @@ BCI 技术在实际应用中面临多重约束。首先是\textbf{数据稀缺�
 
 （4）\textbf{实验验证}。在 BCI Competition IV 2a 数据集上验证所提方法的有效性，从分类准确率、训练时间、推理延迟、内存占用等维度与 DQN 和固定时间窗基准进行对比。
 
-\subsection{研究意义}
+\xmusubsection{研究意义}{Research Significance}
 \label{subsec:contributions}
 
 本研究的意义主要体现在理论贡献与实践价值两个层面：
@@ -74,7 +74,7 @@ BCI 技术在实际应用中面临多重约束。首先是\textbf{数据稀缺�
 
 （2）\textbf{可解释性 BCI 系统的实践探索}。表格型 Q-Learning 的 Q 值表可直接可视化和分析，研究者能够追踪智能体的学习轨迹、理解决策依据并调试优化策略。在医疗康复等安全敏感应用中，可解释性是系统部署的关键前提。本研究的可解释性设计为 BCI 系统的临床转化提供了重要支撑。
 
-\section{论文结构}
+\xmusection{论文结构}{Thesis Structure}
 \label{sec:thesis_structure}
 
 本论文共分为五章，结构安排如下：

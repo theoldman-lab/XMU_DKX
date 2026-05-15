@@ -44,14 +44,24 @@
 \def\xmu@label@defenddate{论文答辩日期：}
 \def\xmu@label@grantdate{学位授予日期：}
 
+%% 本科封面专用标签
+\def\xmu@label@cover@name{姓~~~~名：}
+\def\xmu@label@cover@studentid{学~~~~号：}
+\def\xmu@label@cover@college{学~~~~院：}
+\def\xmu@label@cover@major{专~~~~业：}
+\def\xmu@label@cover@grade{年~~~~级：}
+\def\xmu@label@cover@internaladvisor{校内指导教师：}
+\def\xmu@label@cover@externaladvisor{校外指导教师：}
+\def\xmu@label@cover@date{}
+
 %% 声明内容标签
-\def\xmu@label@originality@title{厦门大学学位论文原创性声明}
-\def\xmu@label@originality@authorsign{声明人~~~~（签名）：}
+\def\xmu@label@originality@title{厦门大学本科学位论文诚信承诺书}
+\def\xmu@label@originality@authorsign{学生声明~~~~（签名）：}
 \def\xmu@label@originality@supervisorsign{指导教师（签名）：}
 \def\xmu@label@originality@signdate{~~~~~~~~年~~~~月~~~~日}
-\def\xmu@label@originality@content{本人呈交的学位论文是本人在导师指导下，独立完成的研究成果。本人在论文写作中参考其他个人或集体已经发表的研究成果，均在文中以适当方式明确标明，并符合法律规范和《厦门大学研究生学术活动规范（试行）》。\par
-	另外，该学位论文为（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）课题（组）的研究成果，获得（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）课题（组）经费或实验室的资助，在（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）实验室完成。（请在以上括号内填写课题或课题组负责人或实验室名称，未有此项声明内容的，可以不作特别声明。）\par
-	本人声明该学位论文不存在剽窃、抄袭等学术不端行为，并愿意承担因学术不端行为所带来的一切后果和法律责任。
+\def\xmu@label@originality@content{本人呈交的学位论文是本人在导师指导下独立完成的研究成果。本人在论文写作中参考其他个人或集体已经发表的研究成果，均在文中以适当方式明确标明，并符合法律规范和《厦门大学本科毕业论文（设计）规范》。\par
+	该学位论文为（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）课题（组）的研究成果，获得（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）课题（组）经费或实验室的资助，在（~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~）实验室完成。（请在以上括号内填写课题或课题组负责人或实验室名称，未有此项声明内容的，可以不作特别声明。）\par
+	本人承诺辅修专业毕业论文（设计）（如有）的内容与主修专业不存在相同与相近情况。
 }
 
 \def\xmu@label@copyright@title{厦门大学学位论文著作权使用声明}
@@ -73,7 +83,7 @@
 \ifxmu@master
 	\def\xmu@value@thesistype{硕~~~~士~~~~学~~~~位~~~~论~~~~文}
 \else
-	\def\xmu@value@thesistype{学~~~~士~~~~学~~~~位~~~~论~~~~文}
+	\def\xmu@value@thesistype{本~~~~科~~~~毕~~~~业~~~~论~~~~文~~~~（设~~~~计）}
 \fi
 \def\xmu@value@title{基于 Q-Learning 的运动想象时间窗优化方法}
 \def\xmu@value@entitle{Motor Imagery Time Window Optimization Based on Q-Learning}
@@ -83,6 +93,12 @@
 \def\xmu@value@submitdate{~~~~年~~~~月}
 \def\xmu@value@defenddate{~~~~年~~~~月}
 \def\xmu@value@grantdate{~~~~年~~~~月}
+\def\xmu@value@college{信息学院}
+\def\xmu@value@grade{2022级}
+\def\xmu@value@externaladvisor{}
+\def\xmu@value@advisortitle{副教授}
+\def\xmu@value@externaladvisortitle{}
+\def\xmu@value@coverdate{二〇二六年~~五月~~十五日}
 \def\xmu@value@printdate{\today}
 
 %% 设置封面内容的命令
@@ -101,3 +117,9 @@
 \newcommand\defenddate[1]{\def\xmu@value@defenddate{#1}}
 \newcommand\grantdate[1]{\def\xmu@value@grantdate{#1}}
 \newcommand\printdate[1]{\def\xmu@value@printdate{#1}}
+\newcommand\college[1]{\def\xmu@value@college{#1}}
+\newcommand\grade[1]{\def\xmu@value@grade{#1}}
+\newcommand\externaladvisor[1]{\def\xmu@value@externaladvisor{#1}}
+\newcommand\advisortitle[1]{\def\xmu@value@advisortitle{#1}}
+\newcommand\externaladvisortitle[1]{\def\xmu@value@externaladvisortitle{#1}}
+\newcommand\coverdate[1]{\def\xmu@value@coverdate{#1}}

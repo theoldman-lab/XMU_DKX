@@ -1,0 +1,85 @@
+\hypersetup {hidelinks}
+\contentsline {chapter}{\sffamily Abstract-Chinese}{V}{chapter*.2}%
+\contentsline {chapter}{\sffamily Abstract-English}{VI}{chapter*.3}%
+\contentsline {chapter}{\sffamily Contents-Chinese}{VII}{chapter*.4}%
+\contentsline {chapter}{\sffamily Contents-English}{XI}{chapter*.5}%
+\contentsline {chapter} {\numberline {\sffamily Chapter 1}Introduction} {1}{chapter.1}
+\contentsline {section} {\numberline {\sffamily 1.1}Research Background} {1}{section.1.1}
+\contentsline {section} {\numberline {\sffamily 1.2}Problem Statement} {2}{section.1.2}
+\contentsline {section} {\numberline {\sffamily 1.3}Research Content and Significance} {3}{section.1.3}
+\contentsline {subsection}{\numberline {1.3.1}Research Content}{3}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Research Significance}{3}{subsection.1.3.2}%
+\contentsline {section} {\numberline {\sffamily 1.4}Thesis Structure} {4}{section.1.4}
+\contentsline {chapter} {\numberline {\sffamily Chapter 2}Related Work} {5}{chapter.2}
+\contentsline {section} {\numberline {\sffamily 2.1}Motor Imagery BCI Systems} {5}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Neurophysiological Basis of Motor Imagery}{5}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Basic Architecture of BCI Systems}{5}{subsection.2.1.2}%
+\contentsline {section} {\numberline {\sffamily 2.2}EEG Feature Extraction and Classification Methods} {6}{section.2.2}
+\contentsline {section} {\numberline {\sffamily 2.3}Time Window Optimization Methods} {7}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Fixed Time Window Methods}{7}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Optimization-based Time Window Selection}{7}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Evaluation Criteria for Time Window Optimization}{8}{subsection.2.3.3}%
+\contentsline {section} {\numberline {\sffamily 2.4}Reinforcement Learning in BCI} {9}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}Fundamentals of Reinforcement Learning}{9}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Deep Q-Network}{9}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Reinforcement Learning Applications in BCI}{9}{subsection.2.4.3}%
+\contentsline {section} {\numberline {\sffamily 2.5}Chapter Summary} {10}{section.2.5}
+\contentsline {chapter} {\numberline {\sffamily Chapter 3}Method} {11}{chapter.3}
+\contentsline {section} {\numberline {\sffamily 3.1}Problem Formulation} {11}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Markov Decision Process Modeling}{11}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Optimization Objectives}{13}{subsection.3.1.2}%
+\contentsline {section} {\numberline {\sffamily 3.2}Tabular Q-Learning Algorithm} {13}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Algorithm Principles}{13}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Algorithm Design}{14}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Inference Process}{16}{subsection.3.2.3}%
+\contentsline {section} {\numberline {\sffamily 3.3}Convergence Analysis} {16}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Convergence Theorem}{16}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Convergence Guarantees of This Study}{16}{subsection.3.3.2}%
+\contentsline {section} {\numberline {\sffamily 3.4}Theoretical Comparison with DQN} {17}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Review of DQN Methods}{17}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Comparison of Theoretical Properties}{17}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Applicability Boundary Analysis}{18}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Basis for Method Selection}{18}{subsection.3.4.4}%
+\contentsline {section} {\numberline {\sffamily 3.5}Chapter Summary} {18}{section.3.5}
+\contentsline {chapter} {\numberline {\sffamily Chapter 4}Experiments and Results Analysis} {20}{chapter.4}
+\contentsline {section} {\numberline {\sffamily 4.1}Experimental Design} {20}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Experimental Environment}{20}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Dataset Description}{21}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Data Preprocessing}{21}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Feature Extraction and Classification}{21}{subsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.1.5}Comparison Methods}{22}{subsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.1.6}Evaluation Protocol}{23}{subsection.4.1.6}%
+\contentsline {subsection}{\numberline {4.1.7}Experimental Procedure Overview}{23}{subsection.4.1.7}%
+\contentsline {section} {\numberline {\sffamily 4.2}Baseline Method Performance Analysis} {23}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Fixed vs. Search-Optimized Time Windows}{23}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Result Analysis}{27}{subsection.4.2.2}%
+\contentsline {section} {\numberline {\sffamily 4.3}Comparative Analysis of Q-Learning and Baselines} {28}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Overall Performance Comparison}{28}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Time Window Selection Analysis}{30}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Result Analysis}{31}{subsection.4.3.3}%
+\contentsline {section} {\numberline {\sffamily 4.4}Comparative Analysis of Q-Learning and DQN} {32}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}Overall Performance Comparison}{32}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Subject-Level Performance Comparison}{35}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Statistical Significance Testing}{35}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Adaptive vs. Fixed Time Window}{36}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.5}Discussion}{36}{subsection.4.4.5}%
+\contentsline {section} {\numberline {\sffamily 4.5}Q-Learning Variant Ablation Experiments} {37}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Ablation Experiment Results}{37}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Inter-Subject Difference Analysis}{40}{subsection.4.5.2}%
+\contentsline {section} {\numberline {\sffamily 4.6}Chapter Summary} {41}{section.4.6}
+\contentsline {chapter} {\numberline {\sffamily Chapter 5}Conclusion and Future Work} {43}{chapter.5}
+\contentsline {section} {\numberline {\sffamily 5.1}Research Summary} {43}{section.5.1}
+\contentsline {section} {\numberline {\sffamily 5.2}Research Limitations and Shortcomings} {44}{section.5.2}
+\contentsline {section} {\numberline {\sffamily 5.3}Future Work Outlook} {45}{section.5.3}
+\contentsline {chapter}{\sffamily References}{46}{chapter*.28}%
+\contentsline {chapter} {\numberline {\sffamily Chapter {A}}Appendix} {48}{chapter.{A}}
+\contentsline {section} {\numberline {\sffamily {A}.1}Experimental Task Description} {48}{section.{A}.1}
+\contentsline {section} {\numberline {\sffamily {A}.2}EEG Data Parameters} {49}{section.{A}.2}
+\contentsline {section} {\numberline {\sffamily {A}.3}Tabular Q-Learning Hyperparameters} {49}{section.{A}.3}
+\contentsline {section} {\numberline {\sffamily {A}.4}DQN Hyperparameters} {51}{section.{A}.4}
+\contentsline {section} {\numberline {\sffamily {A}.5}Dueling Architecture Parameters} {52}{section.{A}.5}
+\contentsline {section} {\numberline {\sffamily {A}.6}CSP-SVM Classifier Hyperparameters} {52}{section.{A}.6}
+\contentsline {section} {\numberline {\sffamily {A}.7}Dataset Information} {53}{section.{A}.7}
+\contentsline {section} {\numberline {\sffamily {A}.8}Source Code Repository} {54}{section.{A}.8}
+\contentsline {subsection}{\numberline {{A}.8.1}Repository Address}{54}{subsection.Alph0.8.1}%
+\contentsline {subsection}{\numberline {{A}.8.2}Repository Screenshot}{54}{subsection.Alph0.8.2}%

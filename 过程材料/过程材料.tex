@@ -1,0 +1,364 @@
+\documentclass[12pt,a4paper]{ctexart}
+\usepackage[top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm]{geometry}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{xeCJK}
+\usepackage{amssymb}
+
+% 使用系统自带的中文字体，避免 Times New Roman 问题
+\setCJKmainfont{Noto Serif CJK SC}[
+    AutoFakeBold=true,
+    AutoFakeSlant=true
+]
+\setCJKsansfont{Noto Sans CJK SC}[
+    AutoFakeBold=true
+]
+\setCJKmonofont{Noto Sans Mono CJK SC}[
+    AutoFakeBold=true
+]
+
+% 英文字体使用默认（避免 Times New Roman）
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+
+% 修复 headheight 过小问题
+\setlength{\headheight}{13pt}
+
+% 定义方框字符（解决 □ 缺失问题）
+\newcommand{\checkbox}{$\square$}
+
+% 页眉页脚设置
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{本科毕业论文（设计）过程材料}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% 表格行高设置
+\renewcommand{\arraystretch}{1.2}
+
+% 列表设置
+\setlist{nosep,leftmargin=*,itemsep=0pt,parsep=0pt}
+
+\begin{document}
+
+\begin{center}
+{\Large \textbf{本科毕业论文（设计）过程材料}}
+\end{center}
+
+\section*{任务书}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+题目 & \multicolumn{3}{l|}{基于 Q-Learning 的运动想象时间窗优化方法} \\
+\hline
+姓名 & 邓凯璇 & 学号 & 37220222203575 \\
+\hline
+指导教师 & 施明辉 & 职称 & 副教授 \\
+\hline
+类型 & 论文 & 写作语言 & 中文  \\
+\hline
+来源 &  其它 & 选题方式 &  自选 \\
+\hline
+\end{tabularx}
+
+\subsection*{论文写作要求}
+自选
+
+\subsection*{支持条件}
+\begin{itemize}
+    \item \textbf{数据集}。 BCI Competition IV 2a 数据集，数据来自\\https://github.com/bregydoc/bcidatasetIV2a.git
+    \item \textbf{硬件环境}。 AMD Ryzen 7 6800H 处理器（8 核 16 线程，基准频率 3.2 GHz）和 NVIDIA GeForce RTX 2050 GPU（4 GB GDDR6 显存）
+    \item \textbf{软件环境}。操作系统为 Ubuntu 25.10（内核版本 6.17.0），深度学习计算后端为 CUDA 12.8 和 cuDNN 9.10.2.21。
+    \item \textbf{实现框架}。使用 Python 3.13.7 编程语言实现，主要依赖以下开源库：PyTorch 2.10.0（深度学习框架）、NumPy 2.4.2（数值计算）、SciPy 1.17.1（科学计算）、scikit-learn 1.8.0（机器学习算法）、MNE-Python 1.11.0（脑电信号预处理）、Pandas 3.0.1（数据处理）以及 Matplotlib 3.10.8（数据可视化）。
+\end{itemize}
+
+\subsection*{文献阅读要求}
+%%=============================================================================
+%% 毕业论文参考文献
+%%=============================================================================
+
+%%=============================================================================
+%% 引言参考文献
+%%=============================================================================
+
+\begin{enumerate}
+  \item Tangermann M, Müller K-R, Aertsen A, et al. Review of the BCI Competition IV[J]. Frontiers in Neuroscience, 2012, 6: 55.
+  \item Vidal J J. Toward Direct Brain-Computer Communication[J]. Annual Review of Biophysics and Bioengineering, 1973, 2(1): 157--180.
+  \item Lotte F, Bougrain L, Cichocki A, et al. A Review of Classification Algorithms for EEG-Based Brain--Computer Interfaces: A 10 Year Update[J]. Journal of Neural Engineering, 2018, 15(3): 031005.
+  \item Pfurtscheller G, Lopes da Silva F H. Event-Related EEG/MEG Synchronization and Desynchronization: Basic Principles[J]. Clinical Neurophysiology, 1999, 110(11): 1842--1857.
+  \item Zhang Y, Nam C S, Zhou G, et al. Temporally Constrained Sparse Group Spatial Patterns for Motor Imagery BCI[J]. IEEE Transactions on Cybernetics, 2019, 49(9): 3322--3332.
+  \item Blankertz B, Tomioka R, Lemm S, et al. Optimizing Spatial Filters for Robust EEG Single-Trial Analysis[J]. IEEE Signal Processing Magazine, 2008, 25(1): 41--56.
+  \item Lotte F, Guan C. Regularizing Common Spatial Patterns to Improve BCI Designs: Unified Theory and New Algorithms[J]. IEEE Transactions on Biomedical Engineering, 2011, 58(2): 355--362.
+  \item McFarland D J, McCane L M, David S V, et al. Spatial Filter Selection for EEG-Based Communication[J]. Electroencephalography and Clinical Neurophysiology, 1997, 103(3): 386--394.
+  \item Yang H, Sakhavi S, Ang K K, et al. Time Segment Selection for Multi-Class Motor Imagery EEG-Based BCI System Using Bayesian Optimization[C]. 2015 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC), IEEE, 2015: 1307--1310.
+  \item Chen X, Zhao B, Wang Y, et al. A Dynamic Window Method Based on Reinforcement Learning for SSVEP Recognition[J]. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 2019, 27(11): 2249--2257.
+  \item Zhang Y, Zhou G, Jin J, et al. MARS: Multiagent Reinforcement Learning for Spatial-Spectral and Temporal Feature Selection in EEG-Based BCI[J]. IEEE Transactions on Cybernetics, 2021, 52(8): 7876--7888.
+  \item Zhang Y, Zhou G, Jin J, et al. MARS: Multiagent Reinforcement Learning for Spatial--Spectral and Temporal Feature Selection in EEG-Based BCI[J]. IEEE Transactions on Systems, Man, and Cybernetics: Systems, 2024, 54(6): 3421--3433.
+  \item Zhou W, Wu L, Gao Y, et al. A Dynamic Window Method Based on Reinforcement Learning for SSVEP Recognition[J]. IEEE Transactions on Neural Systems and Rehabilitation Engineering, 2024, 32: 2114--2123.
+  \item Jayaram V, Alamgir M, Altun Y, et al. Transfer Learning in Brain--Computer Interfaces[J]. IEEE Computational Intelligence Magazine, 2016, 11(1): 20--31.
+\end{enumerate}
+
+%%=============================================================================
+%% 相关工作参考文献
+%%=============================================================================
+
+\begin{enumerate}
+  \setcounter{enumi}{14}
+  \item Lotte F, Congedo M, Lécuyer A, et al. A Review of Classification Algorithms for EEG-Based Brain--Computer Interfaces[J]. Journal of Neural Engineering, 2007, 4(2): R1--R13.
+  \item Sutton R S, Barto A G. Reinforcement Learning: An Introduction[M]. 2nd ed. Cambridge, MA: MIT Press, 2018.
+  \item Mnih V, Kavukcuoglu K, Silver D, et al. Human-Level Control Through Deep Reinforcement Learning[J]. Nature, 2015, 518(7540): 529--533.
+  \item Watkins C J C H, Dayan P. Q-Learning[J]. Machine Learning, 1992, 8(3-4): 279--292.
+  \item Van Hasselt H, Guez A, Silver D. Deep Reinforcement Learning with Double Q-Learning[C]. Proceedings of the AAAI Conference on Artificial Intelligence, 2016, 30(1).
+  \item Van Hasselt H. Double Q-Learning[C]. Advances in Neural Information Processing Systems, Curran Associates, Inc., 2010, 23: 2613--2621.
+  \item Wang Z, Schaul T, Hessel M, et al. Dueling Network Architectures for Deep Reinforcement Learning[C]. International Conference on Machine Learning, PMLR, 2016: 1995--2003.
+  \item Hessel M, Modayil J, Van Hasselt H, et al. Rainbow: Combining Improvements in Deep Reinforcement Learning[C]. Proceedings of the AAAI Conference on Artificial Intelligence, 2018, 32(1).
+  \item Cohen J. A Coefficient of Agreement for Nominal Scales[J]. Educational and Psychological Measurement, 1960, 20(1): 37--46.
+  \item Delorme A, Makeig S. EEGLAB: An Open Source Toolbox for Analysis of Single-Trial EEG Dynamics Including Independent Component Analysis[J]. Journal of Neuroscience Methods, 2004, 134(1): 9--21.
+  \item Pedregosa F, Varoquaux G, Gramfort A, et al. Scikit-Learn: Machine Learning in Python[J]. Journal of Machine Learning Research, 2011, 12: 2825--2830.
+  \item Field A. Discovering Statistics Using IBM SPSS Statistics[M]. 4th ed. London: Sage Publications, 2013.
+  \item Cohen J. Statistical Power Analysis for the Behavioral Sciences[M]. 2nd ed. Hillsdale, NJ: Lawrence Erlbaum Associates, 1988.
+\end{enumerate}
+
+%%=============================================================================
+%% 方法参考文献
+%%=============================================================================
+
+\begin{enumerate}
+  \setcounter{enumi}{28}
+  \item Schaul T, Quan J, Antonoglou I, et al. Prioritized Experience Replay[J]. arXiv preprint arXiv:1511.05952, 2015.
+  \item Fortunato M, Azar M G, Piot B, et al. Noisy Networks for Exploration[J]. arXiv preprint arXiv:1706.10295, 2018.
+  \item Bellemare M G, Dabney W, Munos R. A Distributional Perspective on Reinforcement Learning[C]. International Conference on Machine Learning, PMLR, 2017: 449--458.
+\end{enumerate}
+
+%%=============================================================================
+%% 实验与结果分析参考文献
+%%=============================================================================
+
+\begin{enumerate}
+  \setcounter{enumi}{31}
+  \item Lawhern V J, Solon A J, Waytowich N R, et al. EEGNet: A Compact Convolutional Neural Network for EEG-Based Brain--Computer Interfaces[J]. Journal of Neural Engineering, 2018, 15(5): 056013.
+  \item Ang K K, Chin Z Y, Zhang H, et al. Filter Bank Common Spatial Pattern (FBCSP) in Brain-Computer Interface[C]. 2008 IEEE International Joint Conference on Neural Networks (IEEE World Congress on Computational Intelligence), IEEE, 2008: 2390--2397.
+\end{enumerate}
+\vspace{1cm}
+
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{1cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\noindent 注：不足部分可加页。
+
+\newpage
+
+\section*{开题报告}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+题目 & \multicolumn{3}{l|}{基于 Q-Learning 的运动想象时间窗优化方法} \\
+\hline
+姓名 & 邓凯璇 & 学号 & 37220222203575 \\
+\hline
+\end{tabularx}
+
+
+\subsection*{研究目标}
+\begin{itemize}
+    \item 提出一种适用于MI脑电信号的自适应时间窗优化方法。  
+    \item 实现高于传统固定时间窗与常规优化方法的分类准确率。  
+    \item 验证所提方法在个体差异适应性与收敛稳定性方面的优势。  
+    \item 形成一套可复现、可扩展的代码体系与实验分析报告。
+\end{itemize}
+
+\subsection*{研究思路}
+\begin{itemize}
+    \item 系统梳理运动想象脑电信号处理与时窗选择的研究现状，分析现有方法的优缺点。
+    \item 提出基于Dueling Double Q-learning的时间窗优化框架，包括状态空间设计、动作定义、奖励函数构建等。
+    \item 基于BCI Competition IV Dataset 2a公开数据集，实现所提方法，并与固定时间窗、网格搜索、随机搜索、贝叶斯优化等方法进行对比实验。
+    \item 设计消融实验，验证Dueling架构与Double Q-learning机制各自的作用与协同效应。 
+    \item 开发完整的实验验证系统，包含数据预处理、特征提取、分类识别与结果可视化模块。 
+\end{itemize}
+
+\subsection*{研究方法}
+\begin{enumerate}
+    \item \textbf{问题形式化}:将时间窗优化建模为马尔可夫决策过程：
+            \begin{itemize}
+                \item \textbf{状态}：二维离散时间窗参数 \([t_{\text{start}}, t_{\text{end}}]\)
+                \item \textbf{动作}：对起止时间进行\(\pm 0.1\)秒的调整
+                \item \textbf{奖励}：结合分类准确率与窗口长度效率的综合评价
+            \end{itemize}
+    \item \textbf{算法设计}:采用\textbf{表格型Dueling Double Q-learning}，避免深度网络带来的复杂性与调参难度。算法核心包括：
+            \begin{itemize}
+                \item Dueling架构：分解状态价值 \(V(s)\) 与动作优势 \(A(s,a)\)
+                \item Double Q机制：交替更新两套Q表，抑制过高估计
+                \item \(\varepsilon\)-greedy策略：平衡探索与利用，随训练衰减探索率
+            \end{itemize}
+    \item \textbf{实验设计}:
+            \begin{itemize}
+                \item \textbf{数据集}：BCI Competition IV Dataset 2a（9名被试，4类MI任务）
+                \item \textbf{预处理}：平均参考、8--30 Hz带通滤波、50 Hz陷波滤波
+                \item \textbf{特征与分类}：CSP特征提取（3分量）+ 线性SVM分类器
+                \item \textbf{对比方法}：固定窗、网格搜索、随机搜索、标准Q-learning、Double Q-learning、Dueling Q-learning、DQN、贝叶斯优化等
+                \item \textbf{评估指标}：准确率、Cohen's Kappa、F1-score、训练时间、收敛速度
+            \end{itemize}
+    \item \textbf{统计分析}:使用Shapiro-Wilk检验正态性，Levene检验方差齐性，根据结果选择参数或非参数检验方法（如重复测量ANOVA或Friedman检验），并辅以效应量分析与事后检验。
+
+\end{enumerate}
+
+
+\subsection*{具体进度安排}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+起讫时间 & 计划完成内容 \\
+\hline
+2025年1月 & 文献调研、数据集准备、开题报告撰写\\
+\hline
+2025年2月 & 系统原型开发：实现预处理、特征提取、基础分类流程\\
+\hline
+2025年3月 & 实现Q-learning算法，完成中期检查\\
+\hline
+2025年4月 & 完成全部实验对比、结果分析与系统集成，提交论文初稿\\
+\hline
+2025年5月 & 论文修改、查重、答辩准备\\
+\hline
+\end{tabularx}
+
+\vspace{1cm}
+
+\noindent 学生签名：邓凯璇 \hspace{5cm} \today
+
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\noindent 注：不足部分可加页。
+
+\newpage
+
+\section*{教师指导记录}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+题目 & \multicolumn{3}{l|}{基于 Q-Learning 的运动想象时间窗优化方法} \\
+\hline
+姓名 & 邓凯璇 & 学号 & 37220222203575 \\
+\hline
+\end{tabularx}
+
+\subsection*{第一阶段指导}
+
+\vspace{4cm}
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\subsection*{第二阶段指导}
+
+\vspace{4cm}
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\subsection*{第三阶段指导}
+
+\vspace{4cm}
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\subsection*{第四阶段指导}
+
+\vspace{4cm}
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\subsection*{第五阶段指导}
+
+\vspace{4cm}
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\noindent 注：不足部分可加页。
+
+\newpage
+
+\section*{指导教师评语}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+题目 & \multicolumn{3}{l|}{基于 Q-Learning 的运动想象时间窗优化方法} \\
+\hline
+姓名 & 邓凯璇 & 学号 & 37220222203575 \\
+\hline
+\end{tabularx}
+
+\subsection*{（从论文的选题、基本写作规范、文献综述、原创性、工作量、所取得的成果、学生的知识和能力，以及完成论文的态度等方面进行总体评价）}
+
+\vspace{14cm}
+
+\noindent 拟评成绩：\underline{\hspace{6cm}}
+
+\noindent 是否具备答辩资格：\checkbox\ 具备 \checkbox\ 不具备
+
+\vspace{1cm}
+
+\noindent 指导教师签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}} 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\noindent 注：不足部分可加页。
+
+\newpage
+
+\section*{答辩记录}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|}
+\hline
+题目 & \multicolumn{3}{l|}{基于 Q-Learning 的运动想象时间窗优化方法} \\
+\hline
+学院 & 信息学院 & 专业 & 人工智能\\
+\hline
+学生姓名 & 邓凯璇 & 学号 & 37220222203575\\
+\hline
+指导教师 & 施明辉 & 职称 & 副教授\\
+\hline
+答辩日期 & 年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日 & 答辩地点 & \\
+\hline
+\end{tabularx}
+
+\subsection*{答辩小组}
+
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}X|}
+\hline
+姓名 & & & & & \\
+\hline
+职称 & & & & & \\
+\hline
+\end{tabularx}
+
+\subsection*{答辩记录}
+（包括论文陈述、答辩小组成员提出的主要问题及学生答辩的简要情况）
+
+\vspace{3cm}
+
+\subsection*{答辩小组意见}
+是否通过答辩：\checkbox\ 是 \checkbox\ 否
+
+答辩成绩：\underline{\hspace{4cm}}
+
+\vspace{0.5cm}
+\noindent 组长签名：\underline{\hspace{4cm}}
+
+\noindent 成员签名：\underline{\hspace{4cm}}
+
+\noindent 秘书签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}}年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\newpage
+
+\section*{论文总评成绩}
+
+总评成绩评定规则：
+
+\vspace{1cm}
+
+总评成绩：\underline{\hspace{4cm}}
+
+\vspace{1cm}
+\noindent 院长（系主任）签名：\underline{\hspace{3cm}} \hspace{2cm} \underline{\hspace{1cm}}年\underline{\hspace{1cm}}月\underline{\hspace{1cm}}日
+
+\end{document}

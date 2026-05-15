@@ -2,7 +2,7 @@
 %% 第 4 章 实验与结果分析
 %%=============================================================================
 
-\chapter{实验与结果分析}
+\xmuchapter{实验与结果分析}{Experiments and Results Analysis}
 \label{chap:experiments}
 
 % 引言
@@ -10,10 +10,10 @@
 
 本章内容组织如下：第\ref{sec:exp_design}节介绍实验设计，包括实验环境配置、数据集描述、数据预处理流程、特征提取与分类方法、对比方法和评估协议；第\ref{sec:baseline_results}节分析基线方法性能，对比固定时间窗与搜索优化方法的有效性；第\ref{sec:ql_results}节系统对比 Q-Learning 方法族与基线方法的性能，验证强化学习方法的相对优势；第\ref{sec:tableq_vs_dqn}节聚焦表格型 Q-Learning 与 DQN 的详细对比，从整体性能、被试级别性能、统计显著性等角度验证本研究的核心主张；第\ref{sec:ablation}节通过消融实验分析 Q-Learning 各变体的性能差异，验证 Standard Q-Learning 为本任务最优选择；最后，讨论被试间差异、时间窗选择模式和计算效率等关键问题。
 
-\section{实验设计}
+\xmusection{实验设计}{Experimental Design}
 \label{sec:exp_design}
 
-\subsection{实验环境配置}
+\xmusubsection{实验环境配置}{Experimental Environment}
 \label{subsec:experimental_setup}
 
 \textbf{硬件环境}。所有实验均在搭载 AMD Ryzen 7 6800H 处理器（8 核 16 线程，基准频率 3.2 GHz）和 NVIDIA GeForce RTX 2050 GPU（4 GB GDDR6 显存）的计算机上完成，系统内存为 16 GB。
@@ -22,7 +22,7 @@
 
 \textbf{可复现性设置}。为确保实验结果的可复现性，所有实验固定随机种子为 42，随机种子设置涵盖 NumPy 随机数生成器、Python 内置 random 模块、scikit-learn 交叉验证数据划分以及强化学习探索策略。每名被试独立进行 5 次重复实验（随机种子分别为 0--4），报告平均值 $\pm$ 标准差。
 
-\subsection{数据集描述}
+\xmusubsection{数据集描述}{Dataset Description}
 \label{subsec:dataset}
 
 本研究使用 BCI Competition IV 2a 数据集进行实验验证\cite{tangermann2012review}。该数据集是运动想象脑机接口领域的标准基准数据集，包含 9 名健康被试的脑电信号数据。
@@ -33,7 +33,7 @@
 
 \textbf{数据划分}。本研究使用训练集（session T）进行时间窗优化和模型训练，使用测试集（session E）进行性能评估。对于每名被试，训练集和测试集各包含 288 个试次（72 试次 $\times$ 4 类）。
 
-\subsection{数据预处理}
+\xmusubsection{数据预处理}{Data Preprocessing}
 \label{subsec:preprocessing}
 
 为消除噪声和伪影干扰，本研究采用以下预处理流程\cite{delorme2004eeglab}：
@@ -46,7 +46,7 @@
 
 \textbf{（4）时间窗截取}。根据算法选择的时间窗 $[t_{\text{start}}, t_{\text{end}}]$ 截取 EEG 数据，用于后续特征提取。时间窗的选取对分类性能有重要影响，是本章研究的核心问题。
 
-\subsection{特征提取与分类}
+\xmusubsection{特征提取与分类}{Feature Extraction and Classification}
 \label{subsec:feature_classification}
 
 \textbf{CSP 特征提取}。本研究采用共空间模式（Common Spatial Pattern, CSP）方法提取空间滤波特征\cite{blankertz2008optimizing, mcfarland1997spatial}。CSP 通过优化空间滤波器，使不同类别信号的方差差异最大化，是运动想象 BCI 中最有效的特征提取方法之一。
@@ -64,7 +64,7 @@
 
 \textbf{交叉验证}。采用 5 折交叉验证评估训练集性能，确保模型泛化能力\cite{lotte2007review}。训练集被随机划分为 5 份，其中 4 份用于训练，1 份用于验证，重复 5 次后取平均性能作为最终评估结果。
 
-\subsection{对比方法}
+\xmusubsection{对比方法}{Comparison Methods}
 \label{subsec:baseline_methods}
 
 为全面评估本研究提出的表格型 Q-Learning 时间窗优化方法的有效性，本章设计了多层次、多维度的对比实验体系，共计 10 种基准算法。
@@ -75,7 +75,7 @@
 
 \textbf{强化学习方法}：包括 Standard Q-Learning\cite{watkins1992q}、Double Q-Learning\cite{van2016deep, hasselt2010double}、Dueling Q-Learning\cite{wang2016dueling}、Dueling Double Q-Learning 和 DQN\cite{mnih2015human}。其中，表格型 Q-Learning 将时间窗边界离散化为 136 个有效状态，DQN 使用两层全连接网络（64 和 32 隐藏单元）近似 Q 函数。
 
-\subsection{评估协议}
+\xmusubsection{评估协议}{Evaluation Protocol}
 \label{subsec:evaluation_protocol}
 
 \textbf{重复实验设计}。每名被试独立进行 5 次重复实验（随机种子分别为 0--4），报告平均值 $\pm$ 标准差。随机种子影响 CSP 特征提取、SVM 训练、强化学习探索策略和交叉验证划分。
@@ -84,7 +84,7 @@
 
 \textbf{统计检验}。采用配对样本 $t$ 检验（$\alpha = 0.05$）比较方法间差异的统计显著性，并计算 Cohen's $d$ 效应量\cite{field2013discovering, cohen1988statistical}。效应量解释：$|d| < 0.2$ 为小效应，$0.2 \leq |d| < 0.5$ 为中等效应，$|d| \geq 0.5$ 为大效应。
 
-\subsection{实验流程概述}
+\xmusubsection{实验流程概述}{Experimental Procedure Overview}
 \label{subsec:experimental_procedure}
 
 本章通过四个层次的实验分析，系统验证表格型 Q-Learning 方法在运动想象时间窗优化任务中的有效性：
@@ -97,10 +97,10 @@
 
 \textbf{（4）Q-Learning 变体消融实验}：对比 Standard Q-Learning 与多种改进变体的性能，验证 Standard Q-Learning 为本任务最优选择。
 
-\section{基线方法性能分析}
+\xmusection{基线方法性能分析}{Baseline Method Performance Analysis}
 \label{sec:baseline_results}
 
-\subsection{固定时间窗与搜索优化方法对比}
+\xmusubsection{固定时间窗与搜索优化方法对比}{Fixed vs. Search-Optimized Time Windows}
 \label{subsec:fixed_vs_search}
 
 为验证自适应时间窗选择策略的有效性，首先对比固定长度时间窗方法（FL-2s、FL-1.5s、FL-1s）与搜索优化方法（Random-Search、Grid-Search）。
@@ -152,7 +152,7 @@ Grid-Search & \textbf{63.35 $\pm$ 8.78} & \textbf{0.5107 $\pm$ 0.1195} & \textbf
 \end{tabular}
 \end{table}
 
-\subsection{结果分析}
+\xmusubsection{结果分析}{Result Analysis}
 \label{subsec:results_analysis}
 
 综合实验结果，主要发现如下：
@@ -168,10 +168,10 @@ Grid-Search & \textbf{63.35 $\pm$ 8.78} & \textbf{0.5107 $\pm$ 0.1195} & \textbf
 \textbf{固定窗口局限}： 三种固定窗口长度性能几乎相同（45.05\%--45.47\%），表明\textbf{简单调整窗口长度无法解决固定窗口的固有局限}，自适应策略是必然选择。
 
 
-\section{Q-Learning 方法与基线方法对比分析}
+\xmusection{Q-Learning 方法与基线方法对比分析}{Comparative Analysis of Q-Learning and Baselines}
 \label{sec:ql_results}
 
-\subsection{整体性能对比}
+\xmusubsection{整体性能对比}{Overall Performance Comparison}
 \label{subsec:overall_comparison}
 
 在验证自适应策略有效性的基础上，本节将 Q-Learning 方法族（Standard Q-Learning、Double Q-Learning、Dueling Q-Learning、Dueling Double Q-Learning、DQN）与基线方法（Grid-Search、Random-Search）进行系统对比。
@@ -195,7 +195,7 @@ Grid-Search & \textbf{63.35 $\pm$ 8.78} & \textbf{0.5107 $\pm$ 0.1195} & \textbf
 \end{figure}
 
 
-\subsection{时间窗选择分析}
+\xmusubsection{时间窗选择分析}{Time Window Selection Analysis}
 \label{subsec:window_analysis}
 
 图~\ref{fig:window_analysis} 展示了各方法选择的时间窗位置及窗口长度与性能的关系。
@@ -230,7 +230,7 @@ DQN  & 62.70 $\pm$ 9.21 & 0.5022 $\pm$ 0.1251 & 0.6200 $\pm$ 0.0970 & 9.21  \\
 \end{tabular}
 \end{table}
 
-\subsection{结果分析}
+\xmusubsection{结果分析}{Result Analysis}
 \label{subsec:ql_analysis}
 
 综合上述实验结果，对Q-Learning方法与基线方法的对比分析如下：
@@ -245,10 +245,10 @@ DQN  & 62.70 $\pm$ 9.21 & 0.5022 $\pm$ 0.1251 & 0.6200 $\pm$ 0.0970 & 9.21  \\
 
 \textbf{Q-Learning变体比较}: 在五种Q-Learning变体中，Standard Q-Learning和Dueling Q-Learning表现最佳，而Dueling Double Q-Learning略低（61.73\%）。这一结果与理论预期部分吻合：Dueling架构通过分离状态价值和优势函数提升了性能，但Double Q-Learning的过估计修正在本任务中收益有限，甚至可能因过度保守而略微降低性能。
 
-\section{表格型 Q-Learning 与 DQN 对比分析}
+\xmusection{表格型 Q-Learning 与 DQN 对比分析}{Comparative Analysis of Q-Learning and DQN}
 \label{sec:tableq_vs_dqn}
 
-\subsection{整体性能对比}
+\xmusubsection{整体性能对比}{Overall Performance Comparison}
 \label{subsec:overall_tableq_dqn}
 
 本节聚焦于表格型 Q-Learning 与 DQN 的详细对比，验证本研究的核心主张：\textbf{表格型 Q-Learning 可以在不显著牺牲性能的前提下替代 DQN}。
@@ -298,7 +298,7 @@ DQN & \textbf{62.70 $\pm$ 9.21} & 0.5022 $\pm$ 0.1251 & 0.6200 $\pm$ 0.0970 & 9.
 
 \textbf{结果分析}。（1）准确率差异极小：Standard Q-Learning 取得 62.68\% 的准确率，DQN 取得 62.70\% 的准确率，两者差异仅为 -0.02\%，在统计学上可忽略不计。（2）稳定性优势：Standard Q-Learning 的标准差（8.20\%）低于 DQN（9.21\%），相对降低约 10.97\%。（3）时间窗选择差异：Standard Q-Learning 选择的时间窗为 $[2.29\text{ s}, 3.17\text{ s}]$（窗口长度 0.88 s），DQN 选择的时间窗为 $[2.23\text{ s}, 3.28\text{ s}]$（窗口长度 1.05 s）。表格型方法倾向于选择更短但信息密度更高的时间窗。
 
-\subsection{被试级别性能对比}
+\xmusubsection{被试级别性能对比}{Subject-Level Performance Comparison}
 \label{subsec:subject_level_comparison}
 
 表~\ref{tab:subject_comparison} 展示了两种方法在各被试上的详细性能对比。
@@ -327,7 +327,7 @@ S09 & 68.69 $\pm$ 1.06 & 68.27 $\pm$ 0.85 & +0.42 & 0.5824 $\pm$ 0.0141 & 0.5769
 
 进一步分析发现：（1）性能优劣分布均衡：在 9 名被试中，表格型 Q-Learning 在 5 名被试（S02、S04、S05、S06、S09）上优于或持平于 DQN，在 4 名被试（S01、S03、S07、S08）上略低于 DQN。（2）低表现被试上的优势：在 S06 被试（低表现组）上，表格型 Q-Learning 取得 47.03\% 的准确率，优于 DQN 的 45.21\%（$\Delta = +1.82\%$）。（3）高表现被试上的差距：在 S03 和 S08 被试（高表现组）上，DQN 略优于表格型方法，但差距在可接受范围内（$< 3\%$）。
 
-\subsection{统计显著性检验}
+\xmusubsection{统计显著性检验}{Statistical Significance Testing}
 \label{subsec:statistical_test}
 
 为验证两种方法性能差异的统计显著性，对 9 名被试的准确率进行配对样本 $t$ 检验\cite{field2013discovering}。
@@ -338,7 +338,7 @@ S09 & 68.69 $\pm$ 1.06 & 68.27 $\pm$ 0.85 & +0.42 & 0.5824 $\pm$ 0.0141 & 0.5769
 
 \textbf{结果解读}。$p = 0.981 > 0.05$，不能拒绝零假设，表明两种方法的性能差异在统计学上不显著。效应量 $d = -0.003$ 远小于 0.2 的阈值，表明即使存在差异，其实际意义也微乎其微。这一结果从统计学角度支持了本研究的核心主张：\textbf{表格型 Q-Learning 可以在不显著牺牲性能的前提下替代 DQN}。
 
-\subsection{自适应时间窗与固定时间窗对比}
+\xmusubsection{自适应时间窗与固定时间窗对比}{Adaptive vs. Fixed Time Window}
 \label{subsec:adaptive_vs_fixed}
 
 表~\ref{tab:adaptive_fixed_s01} 对比了自适应时间窗方法（Standard Q-Learning）与固定长度时间窗方法在 S01 被试上的性能。
@@ -362,15 +362,15 @@ FL-2s (best) & 2.0 & 4.0 & 2.0 & 57.88 & 0.4382 & 0.5776 \\
 
 Standard Q-Learning 通过学习为 S01 被试选择最优时间窗 $[2.80\text{ s}, 3.60\text{ s}]$，取得 65.93\% 的准确率，优于所有固定长度时间窗方法的最优候选窗口。这一结果验证了本研究方法的有效性：\textbf{自适应时间窗选择能够根据个体神经响应特性动态调整，在连续状态空间中搜索最优解，而非局限于预定义的离散候选集合}。现有研究表明，时间窗的优化选择对运动想象分类性能具有显著影响，基于搜索或学习的方法能够有效捕捉个体化的时间特征\cite{yang2015time, chen2019dynamic, zhang2021mars}。
 
-\subsection{讨论}
+\xmusubsection{讨论}{Discussion}
 \label{subsec:tableq_dqn_discussion}
 
 本节通过详细对比分析，验证了以下结论：（1）性能等价性：表格型 Q-Learning 与 DQN 的准确率差异仅为 -0.02\%，统计检验表明差异不显著（$p = 0.981$）。（2）稳定性优势：表格型 Q-Learning 的跨被试标准差低于 DQN（8.20\% vs 9.21\%），表明其稳定性更优。（3）被试普适性：在 9 名被试中，表格型 Q-Learning 在超过半数的被试上优于或持平于 DQN，尤其在低表现被试上优势更明显。
 
-\section{Q-Learning 变体消融实验}
+\xmusection{Q-Learning 变体消融实验}{Q-Learning Variant Ablation Experiments}
 \label{sec:ablation}
 
-\subsection{消融实验结果}
+\xmusubsection{消融实验结果}{Ablation Experiment Results}
 \label{subsec:ablation_results}
 
 为验证 Standard Q-Learning 在本任务中的有效性，本节对比多种 Q-Learning 变体的性能。
@@ -422,7 +422,7 @@ DQN & 62.70 $\pm$ 9.21  & 0.01 & 0.5022 $\pm$ 0.1251 & 0.6200 $\pm$ 0.0970 \\
 
 \textbf{结果分析}。（1）Standard Q-Learning 表现稳健：作为基准方法，Standard Q-Learning 取得了与 DQN 相当的准确率（62.68\% vs 62.70\%），且标准差更低（8.20\% vs 9.21\%）。（2）Double Q-Learning 未带来收益：添加 Double Q-Learning 后准确率下降 1.31\%，效应量 $d = -0.10$。这可能是因为本任务中 Q 值估计的过偏问题不显著，Double Q-Learning 的去偏机制反而导致价值估计过于保守。Double Q-Learning 的核心思想是通过维护两个独立的 Q 函数来缓解过估计问题\cite{van2016deep}，但在本任务的状态空间（136 个离散状态）中，状态 - 动作对的数量有限，Q 值估计的过偏问题并不严重，此时去偏机制可能导致智能体倾向于选择更保守的长窗口策略，从而引入更多噪声。（3）Dueling 架构效果有限：单独使用 Dueling 架构时准确率微幅提升 0.11\%，但提升不显著。Dueling 架构通过分离状态价值和优势函数来提升性能\cite{wang2016dueling}，但本任务的状态空间相对简单，优势函数的引入未能带来显著增益。（4）组合效果不佳：同时使用两种技术时，准确率下降 1.52\%，标准差增加至 9.11\%，表明两种技术的组合未产生协同效应。综上，\textbf{Standard Q-Learning 在本任务中是最优选择}，既保持了轻量化优势，又取得了与复杂变体相当的性能。
 
-\subsection{被试间差异分析}
+\xmusubsection{被试间差异分析}{Inter-Subject Difference Analysis}
 \label{subsec:subject_variability}
 
 表~\ref{tab:subject_variability} 展示了 Standard Q-Learning 方法在各被试上的性能表现。
@@ -454,7 +454,7 @@ S09 & 68.69 $\pm$ 1.06 & 0.5824 $\pm$ 0.0141 & 0.6784 $\pm$ 0.0115 & 2.68 & 3.36
 
 \textbf{被试分组分析}。（1）高表现组（S03、S07、S08、S09）：准确率 $> 65\%$，Kappa $> 0.54$。（2）中表现组（S01、S02、S05）：准确率 58\%--65\%，Kappa 0.48--0.54。（3）低表现组（S04、S06）：准确率 $< 52\%$，Kappa $< 0.36$。值得注意的是，所有被试选择的时间窗起始点集中在 2.0 s--2.7 s 范围内，与运动想象任务中 ERD 现象的典型时间特征（刺激后 2 s--4 s）相符\cite{pfurtscheller1999event}，验证了本研究方法的学习有效性。
 
-\section{本章小结}
+\xmusection{本章小结}{Chapter Summary}
 
 本章在 BCI Competition IV 2a 标准数据集上系统评估了表格型 Q-Learning 时间窗优化方法的性能，通过多层次、多维度的对比实验得出以下主要结论：
 
