@@ -7,42 +7,8 @@
 
 本附录详细列出本研究中所有实验的超参数设置与软件环境配置，以确保研究的可复现性。所有超参数均在统一的配置文件中管理，便于调试和修改。
 
-\xmusection{实验任务说明}{Experimental Task Description}
-\label{sec:task_description}
-
-本研究涉及\textbf{两个独立但相关的任务}：时间窗优化任务与分类预测任务。明确区分两者的边界与依赖关系，对于理解整体实验流程至关重要。现明确区分如表~\ref{tab:task_comparison} 所示。
-
-\begin{table}[H]
-\centering
-\caption{时间窗优化任务与分类预测任务对比}
-\label{tab:task_comparison}
-\begin{tabular}{lll}
-\hline
-\textbf{维度} & \textbf{任务一：时间窗优化} & \textbf{任务二：分类预测} \\
-\hline
-任务目标 & 找到最优时间窗参数 $(t_{\text{start}}^*, t_{\text{end}}^*)$ & 预测运动想象类别（左手/右手/脚/舌头） \\
-执行阶段 & 训练阶段（离线） & 测试阶段（在线/离线） \\
-输入 & EEG 训练数据（288 试次）+ 标签 & 新的 EEG 测试试次 \\
-输出 & 最优时间窗参数 & 类别标签预测 \\
-方法 & Q-Learning 强化学习 & CSP 特征提取 + SVM 分类 \\
-执行频率 & 每名被试仅需执行一次 & 每个测试试次都需要执行 \\
-耗时 & 约 30 秒--1 分钟 & 约 1 毫秒/试次 \\
-\hline
-\end{tabular}
-\end{table}
-
-时间窗优化是\textbf{辅助任务（预处理）}，分类预测是\textbf{主任务（最终目标）}。任务一（时间窗优化）的输出作为任务二（分类预测）的输入参数。任务一服务于任务二，是手段而非目的。
-
-\label{subsec:clarification}
-
-\textbf{混淆点一：都在用 EEG 数据}。澄清：训练阶段用训练集优化时间窗；测试阶段用测试集进行分类，数据来源不同。
-
-\textbf{混淆点二：都涉及分类准确率}。澄清：时间窗优化时用交叉验证准确率作为奖励；分类预测时用测试集准确率评估最终性能，目的不同。
-
-\textbf{混淆点三：代码中交织在一起}。澄清：代码实现时，时间窗优化的奖励计算需要调用分类流程，但逻辑上是两个独立任务。
-
-\xmusection{EEG 数据参数}{EEG Data Parameters}
-\label{sec:eeg_params}
+\xmusection{数据参数与数据集}{Data Parameters and Dataset}
+\label{sec:data_and_dataset}
 
 EEG 数据采集与预处理的基础参数如表~\ref{tab:eeg_params} 所示。
 
@@ -64,20 +30,44 @@ EEG 数据采集与预处理的基础参数如表~\ref{tab:eeg_params} 所示。
 \end{tabular}
 \end{table}
 
-\xmusection{表格型 Q-Learning 超参数}{Tabular Q-Learning Hyperparameters}
-\label{sec:tabular_ql_params}
-
-表格型 Q-Learning 方法（包括 Standard Q-Learning、Double Q-Learning、Dueling Q-Learning、Dueling Double Q-Learning）的超参数设置如表~\ref{tab:tabular_ql_params} 所示。
+本研究使用的数据集信息如表~\ref{tab:dataset_info} 所示。
 
 \begin{table}[H]
 \centering
-\caption{表格型 Q-Learning 超参数设置}
-\label{tab:tabular_ql_params}
+\caption{BCI Competition IV 2a 数据集信息}
+\label{tab:dataset_info}
+\begin{tabular}{ll}
+\hline
+\textbf{属性} & \textbf{描述} \\
+\hline
+数据集名称 & BCI Competition IV 2a \\
+被试数量 & 9 名健康被试 \\
+任务类型 & 4 类运动想象（左手、右手、脚、舌头） \\
+EEG 通道数 & 22 通道 \\
+采样频率 & 250 Hz \\
+通道位置 & 国际标准 10-20 系统 \\
+训练集试次数 & 288 试次/被试（72 试次 × 4 类） \\
+测试集试次数 & 288 试次/被试（72 试次 × 4 类） \\
+数据来源 & \url{https://github.com/bregydoc/bcidatasetIV2a.git} \\
+\hline
+\end{tabular}
+\end{table}
+
+\xmusection{超参数设置}{Hyperparameter Settings}
+\label{sec:hyperparameters}
+
+\xmusubsection{表格型 Q-Learning 超参数}{Tabular Q-Learning Hyperparameters}
+\label{subsec:tabular_ql_params}
+
+表格型 Q-Learning 方法（包括 Standard Q-Learning、Double Q-Learning、Dueling Q-Learning、Dueling Double Q-Learning）的超参数设置如表~\ref{tab:tabular_ql_params_state}--\ref{tab:tabular_ql_params_train} 所示。
+
+\begin{table}[H]
+\centering
+\caption{表格型 Q-Learning 状态空间参数}
+\label{tab:tabular_ql_params_state}
 \begin{tabular}{ll}
 \hline
 \textbf{参数} & \textbf{值} \\
-\hline
-\multicolumn{2}{c}{\textit{状态空间参数}} \\
 \hline
 $t_{\text{start}}$ 范围 & [0.0, 3.0] 秒 \\
 $t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
@@ -85,18 +75,45 @@ $t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
 最小时间窗长度 & 0.5 秒 \\
 状态空间大小 $|\mathcal{S}|$ & 136 \\
 \hline
-\multicolumn{2}{c}{\textit{学习参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{表格型 Q-Learning 学习参数}
+\label{tab:tabular_ql_params_learn}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 学习率 $\alpha$ & 0.2 \\
 折扣因子 $\gamma$ & 0.95 \\
 \hline
-\multicolumn{2}{c}{\textit{探索策略参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{表格型 Q-Learning 探索策略参数}
+\label{tab:tabular_ql_params_explore}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 初始探索率 $\varepsilon_{\text{init}}$ & 0.9 \\
 最小探索率 $\varepsilon_{\text{min}}$ & 0.05 \\
 探索率衰减率 $\varepsilon_{\text{decay}}$ & 0.995 \\
 \hline
-\multicolumn{2}{c}{\textit{训练参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{表格型 Q-Learning 训练参数}
+\label{tab:tabular_ql_params_train}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 训练轮数 $n_{\text{episodes}}$ & 100 \\
 每轮最大步数 & 40 \\
@@ -117,43 +134,77 @@ $t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
 
 （5）\textbf{训练规模}：100 轮 × 40 步 = 4000 步的总探索次数，足以使 544 个状态 - 动作对（136 状态 × 4 动作）被充分访问（平均每对约 7.4 次）。
 
-\xmusection{DQN 超参数}{DQN Hyperparameters}
-\label{sec:dqn_params}
+\xmusubsection{DQN 超参数}{DQN Hyperparameters}
+\label{subsec:dqn_params}
 
-DQN 基线方法的超参数设置如表~\ref{tab:dqn_params} 所示。
+DQN 基线方法的超参数设置如表~\ref{tab:dqn_params_state}--\ref{tab:dqn_params_replay} 所示。
 
 \begin{table}[H]
 \centering
-\caption{DQN 超参数设置}
-\label{tab:dqn_params}
+\caption{DQN 状态空间参数}
+\label{tab:dqn_params_state}
 \begin{tabular}{ll}
 \hline
 \textbf{参数} & \textbf{值} \\
-\hline
-\multicolumn{2}{c}{\textit{状态空间参数}} \\
 \hline
 $t_{\text{start}}$ 范围 & [0.0, 3.0] 秒 \\
 $t_{\text{end}}$ 范围 & [1.0, 4.0] 秒 \\
 时间窗离散化步长 $\Delta t$ & 0.2 秒 \\
 最小时间窗长度 & 0.5 秒 \\
 \hline
-\multicolumn{2}{c}{\textit{学习参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{DQN 学习参数}
+\label{tab:dqn_params_learn}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 学习率 $\eta$ & $1 \times 10^{-3}$ \\
 折扣因子 $\gamma$ & 0.95 \\
 \hline
-\multicolumn{2}{c}{\textit{探索策略参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{DQN 探索策略参数}
+\label{tab:dqn_params_explore}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 初始探索率 $\varepsilon_{\text{init}}$ & 0.9 \\
 最小探索率 $\varepsilon_{\text{min}}$ & 0.05 \\
 探索率衰减率 $\varepsilon_{\text{decay}}$ & 0.995 \\
 \hline
-\multicolumn{2}{c}{\textit{训练参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{DQN 训练参数}
+\label{tab:dqn_params_train}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 训练轮数 $n_{\text{episodes}}$ & 100 \\
 每轮最大步数 & 40 \\
 \hline
-\multicolumn{2}{c}{\textit{经验回放参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{DQN 经验回放参数}
+\label{tab:dqn_params_replay}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 缓冲区容量 & 10000 \\
 批量大小 $\text{batch\_size}$ & 32 \\
@@ -175,8 +226,8 @@ DQN 使用两层全连接网络近似 Q 函数：
 
 \textbf{输出层}：动作空间维度（4 维，对应 4 个动作的 Q 值）。
 
-\xmusection{Dueling 架构参数}{Dueling Architecture Parameters}
-\label{sec:dueling_params}
+\xmusubsection{Dueling 架构参数}{Dueling Architecture Parameters}
+\label{subsec:dueling_params}
 
 Dueling Q-Learning 和 Dueling Double Q-Learning 采用 Dueling 网络架构，将 Q 函数分解为状态价值函数 $V(s)$ 和优势函数 $A(s,a)$：
 
@@ -202,60 +253,50 @@ Dueling 架构的学习参数如表~\ref{tab:dueling_params} 所示。
 
 \noindent\textbf{说明}：状态价值函数和优势函数采用不同的学习率，以平衡两者对学习过程的贡献。
 
-\xmusection{CSP-SVM 分类器超参数}{CSP-SVM Classifier Hyperparameters}
-\label{sec:csp_svm_params}
+\xmusubsection{CSP-SVM 分类器超参数}{CSP-SVM Classifier Hyperparameters}
+\label{subsec:csp_svm_params}
 
-本研究使用 CSP-SVM 作为基础分类器计算奖励信号，其超参数设置如表~\ref{tab:csp_svm_params} 所示。为公平评估不同时间窗选择方法的性能，所有实验方法统一使用固定参数的 SVM 分类器，避免分类器参数变化对时间窗评估产生干扰。
+本研究使用 CSP-SVM 作为基础分类器计算奖励信号，其超参数设置如表~\ref{tab:csp_params}--\ref{tab:cv_params} 所示。为公平评估不同时间窗选择方法的性能，所有实验方法统一使用固定参数的 SVM 分类器，避免分类器参数变化对时间窗评估产生干扰。
 
 \begin{table}[H]
 \centering
-\caption{CSP-SVM 分类器超参数设置}
-\label{tab:csp_svm_params}
+\caption{CSP 特征提取参数}
+\label{tab:csp_params}
 \begin{tabular}{ll}
 \hline
 \textbf{参数} & \textbf{值} \\
-\hline
-\multicolumn{2}{c}{\textit{CSP 参数}} \\
 \hline
 CSP 分量数 & 4 \\
 协方差矩阵正则化 & $1 \times 10^{-6}$ \\
 特征类型 & 对数方差 \\
 \hline
-\multicolumn{2}{c}{\textit{SVM 参数}} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{SVM 分类器参数}
+\label{tab:svm_params}
+\begin{tabular}{ll}
+\hline
+\textbf{参数} & \textbf{值} \\
 \hline
 核函数 & 线性核 \\
 正则化参数 $C$ & 1.0 \\
 随机种子 & 0 \\
 \hline
-\multicolumn{2}{c}{\textit{交叉验证参数}} \\
-\hline
-交叉验证折数 & 5 \\
-\hline
 \end{tabular}
 \end{table}
 
-\xmusection{数据集信息}{Dataset Information}
-\label{sec:dataset_info}
-
-本研究使用的数据集信息如表~\ref{tab:dataset_info} 所示。
-
 \begin{table}[H]
 \centering
-\caption{BCI Competition IV 2a 数据集信息}
-\label{tab:dataset_info}
+\caption{交叉验证参数}
+\label{tab:cv_params}
 \begin{tabular}{ll}
 \hline
-\textbf{属性} & \textbf{描述} \\
+\textbf{参数} & \textbf{值} \\
 \hline
-数据集名称 & BCI Competition IV 2a \\
-被试数量 & 9 名健康被试 \\
-任务类型 & 4 类运动想象（左手、右手、脚、舌头） \\
-EEG 通道数 & 22 通道 \\
-采样频率 & 250 Hz \\
-通道位置 & 国际标准 10-20 系统 \\
-训练集试次数 & 288 试次/被试（72 试次 × 4 类） \\
-测试集试次数 & 288 试次/被试（72 试次 × 4 类） \\
-数据来源 & \url{https://github.com/bregydoc/bcidatasetIV2a.git} \\
+交叉验证折数 & 5 \\
 \hline
 \end{tabular}
 \end{table}
@@ -263,19 +304,6 @@ EEG 通道数 & 22 通道 \\
 \xmusection{源代码仓库}{Source Code Repository}
 \label{sec:source_code}
 
-本研究的全部源代码、实验配置及数据处理脚本均已开源，托管于 GitHub 平台。
-
-\xmusubsection{仓库地址}{Repository Address}
-
-\textbf{GitHub 仓库}：\url{https://github.com/theoldman-lab/XMU_DKX.git}
-
-\xmusubsection{仓库截图}{Repository Screenshot}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\textwidth]{figures/截图 2026-03-18 20-39-30.png}
-\caption{GitHub 源代码仓库主页}
-\label{fig:github_repo}
-\end{figure}
+本研究的全部源代码、实验配置及数据处理脚本均已开源，托管于 GitHub 平台。\textbf{GitHub 仓库地址}：\url{https://github.com/theoldman-lab/XMU_DKX.git}
 
 \end{document}
